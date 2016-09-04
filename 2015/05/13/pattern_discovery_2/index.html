@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>数据挖掘Efficient Pattern Mining Methods | 暗时间</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="本文要介绍一些高效的数据挖掘方法：
+
+The Downward Closure Property of Frequent Patterns
+The Apriori Algorithm
+Extensions or Improvements of Apriori
+Mining Frequent Patterns by Exploring Vertical Data Format
+FPGrowth: A">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数据挖掘Efficient Pattern Mining Methods">
+<meta property="og:url" content="http://anboqing.github.io/2015/05/13/pattern_discovery_2/index.html">
+<meta property="og:site_name" content="暗时间">
+<meta property="og:description" content="本文要介绍一些高效的数据挖掘方法：
+
+The Downward Closure Property of Frequent Patterns
+The Apriori Algorithm
+Extensions or Improvements of Apriori
+Mining Frequent Patterns by Exploring Vertical Data Format
+FPGrowth: A">
+<meta property="og:image" content="http://7xia5s.com1.z0.glb.clouddn.com/pattern_discoverypd3_1.png">
+<meta property="og:image" content="http://7xia5s.com1.z0.glb.clouddn.com/pattern_discoverypd3_2.png">
+<meta property="og:image" content="http://7xia5s.com1.z0.glb.clouddn.com/pattern_discoverypd3_4.png">
+<meta property="og:image" content="http://7xia5s.com1.z0.glb.clouddn.com/pattern_discoverypd3_5.png">
+<meta property="og:image" content="http://7xia5s.com1.z0.glb.clouddn.com/pattern_discoverypd3_3.png">
+<meta property="og:image" content="http://7xia5s.com1.z0.glb.clouddn.com/pattern_discoverypd3_6.png">
+<meta property="og:image" content="http://7xia5s.com1.z0.glb.clouddn.com/pattern_discoverypd3_7.png">
+<meta property="og:image" content="http://7xia5s.com1.z0.glb.clouddn.com/pattern_discoverypd3_8.png">
+<meta property="og:image" content="http://7xia5s.com1.z0.glb.clouddn.com/pattern_discoverypd3_9.png">
+<meta property="og:image" content="http://7xia5s.com1.z0.glb.clouddn.com/pattern_discoverypd3_10.png">
+<meta property="og:image" content="http://7xia5s.com1.z0.glb.clouddn.com/pattern_discoverypd3_11.png">
+<meta property="og:image" content="http://7xia5s.com1.z0.glb.clouddn.com/pattern_discoverypd4_1.png">
+<meta property="og:image" content="http://7xia5s.com1.z0.glb.clouddn.com/pattern_discoverypd5_1.png">
+<meta property="og:image" content="http://7xia5s.com1.z0.glb.clouddn.com/pattern_discoverypd5_2.png">
+<meta property="og:image" content="http://7xia5s.com1.z0.glb.clouddn.com/pattern_discoverypd5_3.png">
+<meta property="og:image" content="http://7xia5s.com1.z0.glb.clouddn.com/pattern_discoverypd5_4.png">
+<meta property="og:image" content="http://7xia5s.com1.z0.glb.clouddn.com/pattern_discoverypd5_5.png">
+<meta property="og:image" content="http://7xia5s.com1.z0.glb.clouddn.com/pattern_discoverypd5_6.png">
+<meta property="og:updated_time" content="2016-09-04T08:23:15.900Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="数据挖掘Efficient Pattern Mining Methods">
+<meta name="twitter:description" content="本文要介绍一些高效的数据挖掘方法：
+
+The Downward Closure Property of Frequent Patterns
+The Apriori Algorithm
+Extensions or Improvements of Apriori
+Mining Frequent Patterns by Exploring Vertical Data Format
+FPGrowth: A">
+<meta name="twitter:image" content="http://7xia5s.com1.z0.glb.clouddn.com/pattern_discoverypd3_1.png">
+  
+    <link rel="alternate" href="/atom.xml" title="暗时间" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">暗时间</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">书写是最好的思考</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://anboqing.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-pattern_discovery_2" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/05/13/pattern_discovery_2/" class="article-date">
+  <time datetime="2015-05-13T08:22:00.000Z" itemprop="datePublished">2015-05-13</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/数据挖掘/">数据挖掘</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      数据挖掘Efficient Pattern Mining Methods
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>本文要介绍一些高效的数据挖掘方法：</p>
+<ul>
+<li><strong>The Downward Closure Property of Frequent Patterns</strong></li>
+<li><strong>The Apriori Algorithm</strong></li>
+<li><strong>Extensions or Improvements of Apriori</strong></li>
+<li><strong>Mining Frequent Patterns by Exploring Vertical Data Format</strong></li>
+<li><strong>FPGrowth: A Frequent Pattern-Growth Approach</strong></li>
+<li><strong>Mining Closed Patterns</strong></li>
+</ul>
+<hr>
+<h1 id="The-Downward-Closure-Property-of-Frequent-Patterns-Aprior"><a href="#The-Downward-Closure-Property-of-Frequent-Patterns-Aprior" class="headerlink" title="The Downward Closure Property of Frequent Patterns : Aprior"></a>The Downward Closure Property of Frequent Patterns : Aprior</h1><hr>
+<p><img src="http://7xia5s.com1.z0.glb.clouddn.com/pattern_discoverypd3_1.png" alt="1"><br>首先先介绍一个概念：Frequent Pattern 的Downward Closure 性质 （这个性质应该叫做向下封闭性质吗？what ever..who cares）</p>
+<p>狄仁杰大人说：我们先观察，从上一节里面的例子中我们可以观察到 <strong>频繁集</strong>: {$a<em>1,…,a</em>{50}$} 有很多 子集 ，<strong>所有的这些子集也是Frequent的！</strong>（元芳!What’s your opinion ?　大人！这背后必有一个惊天的大秘密！！！我们可以一起搞个大新闻！Excited!）</p>
+<p>元芳和大人通过观察发现：<br>如果 {beer,diaper,nuts} 是频繁的，那么 它的子集{beer,diaper}也是频繁的<br>因为每当出现 {beer,diaper,nuts}的时候，{beer,diaper}也都出现了！（这么奇妙，你每次吃了一碗米饭的时候，你都吃过了一粒米）</p>
+<hr>
+<h1 id="The-Apriori-Algorithm"><a href="#The-Apriori-Algorithm" class="headerlink" title="The Apriori Algorithm"></a>The Apriori Algorithm</h1><p><img src="http://7xia5s.com1.z0.glb.clouddn.com/pattern_discoverypd3_2.png" alt="2"><br>于是敌人节大人和元芳就穿越到1994年，化身为Rakesh Agrawal 和 Srikant,在VLDB发表了论文说：   </p>
+<ul>
+<li><strong>Aprior: Any subset of a frequent itemset must be frequent</strong></li>
+</ul>
+<p>这个定理怎么用呢？元芳你怎么看？<strong>大人！反着看！这是一把剪枝的好剪刀！</strong>，如果<strong>任何一个 Itemset S的子集不是频繁的，那么S也不可能频繁，我们就不需要再去挖掘S了，多么痛的领悟！</strong>    </p>
+<p>后来人们基于这个想法，又探索出了2个主要的方法：</p>
+<ul>
+<li>Aprior </li>
+<li>Eclat</li>
+<li>FPgrowth</li>
+</ul>
+<p><a href="http://en.wikipedia.org/wiki/Apriori_algorithm" target="_blank" rel="external">Apriori wiki 页面</a></p>
+<p><img src="http://7xia5s.com1.z0.glb.clouddn.com/pattern_discoverypd3_4.png" alt="4"></p>
+<p>Aprior算法可以用伪代码表示如下：</p>
+<p><img src="http://7xia5s.com1.z0.glb.clouddn.com/pattern_discoverypd3_5.png" alt="5"></p>
+<p>Wiki上这么说的：   </p>
+<ul>
+<li>a transaction database $T$</li>
+<li>a support threshold of $\epsilon$</li>
+<li>$C_k$ is the candidate set for level $k$</li>
+<li>$count[c]$ accesses a field of the data structure that represents candidate set $c$存着support</li>
+</ul>
+<p><img src="http://7xia5s.com1.z0.glb.clouddn.com/pattern_discoverypd3_3.png" alt="3"><br>下面就上面这个伪代码进行解读：    </p>
+<ul>
+<li><p>$L_1$$\leftarrow$ $\lbrace large 1-itemsets \rbrace$</p>
+<ul>
+<li>这行是初始化让第一层的frequent set是 1-itemsets</li>
+</ul>
+</li>
+<li><p>while $L_{k-1}$ $\neq$ $\emptyset$</p>
+<ul>
+<li>这行是说当上一层的frequent sets是空的时候就结束搜索</li>
+</ul>
+</li>
+<li><p>$C<em>k \leftarrow \lbrace a\cup\lbrace b\rbrace \mid a \in L</em>{k-1} \land b \in \bigcup{L_{k-1} \land b \notin a} \rbrace   $</p>
+<ul>
+<li>这行是用来生成侯选集的</li>
+<li>侯选集是从上一层的频繁集$L<em>{k-1}$中选一个子集 $a \in L</em>{k-1}$，然后再从上一层的频繁集$\bigcup L_{k-1}$中选出一个不在a中($ b \notin a$)的元素 $ b $,然后生成一个itemset : $a \cup \lbrace b \rbrace$ 作为新的侯选集中的一个元素。</li>
+</ul>
+</li>
+<li><p>for  transactions t $ \in T $  对每一条 transaction </p>
+<ul>
+<li>$C_t \leftarrow \lbrace c \mid c \in C_k \land c \subseteq t \rbrace$ 选出这条transaction 中属于侯选集 $C_k$ 的 每个item</li>
+<li>count[c] $\leftarrow $ count[c] + 1 把每个item的 support count 加 1</li>
+</ul>
+</li>
+<li><p>$L_k \leftarrow \lbrace c \mid c \in C_k \land count[c] \ge \epsilon \rbrace $ 把侯选集中的support大于阈值minsup的选itemset选出来，作为下一层的 frequent itemset</p>
+</li>
+<li>return $ \bigcup_k L_k $ 返回所有的 频繁集</li>
+</ul>
+<hr>
+<p>下面这是一个直观的例子</p>
+<p><img src="http://7xia5s.com1.z0.glb.clouddn.com/pattern_discoverypd3_6.png" alt="6">  </p>
+<p>实现的技巧</p>
+<p><img src="http://7xia5s.com1.z0.glb.clouddn.com/pattern_discoverypd3_7.png" alt="7"></p>
+<ul>
+<li>如何生成侯选集呢？<ul>
+<li>首先，$F_k$和自己求并集</li>
+<li>然后，剪枝，如何剪枝，如果并集有一个子集不在$F_k$中，就剪枝，例如图中acde的子集cde不在 $F_3$中，所以被剪掉了</li>
+</ul>
+</li>
+</ul>
+<p><img src="http://7xia5s.com1.z0.glb.clouddn.com/pattern_discoverypd3_8.png" alt="7"><br><strong>WIKI 上是这么说的:</strong>   </p>
+<blockquote>
+<p>Apriori uses a “bottom up” approach, where frequent subsets are extended one item at a time (a step known as candidate generation), and groups of candidates are tested against the data. The algorithm terminates when no further successful extensions are found.</p>
+</blockquote>
+<p><strong>就是说，Aprior算法用了一种自底向上的方法，从上一层的frequent itemsets中（初始化为frequent-1 itemset set）扩展一个item，生成本层的候选集,然后在数据库中测试生成的候选集中的每个itemset是不是frequent的，把本层的候选集中是frequent的那些选为本层的frequent itemset，直到上一层没有frequent itemset为止，然后就返回所有层的 frequent itemsets；</strong></p>
+<hr>
+<h1 id="Extensions-or-Improvements-of-Apriori"><a href="#Extensions-or-Improvements-of-Apriori" class="headerlink" title="Extensions or Improvements of Apriori"></a><strong>Extensions or Improvements of Apriori</strong></h1><p><img src="http://7xia5s.com1.z0.glb.clouddn.com/pattern_discoverypd3_9.png" alt="10"></p>
+<ul>
+<li><p>由于database存在磁盘上，所以磁盘访问开销很大，所以要减少数据库访问的次数</p>
+<ul>
+<li>partioning 方法，这是我们接下来要讲的</li>
+<li><strong>Dynamic itemset counting</strong>(Brin <strong>这个作者吊炸天了！他就是谷歌的创始人之一！发表这个论文的第二年98年他就创办了谷歌</strong>)</li>
+</ul>
+</li>
+<li><p>另一种思路是 减少候选集的数量</p>
+</li>
+<li>第3种方法是 使用一些特殊的数据结构<ul>
+<li>我们要用的是一个 FP tree</li>
+</ul>
+</li>
+</ul>
+<hr>
+<p>下面我们就简要看一下第一种方法 Partioning method:<br><img src="http://7xia5s.com1.z0.glb.clouddn.com/pattern_discoverypd3_10.png" alt="11"></p>
+<p>这个方法的发明者观察到了一个非常有趣的现象：TDB中任何一个潜在的频繁集至少在该transaction database 的一个partition里是frequent的；</p>
+<p>证明过程是这样的：  </p>
+<ol>
+<li>首先如果一个itemset X在图中六个partition里面的<strong>任何一个里</strong>不是frequent的</li>
+<li>那么就有 $sup_i$(X) $\lt$ $\sigma$|$TDB_i$| (这是说X的support 小于 sigma 乘以 size($TDB_i$)) <ul>
+<li>这个乘积其实就是阈值 minsup，为什么呢，因为$\sigma$是一个比率，它用来表示在一个itemsets里面满足support大于多少就算是 frequent pattern</li>
+</ul>
+</li>
+<li>最后把每个partition里的support(X)加起来还是小于总共的TDB里的阈值 $\sum_{i=1}^6 SUP_i(X) \lt \sigma |TDB| $</li>
+<li><strong>也就是说，它在每一个分区里面都不频繁，那么它在整体里面也不可能频繁</strong>，所以，只有在至少一个TDB里面 itemset 是frequent的，它才可能在全集里面frequent；</li>
+</ol>
+<p>那么具体怎么实现呢呢？需要两次扫描： </p>
+<ul>
+<li><p>第一次： 切分database,怎么切分呢？ Each partition you want them to fit into the main memory.</p>
+<ul>
+<li>为什么呢？因为无论你怎么扫描，你不需要进行任何的数据库I/O操作</li>
+<li>这样就能生成所有的 local frequent patterns 局部频繁集</li>
+</ul>
+</li>
+<li><p>第二次： 选出全局的global patterns,怎么选呢？</p>
+<ul>
+<li>由于每一个分区里面的frequent pattern 很有称为全局frequent pattern的潜在可能</li>
+<li>所以第二遍扫描就count each database combos counts of the global candidate set(把每个分区里面的频繁集count求和）有点类似map-reduce的意思；</li>
+</ul>
+</li>
+</ul>
+<p>这样就保证了这种方法只扫描两次数据库；</p>
+<hr>
+<p>##直接散列再剪枝法<br><img src="http://7xia5s.com1.z0.glb.clouddn.com/pattern_discoverypd3_11.png" alt="12"></p>
+<p>在生成frequent 1-itemset 的时候，我们可以先为每个transaction 生成所有的frequent 2-itemset ， 把它们都hash到hash表中，并且统计每个bucket 的数量，如果这个数量低于频繁集的阈值，那么这个集合的子集都可以剪枝了。</p>
+<hr>
+<p>##Exploring Vertical Data Format<br><img src="http://7xia5s.com1.z0.glb.clouddn.com/pattern_discoverypd4_1.png" alt="13"><br><strong>这个和搜索引擎的倒排索引是一个道理！</strong><br>把数据库中的每一个item想象成切分好的词，然后给这个数据表建立倒排索引，就是图中说的把 horizontal Data format 转换成了 vertical Data format;<br>用这个 tid-list : 可以方便的生成候选集 ；<br>比如， t(e) = { $T_10,T_20,T_30$ }; t(a) = { $T_10,T_20$ } ; t(ae) = { $T_10,T_20$ },生成 t(ae)的时候就是用 t(e)和t(a)求交集。对于t(ae)如果其中的任何一个item不是frequent那么t(ae)就不是frequent,t(ae)就可以忽略不计了; 如果t(ae)的两个成员都是frequent,那么判断t(ae)也很简单，就看它的size是多大；</p>
+<hr>
+<h2 id="FPGrowth-A-Pattern-Growth-Approach"><a href="#FPGrowth-A-Pattern-Growth-Approach" class="headerlink" title="FPGrowth: A Pattern Growth Approach"></a>FPGrowth: A Pattern Growth Approach</h2><p><img src="http://7xia5s.com1.z0.glb.clouddn.com/pattern_discoverypd5_1.png" alt="fp1"><br>正如我们看到的，虽然很多时候Aprior生成与测试方法显著地减少了侯选集的大小，使性能得到了很大的提高。但是，这种方法有两种缺点：   </p>
+<ul>
+<li>它仍然需要生成一个海量的侯选集。例如，如果有$10^4$个frequent 1-itemsets ,Aprior算法需要生成至少$10^7$个 candidate 2-itemsets;</li>
+<li>它需要重复扫描扫描全部数据库，并且要检索巨大的侯选集来进行模式匹配。而且每次需要遍历所有数据项才能确定候选pattern的support count，这样耗费太大了;</li>
+</ul>
+<p>所以就有人提出，能不能不生成侯选集就挖掘出频繁集呢？于是，Frequent Pattern growth 算法就应运而生了。<br>FP-growth算法主要使用了分治法。首先，它吧数据库里的频繁集信息用一种压缩的方式表示，这种数据结构叫做FP-tree（类似字典树）。这棵树保存着itemset的关联信息。然后，它把这个压缩后的数据库分成一组conditional<br> databases（就是一种特殊的投影数据库）,每个conditional database一个frequent item(或者称之为模式片段）,然后分别挖掘这些conditional databases。<strong>对每个模式片段来说，只有和他相关的数据集才需要被检测。因此，这个方法用“让被检测模式growth的方式”切实的减少了需要检索的数据集的数量</strong></p>
+<p><img src="http://7xia5s.com1.z0.glb.clouddn.com/pattern_discoverypd5_2.png" alt="fp2"></p>
+<p>FP-growth算法的第一步是：检索数据库一次，生成1-itemset 频繁集，以及统计每个frequent item的support count。然后把频繁集按照support count 从高到低排序；    </p>
+<p>第二步是生成FP—Tree：先构造一个空的树根root,对每个数据项做下面的操作：<br>先把每个数据项中的item按照上面的顺序排序，然后选择每一个item，将这个item插入到FP-tree里去 （insert_tree([p|P],T) p是第一个item,P是剩下的item），插入的方法如下：<br>如果如果这个item跟树中的某个item N 相同，那么就把树中该节点的count+1,否则就生成一个新节点N，并且初始化它的count为1，把它的父节点指针指向T.如果剩下的item不为空的话，就递归的调用insert_tree(P,N);</p>
+<p><img src="http://7xia5s.com1.z0.glb.clouddn.com/pattern_discoverypd5_3.png" alt="fp3"><br>为了方便树的遍历，还要构建一个item header table，让table中每一个item，指向它在树中出现的每个节点，用链表连起来。<br>有了这两个数据结构，我们就把挖掘数据库的任务转化成了挖掘FP-tree的任务。</p>
+<p><img src="http://7xia5s.com1.z0.glb.clouddn.com/pattern_discoverypd5_4.png" alt="fp4"></p>
+<p>FP-tree是这样挖掘的：   </p>
+<ol>
+<li>从每一个frequent length 1-pattern （当做一个起始后缀） 开始，把它在树中的所有前缀路径找出来，作为它的conditional pattern base </li>
+<li>然后针对每个conditional pattern base 构建相应的conditional FP-tree<br><strong>其实conditional这个词在这里我们可以理解成向贝叶斯公式里面的意义，为什么把前缀叫conditional呢，因为当这个后缀发生的时候，它的前缀已经出现了</strong></li>
+<li>然后递归的挖掘每个conditional FP-tree。<br><img src="http://7xia5s.com1.z0.glb.clouddn.com/pattern_discoverypd5_5.png" alt="fp5"><br><img src="http://7xia5s.com1.z0.glb.clouddn.com/pattern_discoverypd5_6.png" alt="fp6"> </li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://anboqing.github.io/2015/05/13/pattern_discovery_2/" data-id="cisoqi7e8004brmggi044qlpg" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/datamining-Apriori-FPGrowth/">datamining Apriori FPGrowth</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2015/05/16/machine_learning_tw_1/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          机器学习概念介绍
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2015/05/12/pattern_discovery_1/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">数据挖掘基本概念</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Caffe/">Caffe</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Caffe教程/">Caffe教程</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Learning/">Learning</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/PCA-降维/">PCA 降维</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/RMI/">RMI</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/SOA/">SOA</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/c/">c++</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/caffe/">caffe</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/epoll/">epoll</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/linux/">linux</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/pandas/">pandas</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/tcp-ip/">tcp/ip</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/函数式编程/">函数式编程</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/协程/">协程</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/工具配置/">工具配置</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/推荐系统/">推荐系统</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/数据挖掘/">数据挖掘</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/机器学习/">机器学习</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/算法学习/">算法学习</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/统计/">统计</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/编码/">编码</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/编译原理/">编译原理</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/设计模式/">设计模式</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/贝叶斯分类/">贝叶斯分类</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Caffe教程/">Caffe教程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Composite，组合模式/">Composite，组合模式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Decorator/">Decorator</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/LaTex-数学公式-Pelican-MathJax/">LaTex  数学公式  Pelican  MathJax</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Learning/">Learning</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PCA-降维/">PCA 降维</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RMI/">RMI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SOA/">SOA</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c-c-linkage-incomplete-type/">c c++ linkage incomplete-type</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/caffe-proto/">caffe .proto</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/datamining/">datamining</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/datamining-Apriori-FPGrowth/">datamining Apriori FPGrowth</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/epoll-网络编程/">epoll 网络编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux-source-code/">linux source code</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tcp-ip/">tcp/ip</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/web-service-axis-xfire-lomboz-tomcat/">web-service axis xfire lomboz tomcat</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/函数式编程/">函数式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/动态规划/">动态规划</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/协程/">协程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/可视化-pandas/">可视化 pandas</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/基础知识-编码/">基础知识 编码</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/感知机/">感知机</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/推荐系统/">推荐系统</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/机器学习/">机器学习</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/机器学习-算法/">机器学习 算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/梯度下降/">梯度下降</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编译原理-Compiler-上下文无关文法/">编译原理 Compiler 上下文无关文法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编译编译原理/">编译编译原理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/贝叶斯分类器/">贝叶斯分类器</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Caffe教程/" style="font-size: 20px;">Caffe教程</a> <a href="/tags/Composite，组合模式/" style="font-size: 10px;">Composite，组合模式</a> <a href="/tags/Decorator/" style="font-size: 10px;">Decorator</a> <a href="/tags/LaTex-数学公式-Pelican-MathJax/" style="font-size: 10px;">LaTex  数学公式  Pelican  MathJax</a> <a href="/tags/Learning/" style="font-size: 10px;">Learning</a> <a href="/tags/PCA-降维/" style="font-size: 10px;">PCA 降维</a> <a href="/tags/RMI/" style="font-size: 10px;">RMI</a> <a href="/tags/SOA/" style="font-size: 10px;">SOA</a> <a href="/tags/c-c-linkage-incomplete-type/" style="font-size: 10px;">c c++ linkage incomplete-type</a> <a href="/tags/caffe-proto/" style="font-size: 10px;">caffe .proto</a> <a href="/tags/datamining/" style="font-size: 10px;">datamining</a> <a href="/tags/datamining-Apriori-FPGrowth/" style="font-size: 10px;">datamining Apriori FPGrowth</a> <a href="/tags/epoll-网络编程/" style="font-size: 10px;">epoll 网络编程</a> <a href="/tags/linux-source-code/" style="font-size: 10px;">linux source code</a> <a href="/tags/tcp-ip/" style="font-size: 10px;">tcp/ip</a> <a href="/tags/web-service-axis-xfire-lomboz-tomcat/" style="font-size: 10px;">web-service axis xfire lomboz tomcat</a> <a href="/tags/函数式编程/" style="font-size: 10px;">函数式编程</a> <a href="/tags/动态规划/" style="font-size: 13.33px;">动态规划</a> <a href="/tags/协程/" style="font-size: 13.33px;">协程</a> <a href="/tags/可视化-pandas/" style="font-size: 10px;">可视化 pandas</a> <a href="/tags/基础知识-编码/" style="font-size: 10px;">基础知识 编码</a> <a href="/tags/感知机/" style="font-size: 10px;">感知机</a> <a href="/tags/推荐系统/" style="font-size: 13.33px;">推荐系统</a> <a href="/tags/机器学习/" style="font-size: 16.67px;">机器学习</a> <a href="/tags/机器学习-算法/" style="font-size: 10px;">机器学习 算法</a> <a href="/tags/梯度下降/" style="font-size: 10px;">梯度下降</a> <a href="/tags/编译原理-Compiler-上下文无关文法/" style="font-size: 10px;">编译原理 Compiler 上下文无关文法</a> <a href="/tags/编译编译原理/" style="font-size: 10px;">编译编译原理</a> <a href="/tags/贝叶斯分类器/" style="font-size: 10px;">贝叶斯分类器</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">July 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/06/">June 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">July 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/06/">June 2014</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2016/05/13/epoll/">事件驱动模型epoll</a>
+          </li>
+        
+          <li>
+            <a href="/2016/05/12/由补码引发的关于编码的思考/">由补码引发的关于编码的思考</a>
+          </li>
+        
+          <li>
+            <a href="/2016/01/15/Caffe教程４-Solver/">Caffe教程４：Solver</a>
+          </li>
+        
+          <li>
+            <a href="/2016/01/14/损失函数/">损失函数</a>
+          </li>
+        
+          <li>
+            <a href="/2016/01/13/Forward和Backward/">Forward 和 Backward</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2016 安勃卿<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

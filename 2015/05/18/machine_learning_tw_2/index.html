@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>机器学习：感知机 | 暗时间</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="[TOC]
+
+感知器的概念感知器（perceptron)是人工神经网络的基础单元，感知器是以一个实数值向量作为输入，计算这些输入的线性组合，然后如果结果大于某个阈值，就输出1，否则输出-1.更精确的是，如果输入为$x_1$到$x_n$，那么感知器计算的输出为：$$o(x_1,…,x_n) = \begin{cases}1, &amp;amp; \text{ $w_0+w_1x_1+…+w_nx_n $&amp;g">
+<meta property="og:type" content="article">
+<meta property="og:title" content="机器学习：感知机">
+<meta property="og:url" content="http://anboqing.github.io/2015/05/18/machine_learning_tw_2/index.html">
+<meta property="og:site_name" content="暗时间">
+<meta property="og:description" content="[TOC]
+
+感知器的概念感知器（perceptron)是人工神经网络的基础单元，感知器是以一个实数值向量作为输入，计算这些输入的线性组合，然后如果结果大于某个阈值，就输出1，否则输出-1.更精确的是，如果输入为$x_1$到$x_n$，那么感知器计算的输出为：$$o(x_1,…,x_n) = \begin{cases}1, &amp;amp; \text{ $w_0+w_1x_1+…+w_nx_n $&amp;g">
+<meta property="og:image" content="http://7xia5s.com1.z0.glb.clouddn.com/ml_ml_ganzhiqi.png">
+<meta property="og:image" content="http://7xia5s.com1.z0.glb.clouddn.com/ml_ml_2_2.png">
+<meta property="og:updated_time" content="2016-09-04T02:26:40.682Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="机器学习：感知机">
+<meta name="twitter:description" content="[TOC]
+
+感知器的概念感知器（perceptron)是人工神经网络的基础单元，感知器是以一个实数值向量作为输入，计算这些输入的线性组合，然后如果结果大于某个阈值，就输出1，否则输出-1.更精确的是，如果输入为$x_1$到$x_n$，那么感知器计算的输出为：$$o(x_1,…,x_n) = \begin{cases}1, &amp;amp; \text{ $w_0+w_1x_1+…+w_nx_n $&amp;g">
+<meta name="twitter:image" content="http://7xia5s.com1.z0.glb.clouddn.com/ml_ml_ganzhiqi.png">
+  
+    <link rel="alternate" href="/atom.xml" title="暗时间" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">暗时间</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">书写是最好的思考</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://anboqing.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-machine_learning_tw_2" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/05/18/machine_learning_tw_2/" class="article-date">
+  <time datetime="2015-05-18T12:41:00.000Z" itemprop="datePublished">2015-05-18</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/机器学习/">机器学习</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      机器学习：感知机
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>[TOC]</p>
+<hr>
+<h2 id="感知器的概念"><a href="#感知器的概念" class="headerlink" title="感知器的概念"></a>感知器的概念</h2><p>感知器（perceptron)是人工神经网络的基础单元，感知器是以一个实数值向量作为输入，计算这些输入的线性组合，然后如果结果大于某个阈值，就输出1，否则输出-1.更精确的是，如果输入为$x_1$到$x_n$，那么感知器计算的输出为：<br>$$<br>o(x_1,…,x_n) = \begin{cases}<br>1, &amp; \text{ $w_0+w_1x_1+…+w_nx_n $&gt; 0}\<br>-1, &amp; \text{otherwise }<br>\end{cases}<br>$$<br><img src="http://7xia5s.com1.z0.glb.clouddn.com/ml_ml_ganzhiqi.png" alt="perceptron"><br>其中，每一个$w_i$是一个实数常量，或者叫做<strong>权值(weight)</strong>,用来决定输入$x_i$对感知器输出的<strong>贡献率</strong>。<br>实数$w_0$是一个<strong>阈值(threshold)</strong>，它是为了使感知器输出1，输入的<strong>加权和</strong> $w_0+w_1x_1+…+w_nx_n$必须超过的值。</p>
+<p>感知机是一种<strong>线性</strong>分类模型(非线性的不能分)，属于<strong>判别模型</strong>，感知机模型的<strong>假设空间</strong>是定义在特征空间中的所有线性分类模型或线性分类器，即函数集合 $\lbrace f \mid f(x) =  w \cdot x + b  \rbrace$。<br>感知机有如下几何解释：线性方程<br>$$ w \cdot x +b = 0 $$<br>对应于<strong>特征空间</strong>$R^n$中的一个<strong>超平面S</strong>,其中w是超平面的<strong>法向量</strong>，b是超平面的<strong>截距</strong>。这个超平面将特征空间划分为2个部分，每一部分是一类。</p>
+<p>公式是这样推导出来的：   </p>
+<p>$ h(x) = sign((\sum_{i=1}^dw_ix<em>i$) - threashold)<br>       = $sign((\sum</em>{i=1}^dw_ix<em>i$) + (-threashold) $\cdot$ (+1))<br>       = sign(($\sum</em>{i=1}^dw_ix_i$) + $w_0x_0$)<br>       = sign($W^T$X)</p>
+<hr>
+<h2 id="感知机的历史"><a href="#感知机的历史" class="headerlink" title="感知机的历史"></a>感知机的历史</h2><p>1943年，<strong>心理学家</strong> Warren McCulloch 和<strong>数理逻辑学家</strong> Walter Pitts 在合作的《A logical calculus of the ideas immanent in nervous activity》 论文中提出并给出了人工神经网络的概念及人工神经元的数学模型，从而开创了人工神经网络研究的时代。1949年，<strong>心理学家</strong>唐纳德·赫布 在《The Organization of Behavior》论文中描述了神经元学习法则。        </p>
+<p>人工神经网络更进一步被美国<strong>神经学家</strong> Frank Rosenblatt 所发展。他提出了可以模拟人类感知能力的机器，并称之为『感知机』。1957年，在 Cornell 航空实验室中，他成功在IBM 704机上完成了感知机的仿真。两年后，他又成功实现了能够识别一些英文字母、基于感知机的神经计算机——Mark1，并于1960年6月23日，展示与众。     </p>
+<p>为了『教导』感知机识别图像，Rosenblatt，在 Hebb 学习法则的基础上，发展了一种迭代、试错、类似于人类学习过程的学习算法——感知机学习。除了能够识别出现较多次的字母，感知机也能对不同书写方式的字母图像进行概括和归纳。但是，由于本身的局限，感知机除了那些包含在训练集里的图像以外，不能对受干扰（半遮蔽、不同大小、平移、旋转）的字母图像进行可靠的识别。     </p>
+<p>首个有关感知机的成果，由 Rosenblatt 于1958年发表在《The Perceptron: A Probabilistic Model for Information Storage and Organization in the Brain》 的文章里。1962年，他又出版了《Principles of Neurodynamics: Perceptrons and the theory of brain mechanisms》 一书，向大众深入解释感知机的理论知识及背景假设。此书介绍了一些重要的概念及定理证明，例如感知机收敛定理。   </p>
+<p>虽然最初被认为有着良好的发展潜能，但感知机最终被证明不能处理诸多的模式识别问题。1969年，Marvin Minsky 和 Seymour Papert 在《Perceptrons》书中，仔细分析了以感知机为代表的单层神经网络系统的功能及局限，证明感知机不能解决简单的异或（XOR）等线性不可分问题，但 Rosenblatt 和 Minsky 及 Papert 等人在当时已经了解到多层神经网络能够解决线性不可分的问题。      </p>
+<p>由于 Rosenblatt 等人没能够及时推广感知机学习算法到多层神经网络上，又由于《Perceptrons》在研究领域中的巨大影响，及人们对书中论点的误解，造成了人工神经领域发展的长年停滞及低潮，直到人们认识到多层感知机没有单层感知机固有的缺陷及反向传播算法在80年代的提出，才有所恢复。1987年，书中的错误得到了校正，并更名再版为《Perceptrons - Expanded Edition》。    </p>
+<p>近年，在 Freund 及 Schapire (1998)使用<strong>核技巧</strong>改进感知机学习算法之后，愈来愈多的人对感知机学习算法产生兴趣。后来的研究表明除了二元分类，感知机也能应用在较复杂、被称为 structured learning 类型的任务上（Collins, 2002），又或使用在分布式计算环境中的大规模机器学习问题上（McDonald, Hall and Mann,2011）。</p>
+<hr>
+<h2 id="感知机学习策略"><a href="#感知机学习策略" class="headerlink" title="感知机学习策略"></a>感知机学习策略</h2><h3 id="1-数据集的线性可分性"><a href="#1-数据集的线性可分性" class="headerlink" title="1. 数据集的线性可分性"></a>1. 数据集的线性可分性</h3><p>  给定一个数据集，如果存在某个超平面S, $w \cdot x+b$=0能够将数据集的正实例点和负实例点都正确的划分到超平面的两侧，即对所有$y_i=+1的实例i，有w<em>x_i+b &gt;０$，$y_i=－1$的实例i，有<br>  $w \cdot x+b＜０$，就称该数据集是<em>*线性可分</em></em>的。</p>
+<h3 id="2-感知机学习策略"><a href="#2-感知机学习策略" class="headerlink" title="2. 感知机学习策略"></a>2. 感知机学习策略</h3><p>感知机学习策略是：在<strong>假设空间</strong>中，选取使<strong>损失函数</strong>值最小的模型参数（权重w,偏置bias)，即感知机模型。   </p>
+<p>为什么引入损失函数呢？损失函数又是什么呢？     </p>
+<p>假设训练数据集是线性可分的，感知机学习的目标是求得一个能够将训练集正实例点和负实例点完全正确分开的<strong>分离超平面（separating hyperplane)</strong>,为了找出这样的超平面，即确定感知机模型参数w,b,需要确定一个学习策略，即定义<strong>经验损失函数</strong>并将损失函数<strong>极小化</strong>。</p>
+<p><strong>损失函数</strong>可以选择误分类点的总数，也可以选择<strong>误分类点到超平面的距离</strong>，由于我们要对这个损失函数进行<strong>极小化</strong>，极小化最好是连续可导的函数，所以就选择后者，因为误分类点的总数是一个离散的函数，不是连续的。    </p>
+<p>为此，我们先根据点到平面的距离公式写出输入空间$R^n$中任意一点$x_0$到超平面S的距离：<br>$$<br>\frac1{\left\lVert w\right\rVert}\left\lvert w \cdot x +b \right\rvert<br>$$<br>这里 $\left\lVert w \right\rVert$ 是 w 的norm范数。    </p>
+<p>其次，对于误分类的数据($x_i,y_i$)来说,<br>$$ -y_i(w \cdot x_i +b) \gt 0 $$成立。因为对于误分类的数据来说，$y_i和w \cdot x+b $ <strong>永远异号</strong>，所以，<strong>误分类点到超平面的距离就是：</strong><br>$$<br>-\frac1{\left\lVert w\right\rVert} y<em>i \left( w \cdot x +b \right)<br>$$<br>这样，假设超平面S的误分类点集合为 <strong>M</strong> ,那么所有误分类点到超平面S的总距离为<br>$$<br>-\frac1{\left\lVert w\right\rVert} \sum</em>{x_i \in M } y<em>i \left( w \cdot x +b \right)<br>$$<br>不考虑 $\frac1{\left\lVert w\right\rVert}$（因为它对所有的训练数据样本都是一样的），就得到了感知机学习的损失函数<br>$$<br>    L(w,b)=- \sum</em>{x_i \in M }y_i \left( w \cdot x +b \right)<br>$$<br>其中 M 为 <strong>误分类点的集合</strong>。这个损失函数就是感知机学习的 <strong>经验风险函数</strong>。   </p>
+<p> 显然，损失函数是非负的，如果没有误分类点，那么损失函数的值就是0，误分类点越少，误分类点离超平面越近，损失函数值就越小。 针对一个特定的样本点的损失函数值，在分类正确的时候是0，在误分类的时候是参数w,b的线性函数，因此，损失函数 L(w,b) 是 w,b 的<strong>连续可导函数</strong>。这样，我们就能用数值积分的优化方法对这个函数进行最优化了。优化的过程就是学习的过程。 </p>
+<hr>
+<h2 id="感知器学习算法"><a href="#感知器学习算法" class="headerlink" title="感知器学习算法"></a>感知器学习算法</h2><p>感知机学习算法的原始形式：<br>输入：　训练数据集T = {$(x_1,y_1),(x_2,y_2),…,(x_n,y_n)$},其中　$x_i \in X = R^n , y_i \in Y = {-1,+1},i=1,2,…,N$ ; 学习率$\eta$ ( 0 &lt; $\eta \le 1$);    </p>
+<p>输出：　w,b; 感知机模型 $ f(x) = sign(  w \cdot x + b) $ ;     </p>
+<ol>
+<li>选取初始值$ w_0,b_0$</li>
+<li>在训练集中随机选取<strong>一个</strong>数据($ x_i , y_i $)</li>
+<li>如果 $ y_i(w \cdot x_i + b) \le 0 $<br> $$w \leftarrow w + \eta y_ix_i\ b \leftarrow b + \eta y_i$$</li>
+<li>转到2，直到训练集合中没有误分类点</li>
+</ol>
+<p>这种学习算法直观上有如下解释： 当一个实例点被误分类，即位于分离超平面的错误一侧时，则调整w,b的值，使得分离超平面向该误分类点的一侧移动，以减少该误分类点与超平面的距离，直至超平面越过该误分类点使其被正确分类。</p>
+<p><strong>感知机学习算法由于采用不同的初值或者选取不同的误分类点，解可以不同。</strong></p>
+<p><a href="zh.wikipedia.org/zh/%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D%E6%B3%95">梯度下降</a></p>
+<p><img src="http://7xia5s.com1.z0.glb.clouddn.com/ml_ml_2_2.png" alt="2"></p>
+<ul>
+<li>首先，对每一条数据进行计算　，求出符号</li>
+<li>然后如果求出的符号和真实的符号不相等，就要修正错误</li>
+<li>如何修正错误<ul>
+<li>看右上方y=+1的图，正确的是正的，却算出来负的，说明w 和 x的夹角太大，要把w转向x，因为此时y=+1所以w+yx是　w+x，相当于图中的中间那条向量；</li>
+<li>再看y=-1的图，正确的是负的，但是算出来是正的，说明w和x的夹角太小了，要把w向远离x的方向转，此时w+yx=w-x，所以结果就转向远离x的方向了。</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h2 id="算法代码仿真"><a href="#算法代码仿真" class="headerlink" title="算法代码仿真"></a>算法代码仿真</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> os</div><div class="line"></div><div class="line"><span class="comment"># set the initial data</span></div><div class="line">data_set = [[(<span class="number">3</span>,<span class="number">3</span>),<span class="number">1</span>],[(<span class="number">4</span>,<span class="number">3</span>),<span class="number">1</span>],[(<span class="number">1</span>,<span class="number">1</span>),<span class="number">-1</span>]]</div><div class="line"></div><div class="line">w = [i-i <span class="keyword">for</span> i <span class="keyword">in</span> range(len(data_set)<span class="number">-1</span>)]</div><div class="line">b = <span class="number">0</span></div><div class="line">rate = <span class="number">1</span></div><div class="line"></div><div class="line"><span class="comment"># update parameters using stochastic gradient descent,define the cost function</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">cost_function</span><span class="params">(item)</span>:</span></div><div class="line">  <span class="keyword">global</span> w,b</div><div class="line">  y = item[<span class="number">1</span>]</div><div class="line">  x = item[<span class="number">0</span>]</div><div class="line">  <span class="comment"># get the inner product of w and x</span></div><div class="line">  inner_product = <span class="number">0.0</span></div><div class="line">  <span class="keyword">for</span> i <span class="keyword">in</span> range(len(w)<span class="number">-1</span>):</div><div class="line">    inner_product += w[i]*x[i]</div><div class="line">  res = y*(inner_product+b)</div><div class="line">  <span class="keyword">return</span> res</div><div class="line"></div><div class="line"><span class="comment"># define the update strategy</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">update</span><span class="params">(item)</span>:</span></div><div class="line">  <span class="keyword">global</span> w,b,rate</div><div class="line">  y = item[<span class="number">1</span>]</div><div class="line">  x = item[<span class="number">0</span>]</div><div class="line">  <span class="keyword">for</span> i <span class="keyword">in</span> range(len(w)<span class="number">-1</span>):</div><div class="line">    w[i] = w[i] + rate*y*x[i]</div><div class="line">  <span class="comment"># b is the bias</span></div><div class="line">  b = b + rate*y</div><div class="line"></div><div class="line"></div><div class="line"><span class="comment"># check if there is still mis-classified item</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">check</span><span class="params">(data_set,exist_mis)</span>:</span></div><div class="line">  <span class="keyword">for</span> item <span class="keyword">in</span> data_set:</div><div class="line">    <span class="keyword">if</span> cost_function(item) &lt;= <span class="number">0</span>:</div><div class="line">      update(item)</div><div class="line">      exist_mis = <span class="keyword">True</span></div><div class="line">    <span class="keyword">if</span> exist_mis == <span class="keyword">False</span>:</div><div class="line">      <span class="keyword">print</span> <span class="string">'Result w : '</span>,str(w),<span class="string">' b: '</span>,str(b)</div><div class="line">      os._exit(<span class="number">0</span>)</div><div class="line"></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">learn</span><span class="params">(data_set)</span>:</span></div><div class="line">  <span class="keyword">global</span> w,b</div><div class="line">  <span class="keyword">for</span> turn <span class="keyword">in</span> range(<span class="number">1000</span>): <span class="comment"># iterator 1000 times</span></div><div class="line">    exist_mis= <span class="keyword">False</span></div><div class="line">    check(data_set,exist_mis)</div><div class="line">    exist_mis = <span class="keyword">False</span></div><div class="line">  <span class="keyword">print</span> <span class="string">'the dataset is no linear separatable'</span></div><div class="line"></div><div class="line"><span class="keyword">if</span> __name__==<span class="string">'__main__'</span>:</div><div class="line">  learn(data_set)</div></pre></td></tr></table></figure>
+<hr>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://anboqing.github.io/2015/05/18/machine_learning_tw_2/" data-id="cisoqi7ci001trmgg5tfa9imr" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/感知机/">感知机</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2015/05/21/thinkstats_chpt2/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          《程序员的统计思维》学习笔记：描述性统计量
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2015/05/16/machine_learning_tw_1/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">机器学习概念介绍</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Caffe/">Caffe</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Caffe教程/">Caffe教程</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Learning/">Learning</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/PCA-降维/">PCA 降维</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/RMI/">RMI</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/SOA/">SOA</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/c/">c++</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/caffe/">caffe</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/epoll/">epoll</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/linux/">linux</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/pandas/">pandas</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/tcp-ip/">tcp/ip</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/函数式编程/">函数式编程</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/协程/">协程</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/工具配置/">工具配置</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/推荐系统/">推荐系统</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/数据挖掘/">数据挖掘</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/机器学习/">机器学习</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/算法学习/">算法学习</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/统计/">统计</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/编码/">编码</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/编译原理/">编译原理</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/设计模式/">设计模式</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/贝叶斯分类/">贝叶斯分类</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Caffe教程/">Caffe教程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Composite，组合模式/">Composite，组合模式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Decorator/">Decorator</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/LaTex-数学公式-Pelican-MathJax/">LaTex  数学公式  Pelican  MathJax</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Learning/">Learning</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PCA-降维/">PCA 降维</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RMI/">RMI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SOA/">SOA</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c-c-linkage-incomplete-type/">c c++ linkage incomplete-type</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/caffe-proto/">caffe .proto</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/datamining/">datamining</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/datamining-Apriori-FPGrowth/">datamining Apriori FPGrowth</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/epoll-网络编程/">epoll 网络编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux-source-code/">linux source code</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tcp-ip/">tcp/ip</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/web-service-axis-xfire-lomboz-tomcat/">web-service axis xfire lomboz tomcat</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/函数式编程/">函数式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/动态规划/">动态规划</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/协程/">协程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/可视化-pandas/">可视化 pandas</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/基础知识-编码/">基础知识 编码</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/感知机/">感知机</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/推荐系统/">推荐系统</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/机器学习/">机器学习</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/机器学习-算法/">机器学习 算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/梯度下降/">梯度下降</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编译原理-Compiler-上下文无关文法/">编译原理 Compiler 上下文无关文法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编译编译原理/">编译编译原理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/贝叶斯分类器/">贝叶斯分类器</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Caffe教程/" style="font-size: 20px;">Caffe教程</a> <a href="/tags/Composite，组合模式/" style="font-size: 10px;">Composite，组合模式</a> <a href="/tags/Decorator/" style="font-size: 10px;">Decorator</a> <a href="/tags/LaTex-数学公式-Pelican-MathJax/" style="font-size: 10px;">LaTex  数学公式  Pelican  MathJax</a> <a href="/tags/Learning/" style="font-size: 10px;">Learning</a> <a href="/tags/PCA-降维/" style="font-size: 10px;">PCA 降维</a> <a href="/tags/RMI/" style="font-size: 10px;">RMI</a> <a href="/tags/SOA/" style="font-size: 10px;">SOA</a> <a href="/tags/c-c-linkage-incomplete-type/" style="font-size: 10px;">c c++ linkage incomplete-type</a> <a href="/tags/caffe-proto/" style="font-size: 10px;">caffe .proto</a> <a href="/tags/datamining/" style="font-size: 10px;">datamining</a> <a href="/tags/datamining-Apriori-FPGrowth/" style="font-size: 10px;">datamining Apriori FPGrowth</a> <a href="/tags/epoll-网络编程/" style="font-size: 10px;">epoll 网络编程</a> <a href="/tags/linux-source-code/" style="font-size: 10px;">linux source code</a> <a href="/tags/tcp-ip/" style="font-size: 10px;">tcp/ip</a> <a href="/tags/web-service-axis-xfire-lomboz-tomcat/" style="font-size: 10px;">web-service axis xfire lomboz tomcat</a> <a href="/tags/函数式编程/" style="font-size: 10px;">函数式编程</a> <a href="/tags/动态规划/" style="font-size: 13.33px;">动态规划</a> <a href="/tags/协程/" style="font-size: 13.33px;">协程</a> <a href="/tags/可视化-pandas/" style="font-size: 10px;">可视化 pandas</a> <a href="/tags/基础知识-编码/" style="font-size: 10px;">基础知识 编码</a> <a href="/tags/感知机/" style="font-size: 10px;">感知机</a> <a href="/tags/推荐系统/" style="font-size: 13.33px;">推荐系统</a> <a href="/tags/机器学习/" style="font-size: 16.67px;">机器学习</a> <a href="/tags/机器学习-算法/" style="font-size: 10px;">机器学习 算法</a> <a href="/tags/梯度下降/" style="font-size: 10px;">梯度下降</a> <a href="/tags/编译原理-Compiler-上下文无关文法/" style="font-size: 10px;">编译原理 Compiler 上下文无关文法</a> <a href="/tags/编译编译原理/" style="font-size: 10px;">编译编译原理</a> <a href="/tags/贝叶斯分类器/" style="font-size: 10px;">贝叶斯分类器</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">July 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/06/">June 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">July 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/06/">June 2014</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2016/05/13/epoll/">事件驱动模型epoll</a>
+          </li>
+        
+          <li>
+            <a href="/2016/05/12/由补码引发的关于编码的思考/">由补码引发的关于编码的思考</a>
+          </li>
+        
+          <li>
+            <a href="/2016/01/15/Caffe教程４-Solver/">Caffe教程４：Solver</a>
+          </li>
+        
+          <li>
+            <a href="/2016/01/14/损失函数/">损失函数</a>
+          </li>
+        
+          <li>
+            <a href="/2016/01/13/Forward和Backward/">Forward 和 Backward</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2016 安勃卿<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

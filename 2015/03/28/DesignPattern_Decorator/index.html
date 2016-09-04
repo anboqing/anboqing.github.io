@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>设计模式之　装饰器 Decorator | 暗时间</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="#Intent
+
+Attach additional responsibilities to an object dynamically.Decorators provide a flexible alternative to subclassing for extending functionality.
+
+为对象动态添加责任．装饰者提供了扩展功能的一种比继承更灵活的方法．
+
+###认识装饰者模">
+<meta property="og:type" content="article">
+<meta property="og:title" content="设计模式之　装饰器 Decorator">
+<meta property="og:url" content="http://anboqing.github.io/2015/03/28/DesignPattern_Decorator/index.html">
+<meta property="og:site_name" content="暗时间">
+<meta property="og:description" content="#Intent
+
+Attach additional responsibilities to an object dynamically.Decorators provide a flexible alternative to subclassing for extending functionality.
+
+为对象动态添加责任．装饰者提供了扩展功能的一种比继承更灵活的方法．
+
+###认识装饰者模">
+<meta property="og:image" content="http://7xia5s.com1.z0.glb.clouddn.com/Decorator.png">
+<meta property="og:image" content="http://7xia5s.com1.z0.glb.clouddn.com/11193337-157d75fdf84f43809d1d2a302c26cf20.png">
+<meta property="og:updated_time" content="2016-09-04T12:24:10.546Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="设计模式之　装饰器 Decorator">
+<meta name="twitter:description" content="#Intent
+
+Attach additional responsibilities to an object dynamically.Decorators provide a flexible alternative to subclassing for extending functionality.
+
+为对象动态添加责任．装饰者提供了扩展功能的一种比继承更灵活的方法．
+
+###认识装饰者模">
+<meta name="twitter:image" content="http://7xia5s.com1.z0.glb.clouddn.com/Decorator.png">
+  
+    <link rel="alternate" href="/atom.xml" title="暗时间" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">暗时间</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">书写是最好的思考</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://anboqing.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-DesignPattern_Decorator" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/03/28/DesignPattern_Decorator/" class="article-date">
+  <time datetime="2015-03-28T07:45:00.000Z" itemprop="datePublished">2015-03-28</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/设计模式/">设计模式</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      设计模式之　装饰器 Decorator
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>#Intent</p>
+<blockquote>
+<p>Attach additional responsibilities to an object dynamically.Decorators provide a flexible alternative to subclassing for extending functionality.</p>
+<hr>
+<p>为对象动态添加责任．装饰者提供了扩展功能的一种比继承更灵活的方法．</p>
+</blockquote>
+<p>###认识装饰者模式<br>用继承无法解决的问题:类数量爆炸，设计死板，基类加入的新功能并不适用于所有的子类．</p>
+<ul>
+<li>装饰者和被装饰者有相同的父类</li>
+<li>你可以用一个或者多个装饰者包装一个对象</li>
+<li>既然装饰者和被装饰者有相同的超类型，所以在任何需要原始对象（被包装）的场合，可以用装饰过的对象代替它.</li>
+<li>装饰者可以在所委托被装饰者的行为之前或之后，加上自己的行为，以达到特定的目的．</li>
+<li>对象可以在任何时候被装饰，所以可以在运行时动态的，不限量的用你喜欢的装饰者来装饰对象.</li>
+</ul>
+<p>#类图<br><img src="http://7xia5s.com1.z0.glb.clouddn.com/Decorator.png" alt="装饰者类图"></p>
+<ul>
+<li>Decorator继承了Component，这么做的重点在于，装饰者和被装饰者必须是一样的类型，也就是有共同的超类，在这里，我们用继承达到<strong>类型匹配</strong>，而不是利用继承<strong>获得＂行为＂</strong></li>
+<li>装饰者需要和被装饰者有相同的<strong>“接口”</strong>，因为装饰者必须能取代被装饰者．<strong>新的行为</strong>是从哪里来的？我们将Decorator与component组合时，就是在加入行为．所得到的新行为，并不是继承自超类，而是由组合对象得来的．行为来自装饰者和component或者与其他装饰者之间的组合关系.</li>
+<li>如果以来继承，那么类的行为智能在编译时动态决定．in other word，行为如果不是来自超类，就是子类overide后的版本．In the opposite，利用组合，可以把decorator混着用，而且是在<strong>运行时</strong>；</li>
+<li>如果异类继承，每次需要新的行为时，还得<strong>修改现有代码</strong>;<br>###具体例子的类图<br><img src="http://7xia5s.com1.z0.glb.clouddn.com/11193337-157d75fdf84f43809d1d2a302c26cf20.png" alt="headFirst上的例子"></li>
+</ul>
+<p>#代码</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//component.java</span></div><div class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">Component</span> </span>&#123;</div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">operation</span><span class="params">()</span></span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// concreateComponent.java</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ConcreateComponent</span> <span class="keyword">extends</span> <span class="title">Component</span> </span>&#123;</div><div class="line">	<span class="keyword">private</span> String attribute = <span class="string">"Concreate Component attribute"</span>;</div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">operation</span><span class="params">()</span> </span>&#123;</div><div class="line">		System.out.println(attribute);</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// Decorator.java</span></div><div class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">Decorator</span> <span class="keyword">extends</span> <span class="title">Component</span> </span>&#123;</div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">operation</span><span class="params">()</span></span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//ConcreateDecoratorA</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ConcreateDecoratorA</span> <span class="keyword">extends</span> <span class="title">Decorator</span> </span>&#123;</div><div class="line">	<span class="comment">// 这里用　被包装类的父类引用保存被包装对象　实现多态</span></div><div class="line">	<span class="keyword">private</span> Component concreate_component ;</div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="title">ConcreateDecoratorA</span><span class="params">(Component cct)</span></span>&#123;</div><div class="line">		concreate_component = cct;</div><div class="line">	&#125;</div><div class="line">	<span class="meta">@Override</span></div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">operation</span><span class="params">()</span> </span>&#123;</div><div class="line">		concreate_component.operation();</div><div class="line">		<span class="comment">//添加了新的功能（职责)</span></div><div class="line">		System.out.println(<span class="string">"ConcreateDecoratorA added operation!"</span>);</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//ConcreateDecoratorB.java</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ConcreateDecoratorB</span> <span class="keyword">extends</span> <span class="title">Decorator</span> </span>&#123;</div><div class="line">	<span class="keyword">private</span> Component component;</div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="title">ConcreateDecoratorB</span><span class="params">(Component component)</span></span>&#123;</div><div class="line">		<span class="keyword">this</span>.component = component;</div><div class="line">	&#125;</div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">operation</span><span class="params">()</span> </span>&#123;</div><div class="line">		component.operation();</div><div class="line">		System.out.println(<span class="string">"Concreate decorator B added operation ! "</span>);</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>#讨论</p>
+<p>####优点</p>
+<ul>
+<li>比静态的继承更灵活：与对象的静态继承相比，Decorator提供了更加灵活的想对象添加responsbility 的方式，可以使用添加和分离的方法，在运行时增加和删除职责．使用继承机制增加responsbility需要创建新的子类，如果要为原来已有的所有子类增加新功能的话，每个子类都要重写，增加系统的复杂度，此外可以为一个特定的Component类提供多个Decorator，这种混合匹配是使用继承很难做到的.</li>
+<li><strong>打个比方：盖楼用建筑构件，写oo程序用类，制造构件（写类）是编译时（compile-time），而用构件盖楼（用类）是运行时(run-time);如果不用decorator，那么要使用新的形状的构件（新功能的类），那么必须重新烧新的构件（编写新的类），会造成生产过程不能标准化，生产效率太低了；如果使用了decorator，那么就可以在写类时只写基础的组件（制造标准的建筑组件（砖头，楼板等））,在使用的时候用装饰器把基础组件包装起来，产生新的功能满足不同的需求</strong></li>
+<li>避免在层次结构的高层类中提供太多特征，Decorator模式提供了一种”即用即付”的方法来添加职责,他并不试图在一个复杂的可定制的类中支持所有可预见的特征,相反可以定义一个简单的类,并且用Decorator类给他逐渐的添加功能,可以从简单的部件组合出复杂的功能.</li>
+<li>把添加职责的活动从编写类时推迟到使用类时,因为在编写类的时候，不可能知道所有新功能是什么，所以把类设计为可以定制新功能的结构，让类的用户自己添加要增加的新功能这就避免了在设计类的时候需要用子类来扩展功能的局限性（子类爆炸）</li>
+</ul>
+<p>####缺点</p>
+<ul>
+<li>Decorator会在设计中加入大量的小类，这会偶尔导致别人不容易了解Decorator的设计方式</li>
+<li>从对象的角度出发,被装饰的对象和它原来的对象不是一个对象,被装饰的对象只是调用了原来对象的方法,并且在原来对象的方法附近添加了新的操作.一旦使用装饰者模式,不止需要实例化组件,还要把此组件包装进装饰者中.(工厂和生成器模式对这个问题有帮助)</li>
+</ul>
+<h1 id="OO设计的一点总结"><a href="#OO设计的一点总结" class="headerlink" title="OO设计的一点总结"></a>OO设计的一点总结</h1><ul>
+<li>继承属于扩展的形式之一,但不见得是达到弹性设计的最佳方式;</li>
+<li>在我们的设计中,应该允许行为可以被扩展,而无需修改现有的代码;</li>
+<li>组合和委托可用于在运行时动态的加上新的行为;</li>
+<li>除了继承,装饰者模式也可以让我们扩展行为;</li>
+<li>装饰者模式意味着一群装饰者类,这些类用来包装具体组件;</li>
+<li>装饰者类反映出被装饰的组件类型;</li>
+<li>装饰者可以在被装饰者的行为附近加上自己的行为,甚至将被装饰者的行为整个取代掉,而达到特定的目的;</li>
+<li>可以用无数个装饰者包装一个组件</li>
+<li>装饰者一般对组件的客户是透明的,除非客户程序依赖于组件的具体类型;</li>
+<li>装饰者会导致设计中出现许多小对象,如果过度使用,会让程序变得很复杂;</li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://anboqing.github.io/2015/03/28/DesignPattern_Decorator/" data-id="cisoqi7ay0005rmgg491q0v95" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Decorator/">Decorator</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2015/03/28/DesignPattern_Proxy/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          设计模式之代理模式Proxy
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2015/03/22/DesignPattern_Composite/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">设计模式之Composite</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Caffe/">Caffe</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Caffe教程/">Caffe教程</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Learning/">Learning</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/PCA-降维/">PCA 降维</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/RMI/">RMI</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/SOA/">SOA</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/c/">c++</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/caffe/">caffe</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/epoll/">epoll</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/linux/">linux</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/pandas/">pandas</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/tcp-ip/">tcp/ip</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/函数式编程/">函数式编程</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/协程/">协程</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/工具配置/">工具配置</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/推荐系统/">推荐系统</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/数据挖掘/">数据挖掘</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/机器学习/">机器学习</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/算法学习/">算法学习</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/统计/">统计</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/编码/">编码</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/编译原理/">编译原理</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/设计模式/">设计模式</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/贝叶斯分类/">贝叶斯分类</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Caffe教程/">Caffe教程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Composite，组合模式/">Composite，组合模式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Decorator/">Decorator</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/LaTex-数学公式-Pelican-MathJax/">LaTex  数学公式  Pelican  MathJax</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Learning/">Learning</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PCA-降维/">PCA 降维</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RMI/">RMI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SOA/">SOA</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c-c-linkage-incomplete-type/">c c++ linkage incomplete-type</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/caffe-proto/">caffe .proto</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/datamining/">datamining</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/datamining-Apriori-FPGrowth/">datamining Apriori FPGrowth</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/epoll-网络编程/">epoll 网络编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux-source-code/">linux source code</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tcp-ip/">tcp/ip</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/web-service-axis-xfire-lomboz-tomcat/">web-service axis xfire lomboz tomcat</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/函数式编程/">函数式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/动态规划/">动态规划</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/协程/">协程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/可视化-pandas/">可视化 pandas</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/基础知识-编码/">基础知识 编码</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/感知机/">感知机</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/推荐系统/">推荐系统</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/机器学习/">机器学习</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/机器学习-算法/">机器学习 算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/梯度下降/">梯度下降</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编译原理-Compiler-上下文无关文法/">编译原理 Compiler 上下文无关文法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编译编译原理/">编译编译原理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/贝叶斯分类器/">贝叶斯分类器</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Caffe教程/" style="font-size: 20px;">Caffe教程</a> <a href="/tags/Composite，组合模式/" style="font-size: 10px;">Composite，组合模式</a> <a href="/tags/Decorator/" style="font-size: 10px;">Decorator</a> <a href="/tags/LaTex-数学公式-Pelican-MathJax/" style="font-size: 10px;">LaTex  数学公式  Pelican  MathJax</a> <a href="/tags/Learning/" style="font-size: 10px;">Learning</a> <a href="/tags/PCA-降维/" style="font-size: 10px;">PCA 降维</a> <a href="/tags/RMI/" style="font-size: 10px;">RMI</a> <a href="/tags/SOA/" style="font-size: 10px;">SOA</a> <a href="/tags/c-c-linkage-incomplete-type/" style="font-size: 10px;">c c++ linkage incomplete-type</a> <a href="/tags/caffe-proto/" style="font-size: 10px;">caffe .proto</a> <a href="/tags/datamining/" style="font-size: 10px;">datamining</a> <a href="/tags/datamining-Apriori-FPGrowth/" style="font-size: 10px;">datamining Apriori FPGrowth</a> <a href="/tags/epoll-网络编程/" style="font-size: 10px;">epoll 网络编程</a> <a href="/tags/linux-source-code/" style="font-size: 10px;">linux source code</a> <a href="/tags/tcp-ip/" style="font-size: 10px;">tcp/ip</a> <a href="/tags/web-service-axis-xfire-lomboz-tomcat/" style="font-size: 10px;">web-service axis xfire lomboz tomcat</a> <a href="/tags/函数式编程/" style="font-size: 10px;">函数式编程</a> <a href="/tags/动态规划/" style="font-size: 13.33px;">动态规划</a> <a href="/tags/协程/" style="font-size: 13.33px;">协程</a> <a href="/tags/可视化-pandas/" style="font-size: 10px;">可视化 pandas</a> <a href="/tags/基础知识-编码/" style="font-size: 10px;">基础知识 编码</a> <a href="/tags/感知机/" style="font-size: 10px;">感知机</a> <a href="/tags/推荐系统/" style="font-size: 13.33px;">推荐系统</a> <a href="/tags/机器学习/" style="font-size: 16.67px;">机器学习</a> <a href="/tags/机器学习-算法/" style="font-size: 10px;">机器学习 算法</a> <a href="/tags/梯度下降/" style="font-size: 10px;">梯度下降</a> <a href="/tags/编译原理-Compiler-上下文无关文法/" style="font-size: 10px;">编译原理 Compiler 上下文无关文法</a> <a href="/tags/编译编译原理/" style="font-size: 10px;">编译编译原理</a> <a href="/tags/贝叶斯分类器/" style="font-size: 10px;">贝叶斯分类器</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">July 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/06/">June 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">July 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/06/">June 2014</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2016/05/13/epoll/">事件驱动模型epoll</a>
+          </li>
+        
+          <li>
+            <a href="/2016/05/12/由补码引发的关于编码的思考/">由补码引发的关于编码的思考</a>
+          </li>
+        
+          <li>
+            <a href="/2016/01/15/Caffe教程４-Solver/">Caffe教程４：Solver</a>
+          </li>
+        
+          <li>
+            <a href="/2016/01/14/损失函数/">损失函数</a>
+          </li>
+        
+          <li>
+            <a href="/2016/01/13/Forward和Backward/">Forward 和 Backward</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2016 安勃卿<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

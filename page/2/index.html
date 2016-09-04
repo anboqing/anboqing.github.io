@@ -1,0 +1,1117 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>暗时间</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta property="og:type" content="website">
+<meta property="og:title" content="暗时间">
+<meta property="og:url" content="http://anboqing.github.io/page/2/index.html">
+<meta property="og:site_name" content="暗时间">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="暗时间">
+  
+    <link rel="alternate" href="/atom.xml" title="暗时间" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">暗时间</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">书写是最好的思考</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://anboqing.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main">
+  
+    <article id="post-协程Coroutines" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/07/20/协程Coroutines/" class="article-date">
+  <time datetime="2015-07-20T01:35:00.000Z" itemprop="datePublished">2015-07-20</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/协程/">协程</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/07/20/协程Coroutines/">协程 Coroutines</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><h3 id="definition"><a href="#definition" class="headerlink" title="definition"></a>definition</h3><blockquote>
+<p>在计算机科学中，routines 被定义为一系列操作。routines的执行过程形成了一种父-子关系，子routine总是先于父routine终止。 Couroutines是routines的一种泛化.(Donald Knuth:协程和routines的主要区别是一个协程可以通过附加的操作明确的进行挂起和恢复，这一机制主要是通过保存执行状态并且提供了加强的控制流程（保存执行上下文）来实现的。</p>
+</blockquote>
+<h3 id="how-it-works"><a href="#how-it-works" class="headerlink" title="how it works"></a>how it works</h3><p>函数 foo 和 bar 可以切换执行，离开自己的函数体，进入对方的体内执行。<br><img src="http://www.boost.org/doc/libs/1_58_0/libs/coroutine/doc/images/foo_bar.png" alt="foobar"><br><img src="http://www.boost.org/doc/libs/1_58_0/libs/coroutine/doc/images/foo_bar.png" alt="output"><br><img src="http://www.boost.org/doc/libs/1_58_0/libs/coroutine/doc/images/foo_bar.png" alt="main"></p>
+<p>如果Couroutines的调用方式和routine一模一样的话，栈区就会一直增长并且永远不会出栈。而且如果调用方式一样，那么跳转到一个Couroutine中间执行就不可能实现，因为返回地址会在栈顶。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://anboqing.github.io/2015/07/20/协程Coroutines/" data-id="cisoqi7dy003ormggeq98k76w" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/协程/">协程</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-用pandas中的parallel_coordinates可视化高维数据" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/06/18/用pandas中的parallel_coordinates可视化高维数据/" class="article-date">
+  <time datetime="2015-06-18T14:18:00.000Z" itemprop="datePublished">2015-06-18</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/pandas/">pandas</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/06/18/用pandas中的parallel_coordinates可视化高维数据/">用pandas中的parallel_coordinates可视化高维数据</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>##1.引言</p>
+<p>在处理数据时常常需要对数据进行可视化以便观察,但是,在笛卡尔坐标系下,超过3维的数据我们就无法可视化了,所以,我们就需要一种有效的方法来可视化高维数据.</p>
+<p>常用的方法有Parallel Coordinates,关于这个方法的介绍可以看<a href="https://en.wikipedia.org/wiki/Parallel_coordinates" target="_blank" rel="external">wikipedia页面</a>,这里就不再重复了.</p>
+<p>##2.python解决方案</p>
+<p>用python实现高维数据可视化需要用到几个库函数 :</p>
+<ol>
+<li><strong><a href="http://pandas.pydata.org/pandas-docs/version/0.16.1/visualization.html#visualization-parallel-coordinates" target="_blank" rel="external">Pandas : parallel_coordinates</a></strong></li>
+<li><strong><a href="http://pandas.pydata.org/pandas-docs/dev/generated/pands.DataFrame.html" target="_blank" rel="external">Pandas : DataFrame</a></strong></li>
+<li><strong><a href="http://scikit-learn.org/stable/modules/classes.html#module-sklearn.datasets" target="_blank" rel="external">scikit-learn : datasets.load_iris()</a></strong></li>
+<li><strong><a href="http://www.numpy.org/" target="_blank" rel="external">Numpy</a></strong></li>
+</ol>
+<p>这里有一个简单的教程来熟悉pands语法:<br><a href="http://pandas.pydata.org/pandas-docs/stable/10min.html" target="_blank" rel="external">10分钟熟悉pandas</a></p>
+<p>如果对pandas的数据结构不了解,还要熟悉一下它的数据结构<br><a href="http://pandas.pydata.org/pandas-docs/stable/dsintro.html" target="_blank" rel="external">Pandas 数据结构简介</a></p>
+<p><a href="http://pandas.pydata.org/pandas-docs/dev/generated/pandas.DataFrame.html" target="_blank" rel="external">DataFrame 的API文档</a></p>
+<p>材料准备齐全,就可以开始进行可视化操作了.</p>
+<hr>
+<p>##3. 实现过程</p>
+<h3 id="3-1-准备数据"><a href="#3-1-准备数据" class="headerlink" title="3.1 准备数据"></a>3.1 准备数据</h3><p>首先找一个经典的4维数据集: 鸢尾花 iris数据集 <a href="https://en.wikipedia.org/wiki/Iris_flower_data_set" target="_blank" rel="external">wiki</a>     ,<a href="http://archive.ics.uci.edu/ml/datasets/Iris" target="_blank" rel="external">uci下载地址</a></p>
+<p>数据集简要描述:</p>
+<p>只有四个属性: </p>
+<ol>
+<li>sepal length in cm </li>
+<li>sepal width in cm </li>
+<li>petal length in cm </li>
+<li>petal width in cm </li>
+</ol>
+<p>共三类: </p>
+<ul>
+<li>Iris Setosa </li>
+<li>Iris Versicolour </li>
+<li>Iris Virginica</li>
+</ul>
+<hr>
+<h4 id="3-1-1-导入数据"><a href="#3-1-1-导入数据" class="headerlink" title="3.1.1 导入数据"></a>3.1.1 导入数据</h4><p>由于scikit-learn已经内建了这个数据集,可以直接导入使用</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">from</span> sklearn <span class="keyword">import</span> datasets</div><div class="line"></div><div class="line">data_origin = datasets.load_iris()</div></pre></td></tr></table></figure>
+<p>data_origin是一个 python 字典, 包含了</p>
+<ul>
+<li>‘target_names’: 标签名,’setosa’ ‘versicolor’ ‘virginica’</li>
+<li>‘data’: 数据 ,150 * 4的 ndarray 对象</li>
+<li>‘target’: 标签值, 0 1 2, 分别对应一个标签名</li>
+<li>‘feature_names’: 特征名, ‘sepal length (cm)’, ‘sepal width (cm)’, ‘petal length (cm)’, ‘petal width (cm)’</li>
+<li>‘DESC’ : 数据集描述字符串</li>
+</ul>
+<hr>
+<h4 id="3-1-2-处理数据"><a href="#3-1-2-处理数据" class="headerlink" title="3.1.2 处理数据"></a>3.1.2 处理数据</h4><p>由于我们要调用 pandas 的 parallel_coordinates 函数,它需要一个 Pandas.DataFrame 对象格式的数据,所以我们要把上面的数据包装到一个 DataFrame对象里. </p>
+<p><strong>DataFrame对象其实就和Sql数据库中的表一样,它和矩阵的不同之处在于它包含了每一列的名称和每一行的名称.</strong></p>
+<p>由于Pandas可以由多种数据类型构造:</p>
+<ul>
+<li><strong>Dict</strong> of 1D ndarrays,lists,or Series (由 1维的 ndarray,list,Serie 构成的 <strong>字典Dict</strong>)</li>
+<li>2-D numpy.ndarray 2维的numpy 多维数组</li>
+<li>numpy中的 Structured or record ndarry</li>
+<li>Pandas中的 一个 Series</li>
+<li>另一个DataFrame</li>
+</ul>
+<p>这里,我选用第一种方式,用python中的字典对象构造.把iris数据包装成一个DataFrame对象,前四列是每个特征对应的值,最后一列是该行数据的数据类型(用target_name构造).每一行是一个数据.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># 先把数据提取出来</span></div><div class="line">data = data_origin[<span class="string">'data'</span>]</div><div class="line"><span class="comment"># 处理类标签数据</span></div><div class="line">target= data_origin[<span class="string">'target'</span>]</div><div class="line">target_names = data_origin[<span class="string">'target_names'</span>]</div><div class="line">target_labels=[]</div><div class="line"><span class="keyword">for</span> class_num <span class="keyword">in</span> target:</div><div class="line">    target_labels.append(target_names[class_num])</div><div class="line"></div><div class="line">feature_names = data_origin[<span class="string">'feature_names'</span>]</div><div class="line"><span class="comment"># 合成字典</span></div><div class="line">data_dict = &#123;&#125;</div><div class="line">column = <span class="number">0</span></div><div class="line"><span class="keyword">for</span> feature_name <span class="keyword">in</span> feature_names:</div><div class="line">    data_dict[feature_name] = data[:,column]</div><div class="line">    column+=<span class="number">1</span></div><div class="line">data_dict[<span class="string">'target_labels'</span>] = target_labels</div></pre></td></tr></table></figure>
+<p>有了字典后就可以合成pandas DataFrame了<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># 包装成 DataFrame</span></div><div class="line"></div><div class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</div><div class="line"></div><div class="line">pd_data = pd.DataFrame(data_dict)</div></pre></td></tr></table></figure></p>
+<hr>
+<p>###3.1.3 画图</p>
+<p>有了数据后,画图就十分方便,只需要调用 pandas 的内置函数 parallel_coordinates() 就好了:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="keyword">from</span> pandas.tool.plotting <span class="keyword">import</span> parallel_coordinates</div><div class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</div><div class="line"></div><div class="line">plt.figure()</div><div class="line"></div><div class="line">parallel_coordinates(pd_data,<span class="string">'target-labels'</span>)</div><div class="line"></div><div class="line">plt.show()</div></pre></td></tr></table></figure>
+<p>这样,图就画好了 :<br><img src="http://7xia5s.com1.z0.glb.clouddn.com/Pandas_plot_parallel_coordinates_iris.png" alt="plot"></p>
+<p>##画一个 500维的数据集 madelon</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#coding=utf-8</span></div><div class="line">__author__ = <span class="string">'anboqing'</span></div><div class="line"></div><div class="line"><span class="keyword">from</span> pandas.tools.plotting <span class="keyword">import</span> parallel_coordinates</div><div class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</div><div class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</div><div class="line"><span class="keyword">import</span> LoadLibSvm <span class="keyword">as</span> ld</div><div class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</div><div class="line"></div><div class="line">origin_data,origin_label = ld.load_libsvm_data(<span class="string">'madelon'</span>)</div><div class="line"></div><div class="line"></div><div class="line"><span class="comment">#print type(origin_data)</span></div><div class="line"></div><div class="line"><span class="comment"># 读取到原始数据和数据的标签后,要包装成一个DataFrame对象</span></div><div class="line"><span class="comment">#print np.shape(origin_label)</span></div><div class="line">mat_data = np.mat(origin_data)</div><div class="line">mat_data = mat_data.transpose()</div><div class="line"><span class="string">"""</span></div><div class="line">#print type(mat_data)</div><div class="line">arr_data = np.array(origin_data)</div><div class="line">#print arr_data.shape</div><div class="line">print type(arr_data)</div><div class="line">print type(mat_data[1,:])</div><div class="line">arr = np.array(mat_data[1,:])</div><div class="line">lst = list(arr)</div><div class="line">print type(lst)</div><div class="line">print np.shape(lst)</div><div class="line">print lst[0]</div><div class="line">lst = list(lst[0])</div><div class="line">print lst[0]</div><div class="line">print type(lst[0])</div><div class="line">"""</div><div class="line"></div><div class="line"><span class="comment"># 先包装成一个dict</span></div><div class="line">data_dict = &#123;&#125;</div><div class="line"><span class="keyword">for</span> idx <span class="keyword">in</span> range(mat_data.shape[<span class="number">0</span>]):</div><div class="line">    arr = np.array(mat_data[idx,:])</div><div class="line">    lst = list(arr)</div><div class="line">    lst = list(lst[<span class="number">0</span>])</div><div class="line">    data_dict[str(idx)] = lst</div><div class="line">data_dict[<span class="string">'label'</span>]=origin_label</div><div class="line"></div><div class="line">pd_df = pd.DataFrame(data_dict)</div><div class="line"></div><div class="line"><span class="string">"""</span></div><div class="line">选了4列来画,能画出来,说明方法是对的,然而画所有列全都是黑的,说明图片尺寸太小了</div><div class="line">small_data = pd.DataFrame(pd_df,columns=['1','2','3','label'])</div><div class="line">plt.figure()</div><div class="line">parallel_coordinates(small_data,'label')</div><div class="line">plt.show()</div><div class="line">"""</div><div class="line"></div><div class="line">plt.figure(figsize=(<span class="number">100</span>,<span class="number">50</span>),dpi=<span class="number">20</span>)</div><div class="line">parallel_coordinates(pd_df,<span class="string">'label'</span>)</div><div class="line">plt.show()</div></pre></td></tr></table></figure>
+<p>画出来效果是这样:<br><img src="http://7xia5s.com1.z0.glb.clouddn.com/Pandas_plot_parallel_coordinates_madelon.jpeg" alt="小图"><br>下面是大图,可以在新页面打开放大看细节:<br><img src="http://7xia5s.com1.z0.glb.clouddn.com/Pandas_plot_parallel_coordinates_madelon.png" alt="4M大图"></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://anboqing.github.io/2015/06/18/用pandas中的parallel_coordinates可视化高维数据/" data-id="cisoqi7e1003urmgg6haixfkx" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/可视化-pandas/">可视化 pandas</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-关于协程" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/06/16/关于协程/" class="article-date">
+  <time datetime="2015-06-16T10:12:00.000Z" itemprop="datePublished">2015-06-16</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/协程/">协程</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/06/16/关于协程/">关于协程</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>以食堂买饭的过程类比并发模型</p>
+<h2 id="1-多进程："><a href="#1-多进程：" class="headerlink" title="1. 多进程："></a>1. 多进程：</h2><pre><code>食堂有n个窗口，每个窗口相当于一个进程（只有一个厨师，只能为一个同学做饭），要开一个窗口开销比较大。每个窗口一次为1个同学做饭，后面的同学只能等当前同学饭好了才能买饭。
+</code></pre><h2 id="2-多线程："><a href="#2-多线程：" class="headerlink" title="2. 多线程："></a>2. 多线程：</h2><pre><code>食堂的每个窗口（进程）可以有多个厨师（多个线程），一个窗口可以为多个同学同时做饭，当没有闲着的厨师的时候，该窗口就不能再接待更多的同学了（线程达到上限），并且，买饭的同学必须在窗口前等待（阻塞），此时该窗口也停止接受新的订单。
+</code></pre><h2 id="3-协程："><a href="#3-协程：" class="headerlink" title="3. 协程："></a>3. 协程：</h2><pre><code>食堂的每个窗口有一个厨师和一个接待员（单个线程），每来一个同学，就接一个订单，然后给同学发一个号码牌，让同学去干别的事情，不用等着，然后接待员继续接单，厨师去做饭，等饭好了，接单员就喊相应号码的同学：同学你的饭好了！然后那个同学就能吃上饭了。其他同学则继续干其他事情，接单员处于一个永真循环中一直接单，厨师也一直做饭，从而实现了并发。并且这种并发没有切换的开销。
+</code></pre>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://anboqing.github.io/2015/06/16/关于协程/" data-id="cisoqi7du003jrmgg8zh3o50t" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/协程/">协程</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-TCPIP协议形象解释" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/06/09/TCPIP协议形象解释/" class="article-date">
+  <time datetime="2015-06-09T10:23:00.000Z" itemprop="datePublished">2015-06-09</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/tcp-ip/">tcp/ip</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/06/09/TCPIP协议形象解释/">TCP/IP协议形象解释</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>在TCP/IP协议中，TCP协议提供可靠的连接服务，采用三次握手建立一个连接。<br>第一次握手：建立连接时，客户端发送syn包(syn=j)到服务器，并进入SYN_SEND状态，等待服务器确认；<br>第二次握手：服务器收到syn包，必须确认客户的SYN（ack=j+1），同时自己也发送一个SYN包（syn=k），即SYN+ACK包，此时服务器 进入SYN_RECV状态；<br>第三次握手：客户端收到服务器的SYN＋ACK包，向服务器发送确认包ACK(ack=k+1)，此包发送完毕，客户端和服务器进入 ESTABLISHED状态，完成三次握手。<br>通过这样的三次握手，客户端与服务端建立起可靠的双工的连接，开始传送数据。<br>三次握手的最主要目的是保证连接是双工的，可靠更多的是通过重传机制来保证的。</p>
+<pre><code>但是为什么一定要进行三次握手来保证连接是双工的呢，一次不行么？两次不行么？我们举一个现实生活中两个人进行语言沟通的例子来模拟三次握手。
+</code></pre><p>第一次对话：<br>   老婆让甲出去打酱油，半路碰到一个朋友乙，甲问了一句：哥们你吃饭了么？<br>结果乙带着耳机听歌呢，根本没听到，没反应。甲心里想：跟你说话也没个音，不跟你说了，沟通失败。说明乙接受不到甲传过来的信息的情况下沟通肯定是失败的。<br>如果乙听到了甲说的话，那么第一次对话成功，接下来进行第二次对话。<br>第二次对话：<br>   乙听到了甲说的话，但是他是老外，中文不好，不知道甲说的啥意思也不知道怎样回答，于是随便回答了一句学过的中文 ：我去厕所了。甲一听立刻笑喷了，“去厕所吃饭”?道不同不相为谋，离你远点吧，沟通失败。说明乙无法做出正确应答的情况下沟通失败。<br>如果乙听到了甲的话，做出了正确的应答，并且还进行了反问：我吃饭了，你呢？那么第二次握手成功。<br>通过前两次对话证明了乙能够听懂甲说的话，并且能做出正确的应答。接下来进行第三次对话。<br>第三次对话：<br>甲刚和乙打了个招呼，突然老婆喊他，“你个死鬼，打个酱油咋这么半天，看我回家咋收拾你”，甲是个妻管严，听完吓得二话不说就跑回家了，把乙自己晾那了。乙心想：这什么人啊，得，我也回家吧，沟通失败。说明甲无法做出应答的情况下沟通失败。<br>如果甲也做出了正确的应答：我也吃了。那么第三次对话成功，两人已经建立起了顺畅的沟通渠道，接下来开始持续的聊天。<br>通过第二次和第三次的对话证明了甲能够听懂乙说的话，并且能做出正确的应答。<br>可见，两个人进行有效的语言沟通，这三次对话的过程是必须的。<br>同理对于TCP为什么需要进行三次握手我们可以一样的理解：<br>为了保证服务端能收接受到客户端的信息并能做出正确的应答而进行前两次(第一次和第二次)握手，为了保证客户端能够接收到服务端的信息并能做出正确的应答而进行后两次(第二次和第三次)握手。</p>
+<hr>
+<p>在此输入正文</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://anboqing.github.io/2015/06/09/TCPIP协议形象解释/" data-id="cisoqi7bq000trmggjkjnuuds" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/tcp-ip/">tcp/ip</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-LearningHowtoLearning学习笔记" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/06/07/LearningHowtoLearning学习笔记/" class="article-date">
+  <time datetime="2015-06-07T11:03:00.000Z" itemprop="datePublished">2015-06-07</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Learning/">Learning</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/06/07/LearningHowtoLearning学习笔记/">Learning How to Learning学习笔记</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="课程简介"><a href="#课程简介" class="headerlink" title="课程简介"></a>课程简介</h2><p>We’ll learn about the how the brain uses two very different learning modes and how it encapsulates (“chunks”) information. We’ll also cover illusions of learning, memory techniques, dealing with procrastination, and best practices shown by research to be most effective in helping you master tough subjects.  </p>
+<h2 id="第一课-What-is-Learning"><a href="#第一课-What-is-Learning" class="headerlink" title="第一课  What is Learning?"></a>第一课  What is Learning?</h2><p>Although living brains are very complex, this module uses metaphor and analogy to help simplify matters. You will discover several fundamentally different modes of thinking, and how you can use these modes to improve your learning. You will also be introduced to a tool for tackling procrastination, be given some practical information about memory, and discover surprisingly useful insights about learning and sleep.</p>
+<h3 id="Focused-versus-Diffuse-Thinking-集中思维和发散思维"><a href="#Focused-versus-Diffuse-Thinking-集中思维和发散思维" class="headerlink" title="Focused versus Diffuse Thinking 集中思维和发散思维"></a>Focused versus Diffuse Thinking 集中思维和发散思维</h3><h4 id="Introduction-to-the-Focused-and-Diffuse-Modes"><a href="#Introduction-to-the-Focused-and-Diffuse-Modes" class="headerlink" title="Introduction to the Focused and Diffuse Modes"></a>Introduction to the Focused and Diffuse Modes</h4><p>研究表明，我们的大脑有两种基本的思维模式： Focused , Diffuse   </p>
+<ul>
+<li>集中思维 : 注意力很集中的状态，会用过去已经习得的神经路径去类比要学的新知识，你会找到新知识和你已经很熟悉的知识有很大的相似处。</li>
+<li>发散思维 : 这是一个更放松的思考方式，和一系列的神经休息状态有关。如果你的工作需要你大脑中没有的新的方法或者创意 ，你如何去开发新的神经路径呢？就要用到发散思维方式，思绪在大脑中随意游走，思绪纷飞，你就会创建新的神经联系和新的神经路径。这就是新知识。</li>
+<li>你不能同时使用2这两种思维模式</li>
+</ul>
+<h4 id="Using-the-Focused-and-Diffuse-Modes–Or-a-Little-Dali-will-do-You"><a href="#Using-the-Focused-and-Diffuse-Modes–Or-a-Little-Dali-will-do-You" class="headerlink" title="Using the Focused and Diffuse Modes–Or, a Little Dali will do You"></a>Using the Focused and Diffuse Modes–Or, a Little Dali will do You</h4><blockquote>
+<p>在不同的思维模式间切换，当遇到困但问题时，先放松用发散模式思考，然后再带着发散模式的思考灵感去专注思考。</p>
+</blockquote>
+<p>###1. What is Learning?<br>当安静地学习时，大脑会在走神时切换成发散模式。</p>
+<p>记忆储存在成千上亿个神经突触（synapse）里面</p>
+<p>传统观点认为大脑一旦发育成熟，可以通过学习来增强神经突触，但认知能力无法改变，除非脑部受到重创，但现在我们得知，大脑在成熟以后的认知能力是平衡的。</p>
+<p>随着光学成像技术的发展，我们可以看到神经元中突触的链接，由此我们发现，突触的数量是不变的，新的形成旧的就会消失，但为什么突触神经元来来去去，记忆却没有随着突触神经元的消失而消失？树突接受了来自其他神经元的信息，看图片，上方图片是树突学习前的样子，下方图片是同一树突学习和睡觉以后的样子，用白色箭头标记的为新形成的突触，所以睡觉能让你的大脑升级，把之前散乱的，线状的知识织成一整块的记忆。</p>
+<p>###2.拖延症</p>
+<p>拖延症的产生：当你不想去做一件事的时候，大脑中相关区域的痛苦会被激发出来，为了避免这种痛苦，大脑将注意力转向其他地方。结果是，你只是感到暂时的愉悦，但是事情被拖延了。</p>
+<p>如何克服拖延症： -——立即去做！！研究发现，当人们开始做不喜欢的事不久，大脑中痛苦的感觉就消失了！推荐使用番茄工作法:</p>
+<ul>
+<li>concentrate for 25 min</li>
+<li>no interrupts</li>
+<li>focus</li>
+<li>reward</li>
+</ul>
+<p>###3.Practice Makes Permanent (熟能生巧）</p>
+<p>为什么数学和科学比较难学？<br>因为数学和科学不能轻易的就被具象化，比如我们要学cow，可以通过一样牛的图片，cow的发音等等，这些都是是实实在在的东西，而数学公式呢？很难找到一个可以具体化的方法，例如图像或者声音。因为这很抽象，不能用人的知觉去感知。所以，就要通过不断的练习来加强神经元的联系。    </p>
+<blockquote>
+<p>Neurons become linked together through repeated use. The more abstract something is ,the more important it is to practice in order to bring those ideas into reality for you.<br> 神经元在不断的练习中链接在了一起。越是抽象的知识，越是需要不断的练习。因为练习可以使这些抽象的概念变得更真实具体.</p>
+</blockquote>
+<p>刚开始学习完，神经元之间的联系很弱，经过不断的练习，这些联系会变强。</p>
+<blockquote>
+<p><strong>Practice makes permanents</strong></p>
+</blockquote>
+<h3 id="4-Inroduction-to-memmory"><a href="#4-Inroduction-to-memmory" class="headerlink" title="4.Inroduction to memmory"></a>4.Inroduction to memmory</h3><ul>
+<li><p>working Memmory:工作记忆是你需要立刻有意识的处理的记忆内容。相当电脑的内存。</p>
+<blockquote>
+<p>过去的研究认为我们人类的工作记忆只有7个块。但是现在研究表明我们的工作记忆只能存储四个信息块。我们可以下意识的把知识组织成整块，所以我们的工作记忆可以存储更多的东西，这个原理就是说：虽然我们的工作内存只有四个块，但是每个块的容量是可变的，只要我们把知识组织为大块，然后我们的工作记忆就能处理越来越大的块。</p>
+</blockquote>
+</li>
+<li><p>Long term memmory：就是硬盘</p>
+<blockquote>
+<p>长期记忆空间非常大，可以存储更多的内容，但是，长期记忆太多了，他们之间相互层叠，这就使我们提取信息变得困难。<br>长期记忆：类似于仓库，有巨大的存储空间，但需要多次练习才能在众多信息中找到你想要的信息。不同的长期记忆储存在大脑的不同区域。研究发现，当第一次将工作记忆转化成长期记忆储存时，需要不断重复这个过程几次，这样能提高日后在你需要的时候找到他的几率。要将记忆转化为长期记忆，用间隔时间重复练习效果更好（类似艾宾浩斯曲线）。即 If you don’t leave time for the mortar to dry, that is, time for the synoptic connections to form and strengthen ,you won’t have a good structure.</p>
+<h3 id="6、睡眠的重要性"><a href="#6、睡眠的重要性" class="headerlink" title="6、睡眠的重要性"></a>6、睡眠的重要性</h3><p>在醒着的时候，大脑会产生有害物质（toxic），当睡着的时候，脑细胞与脑细胞之间的间距增大，通过脑中的液体将有害物质从脑细胞的间隙冲走，从而清理掉有害物质。所以睡眠不足意味着你的大脑毒素没有清理干净，毒素会导致你不能清晰地思考。长期睡眠不足还会导致头痛、抑郁、心脏病。糖尿病等。<br>在睡觉的时候：①大脑将你正在学习和思考的一些内容和概念更紧密地结合在一起；②将记忆中不太重要的部分抹去，同时（simultaneously）将你想要记住的部分进行强化；③大脑会反复练习学习内容中比较难的部分，这样新的神经元模式会不断加深和强化；④增强理解和解决复杂问题的能力。→ 睡觉时，大脑前额皮质层的意识钝化，这使得大脑的其他部分更容易交流，从而将正在学习的内容进行有序的整合，以利于理解和记忆。SO 在睡前多看正在学习的内容，能在睡梦中更好地理解和强化这些内容。</p>
+</blockquote>
+</li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://anboqing.github.io/2015/06/07/LearningHowtoLearning学习笔记/" data-id="cisoqi7bd000grmggm5spqznj" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Learning/">Learning</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-LogisticRegression_1" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/06/04/LogisticRegression_1/" class="article-date">
+  <time datetime="2015-06-03T16:00:00.000Z" itemprop="datePublished">2015-06-04</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/机器学习/">机器学习</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/06/04/LogisticRegression_1/">Logistic Regression 以及 梯度下降法 学习笔记</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="Logistic-Regression-编程实现"><a href="#Logistic-Regression-编程实现" class="headerlink" title="Logistic Regression 编程实现"></a>Logistic Regression 编程实现</h1><hr>
+<p>[toc]</p>
+<h2 id="1-Logistic-Regression-介绍"><a href="#1-Logistic-Regression-介绍" class="headerlink" title="1. Logistic Regression 介绍"></a>1. Logistic Regression 介绍</h2><h2 id="首先阅读一下-Logistic-Regression的-wiki页面"><a href="#首先阅读一下-Logistic-Regression的-wiki页面" class="headerlink" title="首先阅读一下 Logistic Regression的 wiki页面"></a><a href="http://en.wikipedia.org/wiki/Logistic_regression" target="_blank" rel="external">首先阅读一下 Logistic Regression的 wiki页面</a></h2><p>关于Logistic Regression的方方面面wiki上总结的很好很强大了，我没有必要再重复。直接记录一下编程实现过程吧。</p>
+<hr>
+<h2 id="梯度下降法"><a href="#梯度下降法" class="headerlink" title="梯度下降法"></a>梯度下降法</h2><p>当我们把问题转化成了目标函数的最优化问题后，我们就要对目标函数求极小值或者极大值，就要用到最优化理论中的方法，求最小值最常用的就是梯度下降方法。</p>
+<h2 id="梯度wiki"><a href="#梯度wiki" class="headerlink" title="梯度wiki"></a><a href="http://en.wikipedia.org/wiki/Gradient" target="_blank" rel="external">梯度wiki</a></h2><p>梯度是什么？   </p>
+<blockquote>
+<p>将一维函数中 <strong>微分</strong> 概念推广到多维函数中对应的概念就是<strong>梯度</strong></p>
+</blockquote>
+<p>假设在笛卡尔坐标系和欧几里得空间的定义内有一个函数$f(x_0,x_1,…,x_n)$，它可微分，并且函数值是标量值，那么这个函数的梯度就是一个 vector，这个vector里存储了$n$个变量的偏导数，即vector (partial_derivatives),如果对应于一元函数$f(x)$，那么梯度就是它的导数$\frac {df(x)} {dx}$</p>
+<h2 id="Gradient-Decent-wiki页面"><a href="#Gradient-Decent-wiki页面" class="headerlink" title="Gradient Decent wiki页面"></a><a href="http://en.wikipedia.org/wiki/Gradient_descent" target="_blank" rel="external">Gradient Decent wiki页面</a></h2><p>梯度下降法是一种最优化方法，它是一种迭代算法，选取适当的初始值$x^{(0)}$，迭代的每一步，更新$x$的值，进行目标函数的极小化，直到收敛。由于梯度方向是使目标函数值下降最快的方向，在迭代的每一步，以负梯度方向更新x的值，从而达到减少函数值的目的。</p>
+<p>算法描述：     </p>
+<ul>
+<li>输入： 目标函数$f(x)$,梯度函数 $g(x) = \nabla f(x) $,计算精度 $\mathcal{E}$;</li>
+<li>输出： $f(x)$的极小值点$x^*$</li>
+</ul>
+<ol>
+<li>取初值$ x^{(0)} \in R^n $,置 k = 0 </li>
+<li>计算$ f(x^{(k)} ) $</li>
+<li>计算梯度 $ g_k = g( x^{(k)}) $,<ul>
+<li>a) 当$ \left \lVert g_k \right \rVert $ $\lt \mathcal{E} $ 时,停止迭代，令 $ x^* = x ^{(k)}$</li>
+<li>b) 否则 令$p_k = -g(x^{(k)}）$ ,求 $ \lambda_k $，使得 $$ f(x^{(k)}+\lambda_kp<em>k = \min</em>{\lambda \ge 0 } f(x^{(x)} + \lambda p_k) $$</li>
+</ul>
+</li>
+<li>置 $x^{(k+1)} =  x ^{(k)} + \lambda_k p_k$, 计算$f(x^{(k+1)})$<br>当$\left \lVert f(x^{(k+1)}) - f(x^{(k)}) \right\rVert \lt \mathcal{E}$ 或者 $ \left\lVert x^{(k+1)}- x^{(k)} \right\rVert \lt \mathcal{E} $的时候，停止迭代，令 $x^* = x^{(k+1)} $</li>
+<li>否则，置k = k+1 ,跳转到 3 </li>
+</ol>
+<blockquote>
+<p>当目标函数是凸函数的时候，梯度下降法的解是全局最优解，一般情况下，起解部保证是全局最优解，梯度下降法的收敛速度也未必是很快的。</p>
+</blockquote>
+<h3 id="梯度下降编程分类"><a href="#梯度下降编程分类" class="headerlink" title="梯度下降编程分类"></a>梯度下降编程分类</h3><ul>
+<li>“batch” gradient descent 批处理梯度下降<br>“ Batch” : each step of gradient descent uses all the training examples.<blockquote>
+<p>每一步计算用到了所有的样本点</p>
+</blockquote>
+</li>
+<li>stochastic gradient descent 随机梯度下降<blockquote>
+<p>每一步计算使用一个随机选取的样本点来计算</p>
+</blockquote>
+</li>
+</ul>
+<hr>
+<h2 id="2-编程实现过程"><a href="#2-编程实现过程" class="headerlink" title="2. 编程实现过程"></a>2. 编程实现过程</h2><h3 id="数据集选取"><a href="#数据集选取" class="headerlink" title="数据集选取"></a>数据集选取</h3><h3 id="编程实现"><a href="#编程实现" class="headerlink" title="编程实现"></a>编程实现</h3><h2 id="3-Logistic-Resgression-特点总结"><a href="#3-Logistic-Resgression-特点总结" class="headerlink" title="3. Logistic Resgression 特点总结"></a>3. Logistic Resgression 特点总结</h2><ul>
+<li>优点： 计算代价不高，容易实现</li>
+<li>缺点： 容易欠拟合，分类精度不高</li>
+<li>适用数据类型： 数值型和标称型数据。</li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://anboqing.github.io/2015/06/04/LogisticRegression_1/" data-id="cisoqi7bf000jrmggcnr0bfln" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/机器学习-算法/">机器学习 算法</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-thinkstats_chpt2" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/05/21/thinkstats_chpt2/" class="article-date">
+  <time datetime="2015-05-21T14:21:00.000Z" itemprop="datePublished">2015-05-21</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/统计/">统计</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/05/21/thinkstats_chpt2/">《程序员的统计思维》学习笔记：描述性统计量</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>##概念</p>
+<ul>
+<li>均值<br>$$ \mu = \frac1n\sum_i^nx_i $$<br>描述样本的典型值或者<strong>集中趋势</strong></li>
+</ul>
+<hr>
+<ul>
+<li>方差<br>$$ \sigma^2=\frac1n \sum_i^n(x_i-\mu)^2 $$<br>描述样本的<strong>分散</strong>情况</li>
+</ul>
+<hr>
+<ul>
+<li>统计显著性(statistically significant)<br>若一个直观效应不太可能是由随机因素引起的，就是统计显著的</li>
+</ul>
+<hr>
+<h2 id="分布"><a href="#分布" class="headerlink" title="分布"></a>分布</h2><p>汇总统计量简单明了，但是风险也大，因为他们很有可能会掩盖数据的真想。另一种方法就是看数据的<em>分布（distribution）</em>，它描述了各个值出现的频繁程度。</p>
+<p>   表示分布最常用的方法是<em>直方图（histogram）</em>，这种图用于展示各个值出现的频数或者概率。    </p>
+<pre><code>在这里，*频数*指的是数据集中一个值出现的次数，*概率*就是频数除以样本数量。    
+
+在python中，计算频数最简单的办法就是用字典。给一个序列t:
+</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">hist = &#123;&#125;</div><div class="line"><span class="keyword">for</span> x <span class="keyword">in</span> t:</div><div class="line">    hist[x] = hist.get(x, <span class="number">0</span>) + <span class="number">1</span></div></pre></td></tr></table></figure>
+<p>得到的结果是一个将值映射到其频数的字典。将其除以 $n$ 即可把频数转换成概率，这称为<strong>归一化</strong>：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">n = float(len(t))</div><div class="line">pmf = &#123;&#125;</div><div class="line"><span class="keyword">for</span> x, freq <span class="keyword">in</span> hist.items():</div><div class="line">    pmf[x] = freq/n</div></pre></td></tr></table></figure></p>
+<p>归一化后的直方图成为PMF(probability Mass Function),概率质量函数，这个函数是值到其概率的映射。   </p>
+<hr>
+<h2 id="直方图的表示"><a href="#直方图的表示" class="headerlink" title="直方图的表示"></a>直方图的表示</h2><p>编写一个Pmf的模块，定义了表示直方图的Hist对象，以及表示PMF的Pmf对象。<a href="http://thinkstats.com/Pmf.py" target="_blank" rel="external">Pmf.py</a></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> Pmf</div><div class="line">hist = Pmf.MakeHistFromList([<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">2</span>])</div><div class="line"><span class="keyword">print</span> hist</div></pre></td></tr></table></figure>
+<hr>
+<h2 id="绘制直方图"><a href="#绘制直方图" class="headerlink" title="绘制直方图"></a>绘制直方图</h2><p>python 中有不少画图的包，可以使用复杂的<a href="http://www.labri.fr/perso/nrougier/teaching/matplotlib/" target="_blank" rel="external">matplotlib</a>,当然也有简单的<a href="http://web.stanford.edu/~mwaskom/software/seaborn/introduction.html" target="_blank" rel="external">seaborn</a>。<br>　　　　<br>使用matplotlib中的pyplot画：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> Pmf</div><div class="line"><span class="keyword">from</span> matplotlib <span class="keyword">import</span> pyplot</div><div class="line">hist = Pmf.MakeHistFromList([<span class="number">1</span>,<span class="number">2</span>,<span class="number">2</span>,<span class="number">2</span>,<span class="number">2</span>,<span class="number">2</span>,<span class="number">2</span>,<span class="number">4</span>,<span class="number">4</span>,<span class="number">4</span>,<span class="number">4</span>,<span class="number">5</span>])</div><div class="line">vals,freqs = hist.Render()</div><div class="line">rectangles = pyplot.bar(vals,freqs)</div><div class="line">pyplot.show()</div></pre></td></tr></table></figure></p>
+<p><img src="http://7xia5s.com1.z0.glb.clouddn.com/thinkstats_matplotlib.png" alt="此处输入图片的描述"></p>
+<p>作者写了一个绘制图表的函数<a href="http://greenteapress.com/thinkstats/myplot.py" target="_blank" rel="external">myplot</a>.文档：<a href="http://greenteapress.com/thinkstats/myplot.html" target="_blank" rel="external">文档</a>.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">from</span> matplotlib <span class="keyword">import</span> pyplot</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">plotBabiesHist</span><span class="params">(data_dir=<span class="string">'.'</span>)</span>:</span></div><div class="line">    table,firsts,others = first.MakeTables(data_dir)</div><div class="line">    firsts_l = [p.prglength <span class="keyword">for</span> p <span class="keyword">in</span> firsts.records]</div><div class="line">    others_l = [p.prglength <span class="keyword">for</span> p <span class="keyword">in</span> others.records]</div><div class="line">    firsts_h = Pmf.MakeHistFromList(firsts_l)</div><div class="line">    others_h = Pmf.MakeHistFromList(others_l)</div><div class="line">    fst_v,fst_f = firsts_h.Render()</div><div class="line">    oth_v,oth_f = others_h.Render()</div><div class="line">    pyplot.bar(fst_v,fst_f)</div><div class="line">    pyplot.bar(oth_v,oth_f)</div><div class="line">    pyplot.show()</div></pre></td></tr></table></figure>
+<p>  <img src="http://7xia5s.com1.z0.glb.clouddn.com/thinkstats_figure_1.png" alt="7"></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://anboqing.github.io/2015/05/21/thinkstats_chpt2/" data-id="cisoqi7dm003brmggdqdzvikm" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-machine_learning_tw_2" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/05/18/machine_learning_tw_2/" class="article-date">
+  <time datetime="2015-05-18T12:41:00.000Z" itemprop="datePublished">2015-05-18</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/机器学习/">机器学习</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/05/18/machine_learning_tw_2/">机器学习：感知机</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>[TOC]</p>
+<hr>
+<h2 id="感知器的概念"><a href="#感知器的概念" class="headerlink" title="感知器的概念"></a>感知器的概念</h2><p>感知器（perceptron)是人工神经网络的基础单元，感知器是以一个实数值向量作为输入，计算这些输入的线性组合，然后如果结果大于某个阈值，就输出1，否则输出-1.更精确的是，如果输入为$x_1$到$x_n$，那么感知器计算的输出为：<br>$$<br>o(x_1,…,x_n) = \begin{cases}<br>1, &amp; \text{ $w_0+w_1x_1+…+w_nx_n $&gt; 0}\<br>-1, &amp; \text{otherwise }<br>\end{cases}<br>$$<br><img src="http://7xia5s.com1.z0.glb.clouddn.com/ml_ml_ganzhiqi.png" alt="perceptron"><br>其中，每一个$w_i$是一个实数常量，或者叫做<strong>权值(weight)</strong>,用来决定输入$x_i$对感知器输出的<strong>贡献率</strong>。<br>实数$w_0$是一个<strong>阈值(threshold)</strong>，它是为了使感知器输出1，输入的<strong>加权和</strong> $w_0+w_1x_1+…+w_nx_n$必须超过的值。</p>
+<p>感知机是一种<strong>线性</strong>分类模型(非线性的不能分)，属于<strong>判别模型</strong>，感知机模型的<strong>假设空间</strong>是定义在特征空间中的所有线性分类模型或线性分类器，即函数集合 $\lbrace f \mid f(x) =  w \cdot x + b  \rbrace$。<br>感知机有如下几何解释：线性方程<br>$$ w \cdot x +b = 0 $$<br>对应于<strong>特征空间</strong>$R^n$中的一个<strong>超平面S</strong>,其中w是超平面的<strong>法向量</strong>，b是超平面的<strong>截距</strong>。这个超平面将特征空间划分为2个部分，每一部分是一类。</p>
+<p>公式是这样推导出来的：   </p>
+<p>$ h(x) = sign((\sum_{i=1}^dw_ix<em>i$) - threashold)<br>       = $sign((\sum</em>{i=1}^dw_ix<em>i$) + (-threashold) $\cdot$ (+1))<br>       = sign(($\sum</em>{i=1}^dw_ix_i$) + $w_0x_0$)<br>       = sign($W^T$X)</p>
+<hr>
+<h2 id="感知机的历史"><a href="#感知机的历史" class="headerlink" title="感知机的历史"></a>感知机的历史</h2><p>1943年，<strong>心理学家</strong> Warren McCulloch 和<strong>数理逻辑学家</strong> Walter Pitts 在合作的《A logical calculus of the ideas immanent in nervous activity》 论文中提出并给出了人工神经网络的概念及人工神经元的数学模型，从而开创了人工神经网络研究的时代。1949年，<strong>心理学家</strong>唐纳德·赫布 在《The Organization of Behavior》论文中描述了神经元学习法则。        </p>
+<p>人工神经网络更进一步被美国<strong>神经学家</strong> Frank Rosenblatt 所发展。他提出了可以模拟人类感知能力的机器，并称之为『感知机』。1957年，在 Cornell 航空实验室中，他成功在IBM 704机上完成了感知机的仿真。两年后，他又成功实现了能够识别一些英文字母、基于感知机的神经计算机——Mark1，并于1960年6月23日，展示与众。     </p>
+<p>为了『教导』感知机识别图像，Rosenblatt，在 Hebb 学习法则的基础上，发展了一种迭代、试错、类似于人类学习过程的学习算法——感知机学习。除了能够识别出现较多次的字母，感知机也能对不同书写方式的字母图像进行概括和归纳。但是，由于本身的局限，感知机除了那些包含在训练集里的图像以外，不能对受干扰（半遮蔽、不同大小、平移、旋转）的字母图像进行可靠的识别。     </p>
+<p>首个有关感知机的成果，由 Rosenblatt 于1958年发表在《The Perceptron: A Probabilistic Model for Information Storage and Organization in the Brain》 的文章里。1962年，他又出版了《Principles of Neurodynamics: Perceptrons and the theory of brain mechanisms》 一书，向大众深入解释感知机的理论知识及背景假设。此书介绍了一些重要的概念及定理证明，例如感知机收敛定理。   </p>
+<p>虽然最初被认为有着良好的发展潜能，但感知机最终被证明不能处理诸多的模式识别问题。1969年，Marvin Minsky 和 Seymour Papert 在《Perceptrons》书中，仔细分析了以感知机为代表的单层神经网络系统的功能及局限，证明感知机不能解决简单的异或（XOR）等线性不可分问题，但 Rosenblatt 和 Minsky 及 Papert 等人在当时已经了解到多层神经网络能够解决线性不可分的问题。      </p>
+<p>由于 Rosenblatt 等人没能够及时推广感知机学习算法到多层神经网络上，又由于《Perceptrons》在研究领域中的巨大影响，及人们对书中论点的误解，造成了人工神经领域发展的长年停滞及低潮，直到人们认识到多层感知机没有单层感知机固有的缺陷及反向传播算法在80年代的提出，才有所恢复。1987年，书中的错误得到了校正，并更名再版为《Perceptrons - Expanded Edition》。    </p>
+<p>近年，在 Freund 及 Schapire (1998)使用<strong>核技巧</strong>改进感知机学习算法之后，愈来愈多的人对感知机学习算法产生兴趣。后来的研究表明除了二元分类，感知机也能应用在较复杂、被称为 structured learning 类型的任务上（Collins, 2002），又或使用在分布式计算环境中的大规模机器学习问题上（McDonald, Hall and Mann,2011）。</p>
+<hr>
+<h2 id="感知机学习策略"><a href="#感知机学习策略" class="headerlink" title="感知机学习策略"></a>感知机学习策略</h2><h3 id="1-数据集的线性可分性"><a href="#1-数据集的线性可分性" class="headerlink" title="1. 数据集的线性可分性"></a>1. 数据集的线性可分性</h3><p>  给定一个数据集，如果存在某个超平面S, $w \cdot x+b$=0能够将数据集的正实例点和负实例点都正确的划分到超平面的两侧，即对所有$y_i=+1的实例i，有w<em>x_i+b &gt;０$，$y_i=－1$的实例i，有<br>  $w \cdot x+b＜０$，就称该数据集是<em>*线性可分</em></em>的。</p>
+<h3 id="2-感知机学习策略"><a href="#2-感知机学习策略" class="headerlink" title="2. 感知机学习策略"></a>2. 感知机学习策略</h3><p>感知机学习策略是：在<strong>假设空间</strong>中，选取使<strong>损失函数</strong>值最小的模型参数（权重w,偏置bias)，即感知机模型。   </p>
+<p>为什么引入损失函数呢？损失函数又是什么呢？     </p>
+<p>假设训练数据集是线性可分的，感知机学习的目标是求得一个能够将训练集正实例点和负实例点完全正确分开的<strong>分离超平面（separating hyperplane)</strong>,为了找出这样的超平面，即确定感知机模型参数w,b,需要确定一个学习策略，即定义<strong>经验损失函数</strong>并将损失函数<strong>极小化</strong>。</p>
+<p><strong>损失函数</strong>可以选择误分类点的总数，也可以选择<strong>误分类点到超平面的距离</strong>，由于我们要对这个损失函数进行<strong>极小化</strong>，极小化最好是连续可导的函数，所以就选择后者，因为误分类点的总数是一个离散的函数，不是连续的。    </p>
+<p>为此，我们先根据点到平面的距离公式写出输入空间$R^n$中任意一点$x_0$到超平面S的距离：<br>$$<br>\frac1{\left\lVert w\right\rVert}\left\lvert w \cdot x +b \right\rvert<br>$$<br>这里 $\left\lVert w \right\rVert$ 是 w 的norm范数。    </p>
+<p>其次，对于误分类的数据($x_i,y_i$)来说,<br>$$ -y_i(w \cdot x_i +b) \gt 0 $$成立。因为对于误分类的数据来说，$y_i和w \cdot x+b $ <strong>永远异号</strong>，所以，<strong>误分类点到超平面的距离就是：</strong><br>$$<br>-\frac1{\left\lVert w\right\rVert} y<em>i \left( w \cdot x +b \right)<br>$$<br>这样，假设超平面S的误分类点集合为 <strong>M</strong> ,那么所有误分类点到超平面S的总距离为<br>$$<br>-\frac1{\left\lVert w\right\rVert} \sum</em>{x_i \in M } y<em>i \left( w \cdot x +b \right)<br>$$<br>不考虑 $\frac1{\left\lVert w\right\rVert}$（因为它对所有的训练数据样本都是一样的），就得到了感知机学习的损失函数<br>$$<br>    L(w,b)=- \sum</em>{x_i \in M }y_i \left( w \cdot x +b \right)<br>$$<br>其中 M 为 <strong>误分类点的集合</strong>。这个损失函数就是感知机学习的 <strong>经验风险函数</strong>。   </p>
+<p> 显然，损失函数是非负的，如果没有误分类点，那么损失函数的值就是0，误分类点越少，误分类点离超平面越近，损失函数值就越小。 针对一个特定的样本点的损失函数值，在分类正确的时候是0，在误分类的时候是参数w,b的线性函数，因此，损失函数 L(w,b) 是 w,b 的<strong>连续可导函数</strong>。这样，我们就能用数值积分的优化方法对这个函数进行最优化了。优化的过程就是学习的过程。 </p>
+<hr>
+<h2 id="感知器学习算法"><a href="#感知器学习算法" class="headerlink" title="感知器学习算法"></a>感知器学习算法</h2><p>感知机学习算法的原始形式：<br>输入：　训练数据集T = {$(x_1,y_1),(x_2,y_2),…,(x_n,y_n)$},其中　$x_i \in X = R^n , y_i \in Y = {-1,+1},i=1,2,…,N$ ; 学习率$\eta$ ( 0 &lt; $\eta \le 1$);    </p>
+<p>输出：　w,b; 感知机模型 $ f(x) = sign(  w \cdot x + b) $ ;     </p>
+<ol>
+<li>选取初始值$ w_0,b_0$</li>
+<li>在训练集中随机选取<strong>一个</strong>数据($ x_i , y_i $)</li>
+<li>如果 $ y_i(w \cdot x_i + b) \le 0 $<br> $$w \leftarrow w + \eta y_ix_i\ b \leftarrow b + \eta y_i$$</li>
+<li>转到2，直到训练集合中没有误分类点</li>
+</ol>
+<p>这种学习算法直观上有如下解释： 当一个实例点被误分类，即位于分离超平面的错误一侧时，则调整w,b的值，使得分离超平面向该误分类点的一侧移动，以减少该误分类点与超平面的距离，直至超平面越过该误分类点使其被正确分类。</p>
+<p><strong>感知机学习算法由于采用不同的初值或者选取不同的误分类点，解可以不同。</strong></p>
+<p><a href="zh.wikipedia.org/zh/%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D%E6%B3%95">梯度下降</a></p>
+<p><img src="http://7xia5s.com1.z0.glb.clouddn.com/ml_ml_2_2.png" alt="2"></p>
+<ul>
+<li>首先，对每一条数据进行计算　，求出符号</li>
+<li>然后如果求出的符号和真实的符号不相等，就要修正错误</li>
+<li>如何修正错误<ul>
+<li>看右上方y=+1的图，正确的是正的，却算出来负的，说明w 和 x的夹角太大，要把w转向x，因为此时y=+1所以w+yx是　w+x，相当于图中的中间那条向量；</li>
+<li>再看y=-1的图，正确的是负的，但是算出来是正的，说明w和x的夹角太小了，要把w向远离x的方向转，此时w+yx=w-x，所以结果就转向远离x的方向了。</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h2 id="算法代码仿真"><a href="#算法代码仿真" class="headerlink" title="算法代码仿真"></a>算法代码仿真</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> os</div><div class="line"></div><div class="line"><span class="comment"># set the initial data</span></div><div class="line">data_set = [[(<span class="number">3</span>,<span class="number">3</span>),<span class="number">1</span>],[(<span class="number">4</span>,<span class="number">3</span>),<span class="number">1</span>],[(<span class="number">1</span>,<span class="number">1</span>),<span class="number">-1</span>]]</div><div class="line"></div><div class="line">w = [i-i <span class="keyword">for</span> i <span class="keyword">in</span> range(len(data_set)<span class="number">-1</span>)]</div><div class="line">b = <span class="number">0</span></div><div class="line">rate = <span class="number">1</span></div><div class="line"></div><div class="line"><span class="comment"># update parameters using stochastic gradient descent,define the cost function</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">cost_function</span><span class="params">(item)</span>:</span></div><div class="line">  <span class="keyword">global</span> w,b</div><div class="line">  y = item[<span class="number">1</span>]</div><div class="line">  x = item[<span class="number">0</span>]</div><div class="line">  <span class="comment"># get the inner product of w and x</span></div><div class="line">  inner_product = <span class="number">0.0</span></div><div class="line">  <span class="keyword">for</span> i <span class="keyword">in</span> range(len(w)<span class="number">-1</span>):</div><div class="line">    inner_product += w[i]*x[i]</div><div class="line">  res = y*(inner_product+b)</div><div class="line">  <span class="keyword">return</span> res</div><div class="line"></div><div class="line"><span class="comment"># define the update strategy</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">update</span><span class="params">(item)</span>:</span></div><div class="line">  <span class="keyword">global</span> w,b,rate</div><div class="line">  y = item[<span class="number">1</span>]</div><div class="line">  x = item[<span class="number">0</span>]</div><div class="line">  <span class="keyword">for</span> i <span class="keyword">in</span> range(len(w)<span class="number">-1</span>):</div><div class="line">    w[i] = w[i] + rate*y*x[i]</div><div class="line">  <span class="comment"># b is the bias</span></div><div class="line">  b = b + rate*y</div><div class="line"></div><div class="line"></div><div class="line"><span class="comment"># check if there is still mis-classified item</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">check</span><span class="params">(data_set,exist_mis)</span>:</span></div><div class="line">  <span class="keyword">for</span> item <span class="keyword">in</span> data_set:</div><div class="line">    <span class="keyword">if</span> cost_function(item) &lt;= <span class="number">0</span>:</div><div class="line">      update(item)</div><div class="line">      exist_mis = <span class="keyword">True</span></div><div class="line">    <span class="keyword">if</span> exist_mis == <span class="keyword">False</span>:</div><div class="line">      <span class="keyword">print</span> <span class="string">'Result w : '</span>,str(w),<span class="string">' b: '</span>,str(b)</div><div class="line">      os._exit(<span class="number">0</span>)</div><div class="line"></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">learn</span><span class="params">(data_set)</span>:</span></div><div class="line">  <span class="keyword">global</span> w,b</div><div class="line">  <span class="keyword">for</span> turn <span class="keyword">in</span> range(<span class="number">1000</span>): <span class="comment"># iterator 1000 times</span></div><div class="line">    exist_mis= <span class="keyword">False</span></div><div class="line">    check(data_set,exist_mis)</div><div class="line">    exist_mis = <span class="keyword">False</span></div><div class="line">  <span class="keyword">print</span> <span class="string">'the dataset is no linear separatable'</span></div><div class="line"></div><div class="line"><span class="keyword">if</span> __name__==<span class="string">'__main__'</span>:</div><div class="line">  learn(data_set)</div></pre></td></tr></table></figure>
+<hr>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://anboqing.github.io/2015/05/18/machine_learning_tw_2/" data-id="cisoqi7ci001trmgg5tfa9imr" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/感知机/">感知机</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-machine_learning_tw_1" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/05/16/machine_learning_tw_1/" class="article-date">
+  <time datetime="2015-05-16T14:08:00.000Z" itemprop="datePublished">2015-05-16</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/机器学习/">机器学习</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/05/16/machine_learning_tw_1/">机器学习概念介绍</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>[TOC]</p>
+<h2 id="机器学习如何学习"><a href="#机器学习如何学习" class="headerlink" title="机器学习如何学习"></a>机器学习如何学习</h2><p><strong>机器学习是一门理论和实践相结合的科目</strong></p>
+<ul>
+<li>理论导向<ul>
+<li>derive everything <strong>deeply</strong> for solid understanding</li>
+<li>不关心普罗大众</li>
+</ul>
+</li>
+<li><p>技术导向</p>
+<ul>
+<li>flash over the sexiest techniques <strong>broadly</strong> for shiny coverage.</li>
+<li>有太多技术，很难选择，很难正确的使用到合适的场景</li>
+</ul>
+<p>所以纯粹死学理论和不钻研理论只学花哨的技术都不合适，我们要从<strong>机器学习的本质基础</strong>学起。</p>
+<ul>
+<li>要学习关键理论，关键技术，实践中的用法</li>
+<li>学习每个机器学习者都必须掌握的东西</li>
+</ul>
+</li>
+</ul>
+<p><strong>从学习到机器学习</strong></p>
+<ul>
+<li><p><strong>学习：</strong>acquiring <strong>skill</strong> with experience accumulated from <strong>abservations</strong> 从观察积累的知识出发学习技能</p>
+<blockquote>
+<p>观察  —&gt;  Learning —-&gt; skill</p>
+</blockquote>
+</li>
+<li><p><strong>机器学习</strong>：aquiring <strong>skill</strong> with experience accumulated/<strong>computed</strong> from <strong>data</strong>;</p>
+<blockquote>
+<p>data —-&gt;  ML  ——&gt; skill</p>
+</blockquote>
+</li>
+<li><p>Skill : improve some <strong>performance measure</strong> ( e.g. prediction accuracy)</p>
+<blockquote>
+<p>data —-&gt; ML —–&gt; improved performance measure<br>机器学习就是从数据出发，学习到技巧，从而对现有方案有促进提高</p>
+</blockquote>
+</li>
+<li><p><strong>机器可学习的场景</strong></p>
+<ul>
+<li>存在需要被学习的模式</li>
+<li>但是没有可以很容易的对模式定义的数学描述</li>
+<li>并且存在关于该模式的大量数据 </li>
+</ul>
+</li>
+</ul>
+<hr>
+<h2 id="机器学习的例子"><a href="#机器学习的例子" class="headerlink" title="机器学习的例子"></a>机器学习的例子</h2><ol>
+<li>food：从社交网络上挖掘文本和位置信息，学习餐厅的卫生状况对健康的影响</li>
+<li>Clothing: 用销售数据和客户调查数据来给客户进行穿衣搭配的推荐</li>
+<li>Housing: 从建筑特征和能耗负载数据来预测建筑的能耗</li>
+<li>行：自动驾驶</li>
+</ol>
+<hr>
+<h2 id="机器学习和其他领域的关系"><a href="#机器学习和其他领域的关系" class="headerlink" title="机器学习和其他领域的关系"></a>机器学习和其他领域的关系</h2><h3 id="机器学习和数据挖掘"><a href="#机器学习和数据挖掘" class="headerlink" title="机器学习和数据挖掘"></a>机器学习和数据挖掘</h3><ul>
+<li>机器学习：用数据去算出一个和目标函数很接近的假设函数 </li>
+<li>数据挖掘：用大量数据去找到数据里面有用有趣的性质，关联等<ul>
+<li>如果把数据挖掘的目标限制为<strong>找到一个和目标函数很接近的假设函数</strong>的话，那么机器学习和数据挖掘没什么本质的不同，他们目标是一致的。</li>
+<li>但是数据挖掘的目标并不总是这样，如果interesting property和’hypothesis that approximate target是相关的，那么 数据挖掘 可以帮助机器学习，并且反过来也一样（vice versa)</li>
+<li>传统的数据挖掘同样也关注在大数据库里实现高效的计算</li>
+</ul>
+</li>
+<li>他们非常相像，但是不完全相同</li>
+</ul>
+<hr>
+<h3 id="机器学习和人工智能"><a href="#机器学习和人工智能" class="headerlink" title="机器学习和人工智能"></a>机器学习和人工智能</h3><ul>
+<li>机器学习： use data to compute hypothesis g that approximates target f</li>
+<li>人工智能：compute something <strong>that shows intelligent behavior</strong>。<pre><code>* 如果把机器学习要学习的目标函数的功能限定为，这个函数可以让计算机实现智能化的行为（自动驾驶），那么机器学习和人工智能就是相同的。
+* 但是实现智能的途径不只有机器学习一种。
+</code></pre></li>
+</ul>
+<hr>
+<h3 id="机器学习和统计学"><a href="#机器学习和统计学" class="headerlink" title="机器学习和统计学"></a>机器学习和统计学</h3><ul>
+<li>Statistics : use data to <strong>make inference about an unknown process</strong></li>
+<li>g is an inference outcome; f is something unknown ; statistics <strong>can be used to achieve ML</strong></li>
+<li>传统的统计学同样也专注于证明数学假设，但是不关心如何计算</li>
+<li>机器学习用到的许多工具很早就在统计学里面出现了，所以统计学为机器学习提供了有力的工具</li>
+</ul>
+<hr>
+<h2 id="机器学习的组成部分"><a href="#机器学习的组成部分" class="headerlink" title="机器学习的组成部分"></a>机器学习的组成部分</h2><p><strong>基本符号</strong></p>
+<ul>
+<li>input: x$\in$X </li>
+<li>output: y $\in$ Y</li>
+<li><strong>unknown pattern to be learned $\Leftarrow\Rightarrow$</strong> <strong>target function</strong>:  f: X$\rightarrow$Y</li>
+<li>data $\Leftarrow\Rightarrow$ training examples</li>
+<li>hypothesis $\Leftarrow\Rightarrow$ skill with hopefully good performance: g: X $\rightarrow$ Y<br><img src="http://7xia5s.com1.z0.glb.clouddn.com/ml_ml_1_1.png" alt="ml_1_1"></li>
+</ul>
+<hr>
+<p>##参考资料<br>經典文獻<br>F. Rosenblatt. The perceptron: A probabilistic model for information storage and organization in the brain. Psychological Review, 65(6):386-408, 1958. (第二講：Perceptron 的出處)      </p>
+<p>W. Hoeffding. Probability inequalities for sums of bounded random variables. Journal of the American Statistical Association, 58(301):13–30, 1963. (第四講：Hoeffding’s Inequality)    </p>
+<p>Y. S. Abu-Mostafa, X. Song , A. Nicholson, M. Magdon-ismail. The bin model, 1995. (第四講：bin model 的出處)</p>
+<p>V. Vapnik. The nature of statistical learning theory, 2nd edition, 2000. (第五到八講：VC dimension 與 VC bound 的完整數學推導及延伸)</p>
+<p>Y. S. Abu-Mostafa. The Vapnik-Chervonenkis dimension: information versus complexity in learning. Neural Computation, 1(3):312-317, 1989. (第七講：VC Dimension 的概念與重要性)</p>
+<p>參考文獻<br>A. Sadilek, S. Brennan, H. Kautz, and V. Silenzio. nEmesis: Which restaurants should you avoid today? First AAAI Conference on Human Computation and Crowdsourcing, 2013. (第一講：ML 在「食」的應用)</p>
+<p>Y. S. Abu-Mostafa. Machines that think for themselves. Scientific American, 289(7):78-81, 2012. (第一講：ML 在「衣」的應用)</p>
+<p>A. Tsanas, A. Xifara. Accurate quantitative estimation of energy performance of residential buildings using statistical machine learning tools. Energy and Buildings, 49: 560-567, 2012. (第一講：ML 在「住」的應用)</p>
+<p>J. Stallkamp, M. Schlipsing, J. Salmen, C. Igel. Introduction to the special issue on machine learning for traffic sign recognition. IEEE Transactions on Intelligent Transportation Systems 13(4): 1481-1483, 2012. (第一講：ML 在「行」的應用)</p>
+<p>R. Bell, J. Bennett, Y. Koren, and C. Volinsky. The million dollar programming prize. IEEE Spectrum, 46(5):29-33, 2009. (第一講：Netflix 大賽)</p>
+<p>S. I. Gallant. Perceptron-based learning algorithms. IEEE Transactions on Neural Networks, 1(2):179-191, 1990. (第二講：pocket 的出處，注意到實際的 pocket 演算法比我們介紹的要複雜)   </p>
+<p>R. Xu, D. Wunsch II. Survey of clustering algorithms. IEEE Transactions on Neural Networks 16(3), 645-678, 2005. (第三講：Clustering)</p>
+<p>X. Zhu. Semi-supervised learning literature survey. University of Wisconsin Madison, 2008. (第三講：Semi-supervised)</p>
+<p>Z. Ghahramani. Unsupervised learning. In Advanced Lectures in Machine Learning (MLSS ’03), pages 72–112, 2004. (第三講：Unsupervised)</p>
+<p>L. Kaelbling, M. Littman, A. Moore. reinforcement learning: a survey. Journal of Artificial Intelligence Research, 4: 237-285. (第三講：Reinforcement)</p>
+<p>A. Blum. On-Line algorithms in machine learning. Carnegie Mellon University,1998. (第三講：Online)</p>
+<p>B. Settles. Active learning literature survey. University of Wisconsin Madison, 2010. (第三講：Active)</p>
+<p>D. Wolpert. The lack of a priori distinctions between learning algorithms. Neural Computation, 8(7): 1341-1390. (第四講：No free lunch 的正式版)</p>
+<p>T. M. Cover. Geometrical and statistical properties of systems of linear inequalities with applications in pattern recognition. IEEE Transactions on Electronic Computers, 14(3):326–334, 1965. (第五到六講：Growth Function)</p>
+<p>B. Zadrozny, J. Langford, N. Abe. Cost sensitive learning by cost-proportionate example weighting. IEEE International Conference on Data Mining, 2003. (第八講：Weighted Classification)</p>
+<p>G. Sever, A. Lee. Linear Regression Analysis, 2nd Edition, Wiley, 2003. (第九講：Linear Regression </p>
+<pre><code>由統計學的角度來分析；第十二到十三講：Polynomial Transform 後再做 Linear Regression)
+</code></pre><p>D. C. Hoaglin, R. E. Welsch. The hat matrix in regression and ANOVA. American Statistician, 32:17–22, 1978. (第九講：Linear Regression 的 Hat Matrix)</p>
+<p>D. W. Hosmer, Jr., S. Lemeshow, R. X. Sturdivant. Applied Logistic Regression, 3rd Edition, Wiley, 2013 (第十講：Logistic Regression 由統計學的角度來分析)</p>
+<p>T. Zhang. Solving large scale linear prediction problems using stochastic gradient descent algorithms. International Conference on Machine Learning,  (第十一講：Stochastic Gradient Descent 用在線性模型的理論分析)</p>
+<p>R. Rifkin, A. Klautau. In Defense of One-Vs-All Classification. Journal of Machine Learning Research, 5: 101-141, 2004. (第十一講：One-versus-all)</p>
+<p>J. Fürnkranz. Round Robin Classification. Journal of Machine Learning Research, 2: 721-747, 2002. (第十一講：One-versus-one)</p>
+<p>L. Li, H.-T. Lin. Optimizing 0/1 loss for perceptrons by random coordinate descent. In Proceedings of the 2007 International Joint Conference on Neural Networks (IJCNN ’07), pages 749–754, 2007. (第十一講：一個由最佳化角度出發的 Perceptron Algorithm)<br>G.-X. Yuan, C.-H. Ho, C.-J. Lin. Recent advances of large-scale linear classification. Proceedings of IEEE, 2012. (第十一講：更先進的線性分類方法)</p>
+<p>Y.-W. Chang, C.-J. Hsieh, K.-W. Chang, M. Ringgaard, C.-J. Lin. Training and testing low-degree polynomial data mappings via linear SVM. Journal of Machine Learning Research, 11(2010), 1471-1490. (第十二講：一個使用多項式轉換加上線性分類模型的方法)<br>M. Magdon-Ismail, A. Nicholson, Y. S. Abu-Mostafa. Learning in the presence of noise. In Intelligent Signal Processing. IEEE Press, 2001. (第十三講：Noise 和 Learning)</p>
+<p>A. Neumaier, Solving ill-conditioned and singular linear systems: A tutorial on regularization, SIAM Review 40 (1998), 636-666. (第十四講：Regularization)</p>
+<p>T. Poggio, S. Smale. The mathematics of learning: Dealing with data. Notices of the American Mathematical Society, 50(5):537–544, 2003. (第十四講：Regularization)</p>
+<p>P. Burman. A comparative study of ordinary cross-validation, v-fold cross-validation and the repeated learning-testing methods. Biometrika, 76(3): 503–514, 1989. (第十五講：Cross Validation)</p>
+<p>R. Kohavi. A study of cross-validation and bootstrap for accuracy estimation and model selection. In Proceedings of the 14th International Joint Conference on Artificial intelligence (IJCAI ’95), volume 2, 1137–1143, 1995. (第十五講：Cross Validation)<br>A. Blumer, A. Ehrenfeucht, D. Haussler, and M. K. Warmuth. Occam’s razor. Information Processing Letters, 24(6):377–380, 1987. (第十六講：Occam’s Razor)</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://anboqing.github.io/2015/05/16/machine_learning_tw_1/" data-id="cisoqi7ch001qrmgg70rhqkxb" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/机器学习/">机器学习</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-pattern_discovery_2" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/05/13/pattern_discovery_2/" class="article-date">
+  <time datetime="2015-05-13T08:22:00.000Z" itemprop="datePublished">2015-05-13</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/数据挖掘/">数据挖掘</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/05/13/pattern_discovery_2/">数据挖掘Efficient Pattern Mining Methods</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>本文要介绍一些高效的数据挖掘方法：</p>
+<ul>
+<li><strong>The Downward Closure Property of Frequent Patterns</strong></li>
+<li><strong>The Apriori Algorithm</strong></li>
+<li><strong>Extensions or Improvements of Apriori</strong></li>
+<li><strong>Mining Frequent Patterns by Exploring Vertical Data Format</strong></li>
+<li><strong>FPGrowth: A Frequent Pattern-Growth Approach</strong></li>
+<li><strong>Mining Closed Patterns</strong></li>
+</ul>
+<hr>
+<h1 id="The-Downward-Closure-Property-of-Frequent-Patterns-Aprior"><a href="#The-Downward-Closure-Property-of-Frequent-Patterns-Aprior" class="headerlink" title="The Downward Closure Property of Frequent Patterns : Aprior"></a>The Downward Closure Property of Frequent Patterns : Aprior</h1><hr>
+<p><img src="http://7xia5s.com1.z0.glb.clouddn.com/pattern_discoverypd3_1.png" alt="1"><br>首先先介绍一个概念：Frequent Pattern 的Downward Closure 性质 （这个性质应该叫做向下封闭性质吗？what ever..who cares）</p>
+<p>狄仁杰大人说：我们先观察，从上一节里面的例子中我们可以观察到 <strong>频繁集</strong>: {$a<em>1,…,a</em>{50}$} 有很多 子集 ，<strong>所有的这些子集也是Frequent的！</strong>（元芳!What’s your opinion ?　大人！这背后必有一个惊天的大秘密！！！我们可以一起搞个大新闻！Excited!）</p>
+<p>元芳和大人通过观察发现：<br>如果 {beer,diaper,nuts} 是频繁的，那么 它的子集{beer,diaper}也是频繁的<br>因为每当出现 {beer,diaper,nuts}的时候，{beer,diaper}也都出现了！（这么奇妙，你每次吃了一碗米饭的时候，你都吃过了一粒米）</p>
+<hr>
+<h1 id="The-Apriori-Algorithm"><a href="#The-Apriori-Algorithm" class="headerlink" title="The Apriori Algorithm"></a>The Apriori Algorithm</h1><p><img src="http://7xia5s.com1.z0.glb.clouddn.com/pattern_discoverypd3_2.png" alt="2"><br>于是敌人节大人和元芳就穿越到1994年，化身为Rakesh Agrawal 和 Srikant,在VLDB发表了论文说：   </p>
+<ul>
+<li><strong>Aprior: Any subset of a frequent itemset must be frequent</strong></li>
+</ul>
+<p>这个定理怎么用呢？元芳你怎么看？<strong>大人！反着看！这是一把剪枝的好剪刀！</strong>，如果<strong>任何一个 Itemset S的子集不是频繁的，那么S也不可能频繁，我们就不需要再去挖掘S了，多么痛的领悟！</strong>    </p>
+<p>后来人们基于这个想法，又探索出了2个主要的方法：</p>
+<ul>
+<li>Aprior </li>
+<li>Eclat</li>
+<li>FPgrowth</li>
+</ul>
+<p><a href="http://en.wikipedia.org/wiki/Apriori_algorithm" target="_blank" rel="external">Apriori wiki 页面</a></p>
+<p><img src="http://7xia5s.com1.z0.glb.clouddn.com/pattern_discoverypd3_4.png" alt="4"></p>
+<p>Aprior算法可以用伪代码表示如下：</p>
+<p><img src="http://7xia5s.com1.z0.glb.clouddn.com/pattern_discoverypd3_5.png" alt="5"></p>
+<p>Wiki上这么说的：   </p>
+<ul>
+<li>a transaction database $T$</li>
+<li>a support threshold of $\epsilon$</li>
+<li>$C_k$ is the candidate set for level $k$</li>
+<li>$count[c]$ accesses a field of the data structure that represents candidate set $c$存着support</li>
+</ul>
+<p><img src="http://7xia5s.com1.z0.glb.clouddn.com/pattern_discoverypd3_3.png" alt="3"><br>下面就上面这个伪代码进行解读：    </p>
+<ul>
+<li><p>$L_1$$\leftarrow$ $\lbrace large 1-itemsets \rbrace$</p>
+<ul>
+<li>这行是初始化让第一层的frequent set是 1-itemsets</li>
+</ul>
+</li>
+<li><p>while $L_{k-1}$ $\neq$ $\emptyset$</p>
+<ul>
+<li>这行是说当上一层的frequent sets是空的时候就结束搜索</li>
+</ul>
+</li>
+<li><p>$C<em>k \leftarrow \lbrace a\cup\lbrace b\rbrace \mid a \in L</em>{k-1} \land b \in \bigcup{L_{k-1} \land b \notin a} \rbrace   $</p>
+<ul>
+<li>这行是用来生成侯选集的</li>
+<li>侯选集是从上一层的频繁集$L<em>{k-1}$中选一个子集 $a \in L</em>{k-1}$，然后再从上一层的频繁集$\bigcup L_{k-1}$中选出一个不在a中($ b \notin a$)的元素 $ b $,然后生成一个itemset : $a \cup \lbrace b \rbrace$ 作为新的侯选集中的一个元素。</li>
+</ul>
+</li>
+<li><p>for  transactions t $ \in T $  对每一条 transaction </p>
+<ul>
+<li>$C_t \leftarrow \lbrace c \mid c \in C_k \land c \subseteq t \rbrace$ 选出这条transaction 中属于侯选集 $C_k$ 的 每个item</li>
+<li>count[c] $\leftarrow $ count[c] + 1 把每个item的 support count 加 1</li>
+</ul>
+</li>
+<li><p>$L_k \leftarrow \lbrace c \mid c \in C_k \land count[c] \ge \epsilon \rbrace $ 把侯选集中的support大于阈值minsup的选itemset选出来，作为下一层的 frequent itemset</p>
+</li>
+<li>return $ \bigcup_k L_k $ 返回所有的 频繁集</li>
+</ul>
+<hr>
+<p>下面这是一个直观的例子</p>
+<p><img src="http://7xia5s.com1.z0.glb.clouddn.com/pattern_discoverypd3_6.png" alt="6">  </p>
+<p>实现的技巧</p>
+<p><img src="http://7xia5s.com1.z0.glb.clouddn.com/pattern_discoverypd3_7.png" alt="7"></p>
+<ul>
+<li>如何生成侯选集呢？<ul>
+<li>首先，$F_k$和自己求并集</li>
+<li>然后，剪枝，如何剪枝，如果并集有一个子集不在$F_k$中，就剪枝，例如图中acde的子集cde不在 $F_3$中，所以被剪掉了</li>
+</ul>
+</li>
+</ul>
+<p><img src="http://7xia5s.com1.z0.glb.clouddn.com/pattern_discoverypd3_8.png" alt="7"><br><strong>WIKI 上是这么说的:</strong>   </p>
+<blockquote>
+<p>Apriori uses a “bottom up” approach, where frequent subsets are extended one item at a time (a step known as candidate generation), and groups of candidates are tested against the data. The algorithm terminates when no further successful extensions are found.</p>
+</blockquote>
+<p><strong>就是说，Aprior算法用了一种自底向上的方法，从上一层的frequent itemsets中（初始化为frequent-1 itemset set）扩展一个item，生成本层的候选集,然后在数据库中测试生成的候选集中的每个itemset是不是frequent的，把本层的候选集中是frequent的那些选为本层的frequent itemset，直到上一层没有frequent itemset为止，然后就返回所有层的 frequent itemsets；</strong></p>
+<hr>
+<h1 id="Extensions-or-Improvements-of-Apriori"><a href="#Extensions-or-Improvements-of-Apriori" class="headerlink" title="Extensions or Improvements of Apriori"></a><strong>Extensions or Improvements of Apriori</strong></h1><p><img src="http://7xia5s.com1.z0.glb.clouddn.com/pattern_discoverypd3_9.png" alt="10"></p>
+<ul>
+<li><p>由于database存在磁盘上，所以磁盘访问开销很大，所以要减少数据库访问的次数</p>
+<ul>
+<li>partioning 方法，这是我们接下来要讲的</li>
+<li><strong>Dynamic itemset counting</strong>(Brin <strong>这个作者吊炸天了！他就是谷歌的创始人之一！发表这个论文的第二年98年他就创办了谷歌</strong>)</li>
+</ul>
+</li>
+<li><p>另一种思路是 减少候选集的数量</p>
+</li>
+<li>第3种方法是 使用一些特殊的数据结构<ul>
+<li>我们要用的是一个 FP tree</li>
+</ul>
+</li>
+</ul>
+<hr>
+<p>下面我们就简要看一下第一种方法 Partioning method:<br><img src="http://7xia5s.com1.z0.glb.clouddn.com/pattern_discoverypd3_10.png" alt="11"></p>
+<p>这个方法的发明者观察到了一个非常有趣的现象：TDB中任何一个潜在的频繁集至少在该transaction database 的一个partition里是frequent的；</p>
+<p>证明过程是这样的：  </p>
+<ol>
+<li>首先如果一个itemset X在图中六个partition里面的<strong>任何一个里</strong>不是frequent的</li>
+<li>那么就有 $sup_i$(X) $\lt$ $\sigma$|$TDB_i$| (这是说X的support 小于 sigma 乘以 size($TDB_i$)) <ul>
+<li>这个乘积其实就是阈值 minsup，为什么呢，因为$\sigma$是一个比率，它用来表示在一个itemsets里面满足support大于多少就算是 frequent pattern</li>
+</ul>
+</li>
+<li>最后把每个partition里的support(X)加起来还是小于总共的TDB里的阈值 $\sum_{i=1}^6 SUP_i(X) \lt \sigma |TDB| $</li>
+<li><strong>也就是说，它在每一个分区里面都不频繁，那么它在整体里面也不可能频繁</strong>，所以，只有在至少一个TDB里面 itemset 是frequent的，它才可能在全集里面frequent；</li>
+</ol>
+<p>那么具体怎么实现呢呢？需要两次扫描： </p>
+<ul>
+<li><p>第一次： 切分database,怎么切分呢？ Each partition you want them to fit into the main memory.</p>
+<ul>
+<li>为什么呢？因为无论你怎么扫描，你不需要进行任何的数据库I/O操作</li>
+<li>这样就能生成所有的 local frequent patterns 局部频繁集</li>
+</ul>
+</li>
+<li><p>第二次： 选出全局的global patterns,怎么选呢？</p>
+<ul>
+<li>由于每一个分区里面的frequent pattern 很有称为全局frequent pattern的潜在可能</li>
+<li>所以第二遍扫描就count each database combos counts of the global candidate set(把每个分区里面的频繁集count求和）有点类似map-reduce的意思；</li>
+</ul>
+</li>
+</ul>
+<p>这样就保证了这种方法只扫描两次数据库；</p>
+<hr>
+<p>##直接散列再剪枝法<br><img src="http://7xia5s.com1.z0.glb.clouddn.com/pattern_discoverypd3_11.png" alt="12"></p>
+<p>在生成frequent 1-itemset 的时候，我们可以先为每个transaction 生成所有的frequent 2-itemset ， 把它们都hash到hash表中，并且统计每个bucket 的数量，如果这个数量低于频繁集的阈值，那么这个集合的子集都可以剪枝了。</p>
+<hr>
+<p>##Exploring Vertical Data Format<br><img src="http://7xia5s.com1.z0.glb.clouddn.com/pattern_discoverypd4_1.png" alt="13"><br><strong>这个和搜索引擎的倒排索引是一个道理！</strong><br>把数据库中的每一个item想象成切分好的词，然后给这个数据表建立倒排索引，就是图中说的把 horizontal Data format 转换成了 vertical Data format;<br>用这个 tid-list : 可以方便的生成候选集 ；<br>比如， t(e) = { $T_10,T_20,T_30$ }; t(a) = { $T_10,T_20$ } ; t(ae) = { $T_10,T_20$ },生成 t(ae)的时候就是用 t(e)和t(a)求交集。对于t(ae)如果其中的任何一个item不是frequent那么t(ae)就不是frequent,t(ae)就可以忽略不计了; 如果t(ae)的两个成员都是frequent,那么判断t(ae)也很简单，就看它的size是多大；</p>
+<hr>
+<h2 id="FPGrowth-A-Pattern-Growth-Approach"><a href="#FPGrowth-A-Pattern-Growth-Approach" class="headerlink" title="FPGrowth: A Pattern Growth Approach"></a>FPGrowth: A Pattern Growth Approach</h2><p><img src="http://7xia5s.com1.z0.glb.clouddn.com/pattern_discoverypd5_1.png" alt="fp1"><br>正如我们看到的，虽然很多时候Aprior生成与测试方法显著地减少了侯选集的大小，使性能得到了很大的提高。但是，这种方法有两种缺点：   </p>
+<ul>
+<li>它仍然需要生成一个海量的侯选集。例如，如果有$10^4$个frequent 1-itemsets ,Aprior算法需要生成至少$10^7$个 candidate 2-itemsets;</li>
+<li>它需要重复扫描扫描全部数据库，并且要检索巨大的侯选集来进行模式匹配。而且每次需要遍历所有数据项才能确定候选pattern的support count，这样耗费太大了;</li>
+</ul>
+<p>所以就有人提出，能不能不生成侯选集就挖掘出频繁集呢？于是，Frequent Pattern growth 算法就应运而生了。<br>FP-growth算法主要使用了分治法。首先，它吧数据库里的频繁集信息用一种压缩的方式表示，这种数据结构叫做FP-tree（类似字典树）。这棵树保存着itemset的关联信息。然后，它把这个压缩后的数据库分成一组conditional<br> databases（就是一种特殊的投影数据库）,每个conditional database一个frequent item(或者称之为模式片段）,然后分别挖掘这些conditional databases。<strong>对每个模式片段来说，只有和他相关的数据集才需要被检测。因此，这个方法用“让被检测模式growth的方式”切实的减少了需要检索的数据集的数量</strong></p>
+<p><img src="http://7xia5s.com1.z0.glb.clouddn.com/pattern_discoverypd5_2.png" alt="fp2"></p>
+<p>FP-growth算法的第一步是：检索数据库一次，生成1-itemset 频繁集，以及统计每个frequent item的support count。然后把频繁集按照support count 从高到低排序；    </p>
+<p>第二步是生成FP—Tree：先构造一个空的树根root,对每个数据项做下面的操作：<br>先把每个数据项中的item按照上面的顺序排序，然后选择每一个item，将这个item插入到FP-tree里去 （insert_tree([p|P],T) p是第一个item,P是剩下的item），插入的方法如下：<br>如果如果这个item跟树中的某个item N 相同，那么就把树中该节点的count+1,否则就生成一个新节点N，并且初始化它的count为1，把它的父节点指针指向T.如果剩下的item不为空的话，就递归的调用insert_tree(P,N);</p>
+<p><img src="http://7xia5s.com1.z0.glb.clouddn.com/pattern_discoverypd5_3.png" alt="fp3"><br>为了方便树的遍历，还要构建一个item header table，让table中每一个item，指向它在树中出现的每个节点，用链表连起来。<br>有了这两个数据结构，我们就把挖掘数据库的任务转化成了挖掘FP-tree的任务。</p>
+<p><img src="http://7xia5s.com1.z0.glb.clouddn.com/pattern_discoverypd5_4.png" alt="fp4"></p>
+<p>FP-tree是这样挖掘的：   </p>
+<ol>
+<li>从每一个frequent length 1-pattern （当做一个起始后缀） 开始，把它在树中的所有前缀路径找出来，作为它的conditional pattern base </li>
+<li>然后针对每个conditional pattern base 构建相应的conditional FP-tree<br><strong>其实conditional这个词在这里我们可以理解成向贝叶斯公式里面的意义，为什么把前缀叫conditional呢，因为当这个后缀发生的时候，它的前缀已经出现了</strong></li>
+<li>然后递归的挖掘每个conditional FP-tree。<br><img src="http://7xia5s.com1.z0.glb.clouddn.com/pattern_discoverypd5_5.png" alt="fp5"><br><img src="http://7xia5s.com1.z0.glb.clouddn.com/pattern_discoverypd5_6.png" alt="fp6"> </li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://anboqing.github.io/2015/05/13/pattern_discovery_2/" data-id="cisoqi7e8004brmggi044qlpg" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/datamining-Apriori-FPGrowth/">datamining Apriori FPGrowth</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+
+
+  <nav id="page-nav">
+    <a class="extend prev" rel="prev" href="/">&laquo; __('prev')</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/3/">__('next') &raquo;</a>
+  </nav>
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Caffe/">Caffe</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Caffe教程/">Caffe教程</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Learning/">Learning</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/PCA-降维/">PCA 降维</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/RMI/">RMI</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/SOA/">SOA</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/c/">c++</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/caffe/">caffe</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/epoll/">epoll</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/linux/">linux</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/pandas/">pandas</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/tcp-ip/">tcp/ip</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/函数式编程/">函数式编程</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/协程/">协程</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/工具配置/">工具配置</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/推荐系统/">推荐系统</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/数据挖掘/">数据挖掘</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/机器学习/">机器学习</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/算法学习/">算法学习</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/统计/">统计</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/编码/">编码</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/编译原理/">编译原理</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/设计模式/">设计模式</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/贝叶斯分类/">贝叶斯分类</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Caffe教程/">Caffe教程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Composite，组合模式/">Composite，组合模式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Decorator/">Decorator</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/LaTex-数学公式-Pelican-MathJax/">LaTex  数学公式  Pelican  MathJax</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Learning/">Learning</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PCA-降维/">PCA 降维</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RMI/">RMI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SOA/">SOA</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c-c-linkage-incomplete-type/">c c++ linkage incomplete-type</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/caffe-proto/">caffe .proto</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/datamining/">datamining</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/datamining-Apriori-FPGrowth/">datamining Apriori FPGrowth</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/epoll-网络编程/">epoll 网络编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux-source-code/">linux source code</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tcp-ip/">tcp/ip</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/web-service-axis-xfire-lomboz-tomcat/">web-service axis xfire lomboz tomcat</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/函数式编程/">函数式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/动态规划/">动态规划</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/协程/">协程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/可视化-pandas/">可视化 pandas</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/基础知识-编码/">基础知识 编码</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/感知机/">感知机</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/推荐系统/">推荐系统</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/机器学习/">机器学习</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/机器学习-算法/">机器学习 算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/梯度下降/">梯度下降</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编译原理-Compiler-上下文无关文法/">编译原理 Compiler 上下文无关文法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编译编译原理/">编译编译原理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/贝叶斯分类器/">贝叶斯分类器</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Caffe教程/" style="font-size: 20px;">Caffe教程</a> <a href="/tags/Composite，组合模式/" style="font-size: 10px;">Composite，组合模式</a> <a href="/tags/Decorator/" style="font-size: 10px;">Decorator</a> <a href="/tags/LaTex-数学公式-Pelican-MathJax/" style="font-size: 10px;">LaTex  数学公式  Pelican  MathJax</a> <a href="/tags/Learning/" style="font-size: 10px;">Learning</a> <a href="/tags/PCA-降维/" style="font-size: 10px;">PCA 降维</a> <a href="/tags/RMI/" style="font-size: 10px;">RMI</a> <a href="/tags/SOA/" style="font-size: 10px;">SOA</a> <a href="/tags/c-c-linkage-incomplete-type/" style="font-size: 10px;">c c++ linkage incomplete-type</a> <a href="/tags/caffe-proto/" style="font-size: 10px;">caffe .proto</a> <a href="/tags/datamining/" style="font-size: 10px;">datamining</a> <a href="/tags/datamining-Apriori-FPGrowth/" style="font-size: 10px;">datamining Apriori FPGrowth</a> <a href="/tags/epoll-网络编程/" style="font-size: 10px;">epoll 网络编程</a> <a href="/tags/linux-source-code/" style="font-size: 10px;">linux source code</a> <a href="/tags/tcp-ip/" style="font-size: 10px;">tcp/ip</a> <a href="/tags/web-service-axis-xfire-lomboz-tomcat/" style="font-size: 10px;">web-service axis xfire lomboz tomcat</a> <a href="/tags/函数式编程/" style="font-size: 10px;">函数式编程</a> <a href="/tags/动态规划/" style="font-size: 13.33px;">动态规划</a> <a href="/tags/协程/" style="font-size: 13.33px;">协程</a> <a href="/tags/可视化-pandas/" style="font-size: 10px;">可视化 pandas</a> <a href="/tags/基础知识-编码/" style="font-size: 10px;">基础知识 编码</a> <a href="/tags/感知机/" style="font-size: 10px;">感知机</a> <a href="/tags/推荐系统/" style="font-size: 13.33px;">推荐系统</a> <a href="/tags/机器学习/" style="font-size: 16.67px;">机器学习</a> <a href="/tags/机器学习-算法/" style="font-size: 10px;">机器学习 算法</a> <a href="/tags/梯度下降/" style="font-size: 10px;">梯度下降</a> <a href="/tags/编译原理-Compiler-上下文无关文法/" style="font-size: 10px;">编译原理 Compiler 上下文无关文法</a> <a href="/tags/编译编译原理/" style="font-size: 10px;">编译编译原理</a> <a href="/tags/贝叶斯分类器/" style="font-size: 10px;">贝叶斯分类器</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">July 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/06/">June 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">July 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/06/">June 2014</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2016/05/13/epoll/">事件驱动模型epoll</a>
+          </li>
+        
+          <li>
+            <a href="/2016/05/12/由补码引发的关于编码的思考/">由补码引发的关于编码的思考</a>
+          </li>
+        
+          <li>
+            <a href="/2016/01/15/Caffe教程４-Solver/">Caffe教程４：Solver</a>
+          </li>
+        
+          <li>
+            <a href="/2016/01/14/损失函数/">损失函数</a>
+          </li>
+        
+          <li>
+            <a href="/2016/01/13/Forward和Backward/">Forward 和 Backward</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2016 安勃卿<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

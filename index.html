@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>暗时间</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta property="og:type" content="website">
+<meta property="og:title" content="暗时间">
+<meta property="og:url" content="http://anboqing.github.io/index.html">
+<meta property="og:site_name" content="暗时间">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="暗时间">
+  
+    <link rel="alternate" href="/atom.xml" title="暗时间" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">暗时间</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">书写是最好的思考</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://anboqing.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main">
+  
+    <article id="post-epoll" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/05/13/epoll/" class="article-date">
+  <time datetime="2016-05-13T08:22:00.000Z" itemprop="datePublished">2016-05-13</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/epoll/">epoll</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/05/13/epoll/">事件驱动模型epoll</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><p>事件驱动为广大的程序员所熟悉，其最为人津津乐道的是在图形化界面编程中的应用；<br>事实上，在网络编程中事件驱动也被广泛使用，并大规模部署在高连接数高吞吐量的服务器程序中，<br>如 http 服务器程序、ftp 服务器程序等。相比于传统的网络编程方式，事件驱动能够极大的降低资源占用，<br>增大服务接待能力，并提高网络传输效率。</p>
+<p>本文探究了在linux系统下常用的epoll的原理及其使用方法，总结了自己学习并发服务器编程过程中遇到的问题。</p>
+<hr>
+<h2 id="阻塞式io"><a href="#阻塞式io" class="headerlink" title="阻塞式io"></a>阻塞式io</h2><p>我们来看一个最简单的客户端／服务器交互场景：<br><img src="http://7xkwrm.com1.z0.glb.clouddn.com/epoll_image001.jpg" alt="c/s 1"><br>除非使用fcntl显示指定，几乎所有IO接口都是阻塞型的。这给网络编程带来了很大问题，比如服务器调用send()/recv()的时候，线程会被阻塞，在此期间无法执行任何运算或响应网络请求，如果在服务器阻塞时有新的客户connect，那么新的客户将得不到响应。这时候我们会想到使用<strong>多线程／多进程</strong>模型来实现服务器。</p>
+<h2 id="多进程／线程服务器"><a href="#多进程／线程服务器" class="headerlink" title="多进程／线程服务器"></a>多进程／线程服务器</h2><p>应对多客户机的网络应用，最简单的解决方式是在服务器端使用多线程（或多进程）。多线程（或多进程）的目的是让每个连接都拥有独立的线程（或进程），这样任何一个连接的阻塞都不会影响其他的连接。</p>
+<p>具体使用多进程还是多线程，并没有一个特定的模式。传统意义上，进程的开销要远远大于线程，所以，如果需要同时为较多的客户机提供服务，则不推荐使用多进程；如果单个服务执行体需要消耗较多的 CPU 资源，譬如需要进行大规模或长时间的数据运算或文件访问，则进程较为安全。通常，使用 pthread_create () 创建新线程，fork() 创建新进程。</p>
+<p>我们假设对上述的服务器 / 客户机模型，提出更高的要求，即让服务器同时为多个客户机提供一问一答的服务。于是有了如下的模型。<br><img src="http://7xkwrm.com1.z0.glb.clouddn.com/epoll_image002.jpg" alt="2"><br>在上述的线程 / 时间图例中，主线程持续等待客户端的连接请求，如果有连接，则创建新线程，并在新线程中提供为前例同样的问答服务。<br>述多线程的服务器模型似乎完美的解决了为多个客户机提供问答服务的要求，但其实并不尽然。如果要同时响应成百上千路的连接请求，由于调度的关系，无论多线程还是多进程都会严重占据系统资源，降低系统对外界响应效率，而线程与进程本身也更容易进入假死状态。</p>
+<p>接下来我们可能会考虑使用“线程池”或“连接池”。“线程池”旨在减少创建和销毁线程的频率，其维持一定合理数量的线程，并让空闲的线程重新承担新的执行任务。“连接池”维持连接的缓存池，尽量重用已有的连接、减少创建和关闭连接的频率。这两种技术都可以很好的降低系统开销，都被广泛应用很多大型系统，如 websphere、tomcat 和各种数据库等。</p>
+<p>但是，“线程池”和“连接池”技术也只是在一定程度上缓解了频繁调用 IO 接口带来的资源占用。而且，所谓“池”始终有其上限，当请求大大超过上限时，“池”构成的系统对外界的响应并不比没有池的时候效果好多少。所以使用“池”必须考虑其面临的响应规模，并根据响应规模调整“池”的大小。</p>
+<p>对应上例中的所面临的可能同时出现的上千甚至上万次的客户端请求，“线程池”或“连接池”或许可以缓解部分压力，但是不能解决所有问题。</p>
+<p>总之，多线程模型可以方便高效的解决小规模的服务请求，但面对大规模的服务请求，多线程模型并不是最佳方案。下来我将讨论用非阻塞接口来尝试解决这个问题。</p>
+<h2 id="非阻塞服务器程序"><a href="#非阻塞服务器程序" class="headerlink" title="非阻塞服务器程序"></a>非阻塞服务器程序</h2><p>以上面临的很多问题，一定程度是 IO 接口的阻塞特性导致的。多线程是一个解决方案，还一个方案就是使用非阻塞的接口。</p>
+<p>非阻塞的接口相比于阻塞型接口的显著差异在于，在被调用之后立即返回。也就是说</p>
+<blockquote>
+<p>当进程把一个套接字设置成非阻塞是在通知内核：当所请求的I/O操作非得把本进程投入睡眠才能完成时，不要把本进程投入睡眠，而是返回一个错误 eg. EWOULDBLOCK (UNP)</p>
+</blockquote>
+<p>使用如下的函数可以将某句柄 fd 设为非阻塞状态。<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">fcntl( fd, F_SETFL, O_NONBLOCK );</div></pre></td></tr></table></figure></p>
+<p>下面将给出只用一个线程，但能够同时从多个连接中检测数据是否送达，并且接受数据。<br><img src="http://7xkwrm.com1.z0.glb.clouddn.com/epoll_image003.jpg" alt="3"></p>
+<p>在非阻塞状态下，recv() 接口在被调用后立即返回，返回值代表了不同的含义。如在本例中，</p>
+<ul>
+<li>recv() 返回值大于 0，表示接受数据完毕，返回值即是接受到的字节数；</li>
+<li>recv() 返回 0，表示连接已经正常断开；</li>
+<li>recv() 返回 -1，且 errno 等于 EAGAIN,或者EWOULDBLOCK，表示 recv 操作还没执行完成；</li>
+<li>recv() 返回 -1，且 errno 不等于 EAGAIN，表示 recv 操作遇到错误 比如 SIGPIPE 导致errno==EPIPE,SIGINT导致errno==SIGINTR。</li>
+</ul>
+<p>可以看到服务器线程可以通过循环调用 recv() 接口，可以在单个线程内实现对所有连接的数据接收工作。</p>
+<p>但是上述模型绝不被推荐。因为，循环调用 recv() 将大幅度推高 CPU 占用率；此外，在这个方案中，recv() 更多的是起到检测“操作是否完成”的作用，由于服务器并不知道什么时候fd1,fd2,fd3的缓冲区上会有数据，所以就忙轮询，这样很耗费cpu的。所以需要一种<em>预先告知内核的能力，当内核一旦发现进程指定的一个或多个IO条件就绪，他就通知进程，这个能力叫做</em>　<strong>多路IO复用</strong>.</p>
+<p>操作系统提供了更为高效的检测“操作是否完成”作用的接口，例如select()/poll()/epoll()/dev/poll / kqueue / libv等。</p>
+<p>未完待续…</p>
+<hr>
+<h2 id="使用select-接口的基于事件驱动的服务器模型"><a href="#使用select-接口的基于事件驱动的服务器模型" class="headerlink" title="使用select()接口的基于事件驱动的服务器模型"></a>使用select()接口的基于事件驱动的服务器模型</h2><p>大部分Linux都支持Select函数，该函数用于探测多个文件句柄的状态变化。Manural上是这么描述的:</p>
+<blockquote>
+<p>select() and  pselect()  allow  a  program  to  monitor  multiple  file<br>       descriptors,  waiting  until one or more of the file descriptors become<br>       “ready” for some class of I/O operation (e.g., input possible).  A file<br>       descriptor  is considered ready if it is possible to perform the corre‐<br>       sponding I/O operation (e.g., read(2)) without blocking.</p>
+</blockquote>
+<p>Select接口的原型:<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">FD_ZERO(<span class="keyword">int</span> fd, fd_set* fds) </div><div class="line"> FD_SET(<span class="keyword">int</span> fd, fd_set* fds) </div><div class="line"> FD_ISSET(<span class="keyword">int</span> fd, fd_set* fds) </div><div class="line"> FD_CLR(<span class="keyword">int</span> fd, fd_set* fds) </div><div class="line"> <span class="function"><span class="keyword">int</span> <span class="title">select</span><span class="params">(<span class="keyword">int</span> nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds, <span class="keyword">struct</span> timeval *timeout)</span></span></div></pre></td></tr></table></figure></p>
+<p>这里，fd_set 类型可以简单的理解为按 bit 位标记句柄的队列，例如要在某 fd_set 中标记一个值为 16 的句柄，则该 fd_set 的第 16 个 bit 位被标记为 1。具体的置位、验证可使用 FD_SET、FD_ISSET 等宏实现。在 select() 函数中，readfds、writefds 和 exceptfds 同时作为输入参数和输出参数。如果输入的 readfds 标记了 16 号句柄，则 select() 将检测 16 号句柄是否可读。在 select() 返回后，可以通过检查 readfds 有否标记 16 号句柄，来判断该“可读”事件是否发生。另外，用户可以设置 timeout 时间。</p>
+<p>下面将重新模拟上例中从多个客户端接收数据的模型。<br><img src="http://7xkwrm.com1.z0.glb.clouddn.com/epoll_image004.jpg" alt="4"><br>上述模型只是描述了使用 select() 接口同时从多个客户端接收数据的过程；由于 select() 接口可以同时对多个句柄进行读状态、写状态和错误状态的探测，所以可以很容易构建为多个客户端提供独立问答服务的服务器系统。<br><img src="http://7xkwrm.com1.z0.glb.clouddn.com/epoll_image005.jpg" alt="5"><br>这里需要指出的是，客户端的一个 connect() 操作，将在服务器端激发一个“可读事件”，所以 select() 也能探测来自客户端的 connect() 行为。</p>
+<p>上述模型中，最关键的地方是如何动态维护 select() 的三个参数 readfds、writefds 和 exceptfds。作为输入参数，readfds 应该标记所有的需要探测的“可读事件”的句柄，其中永远包括那个探测 connect() 的那个“母”句柄；同时，writefds 和 exceptfds 应该标记所有需要探测的“可写事件”和“错误事件”的句柄 ( 使用 FD_SET() 标记 )。</p>
+<p>作为输出参数，readfds、writefds 和 exceptfds 中的保存了 select() 捕捉到的所有事件的句柄值。程序员需要检查的所有的标记位 ( 使用 FD_ISSET() 检查 )，以确定到底哪些句柄发生了事件。</p>
+<p>上述模型主要模拟的是“一问一答”的服务流程，所以，如果 select() 发现某句柄捕捉到了“可读事件”，服务器程序应及时做 recv() 操作，并根据接收到的数据准备好待发送数据，并将对应的句柄值加入 writefds，准备下一次的“可写事件”的 select() 探测。同样，如果 select() 发现某句柄捕捉到“可写事件”，则程序应及时做 send() 操作，并准备好下一次的“可读事件”探测准备。下图描述的是上述模型中的一个执行周期。<br><img src="http://7xkwrm.com1.z0.glb.clouddn.com/epoll_image006.jpg" alt="6"></p>
+<p>这种模型的特征在于每一个执行周期都会探测一次或一组事件，一个特定的事件会触发某个特定的响应。我们可以将这种模型归类为“<strong>事件驱动模型</strong>”。</p>
+<p>相比其他模型，使用 select() 的事件驱动模型只用单线程（进程）执行，占用资源少，不消耗太多 CPU，同时能够为多客户端提供服务。如果试图建立一个简单的事件驱动的服务器程序，这个模型有一定的参考价值。</p>
+<p>但这个模型依旧有着很多问题。</p>
+<p>首先，select() 接口并不是实现“事件驱动”的最好选择。<strong>因为当需要探测的句柄值较大时，select() 接口本身需要消耗大量时间去轮询各个句柄</strong>。很多操作系统提供了更为高效的接口，如 linux 提供了 epoll，BSD 提供了 kqueue，Solaris 提供了 /dev/poll …。如果需要实现更高效的服务器程序，类似 epoll 这样的接口更被推荐。遗憾的是不同的操作系统特供的 epoll 接口有很大差异，所以使用类似于 epoll 的接口实现具有较好跨平台能力的服务器会比较困难。</p>
+<p>其次，<strong>该模型将事件探测和事件响应夹杂在一起，一旦事件响应的执行体庞大，则对整个模型是灾难性的</strong>。如下例，庞大的执行体 1 的将直接导致响应事件 2 的执行体迟迟得不到执行，并在很大程度上降低了事件探测的及时性.<br><img src="http://7xkwrm.com1.z0.glb.clouddn.com/epoll_image007.jpg" alt="7"></p>
+<p>接下来就该更先进的epoll出场了。</p>
+<hr>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://anboqing.github.io/2016/05/13/epoll/" data-id="cisoqi7c3001armggwuv8n39j" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/epoll-网络编程/">epoll 网络编程</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-由补码引发的关于编码的思考" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/05/12/由补码引发的关于编码的思考/" class="article-date">
+  <time datetime="2016-05-11T16:35:00.000Z" itemprop="datePublished">2016-05-12</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/编码/">编码</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/05/12/由补码引发的关于编码的思考/">由补码引发的关于编码的思考</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="导引"><a href="#导引" class="headerlink" title="导引"></a>导引</h2><p>本文是由几个问题引发的：</p>
+<ol>
+<li>补码是怎么来的？</li>
+<li>为什么补码的表示范围不对称,TMin比TMax多了1？</li>
+<li>什么是编码？ 编码的本质是什么？</li>
+</ol>
+<hr>
+<h2 id="一、-补码是怎么产生的？"><a href="#一、-补码是怎么产生的？" class="headerlink" title="一、 补码是怎么产生的？"></a>一、 补码是怎么产生的？</h2><h3 id="补码方法-method-of-complements"><a href="#补码方法-method-of-complements" class="headerlink" title="补码方法 (method of complements)"></a>补码方法 (method of complements)</h3><p>在数学和计算领域，补数方法是一种用加上一个正数的方法替代减去一个负数的技术，这种技术过去用在机械计算器上，现在依然在电子计算机里使用。因为计算机里只有加法器，没有减法器，所以要把减法操作转化为加法操作。</p>
+<p>冯诺依曼在他的1945年的关于EDVAC的第一篇手稿里建议使用2的2进制补码，受这个思想启发，在1949年<a href="https://en.wikipedia.org/wiki/Electronic_Delay_Storage_Automatic_Calculator" target="_blank" rel="external">EDSAC</a>(世界上第二台存储程序数字通用计算机)里使用了补码进行计算。</p>
+<p><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/22/EDSAC_%2819%29.jpg/525px-EDSAC_%2819%29.jpg" alt="EDSAC"></p>
+<p>许多早期计算机使用了 ones’ complement（反码）表示。IBM700/7000系列科学计算机用了符号数值表示法（原码）,但是寄存器下标用了补码.早期使用补码的商用计算机包括DEC的PDP-5和1963PDP-6.在1964年IBM生产并迅速主宰了市场的 System/360，使补码表示成为了计算机工业界最广泛使用的表示法。第一台微型计算机PDP-8使用了 two’s complement,以后的几乎所有微型计算机都使用了二进制补码表示。</p>
+<p>先上几张机械计算器的图：<br><img src="https://upload.wikimedia.org/wikipedia/commons/5/57/Mechanical_calculators_Keyboards.png" alt="机械计算器"><br>Various desktop mechanical calculators used in the office from 1851 onwards. Each one has a different user interface. This picture shows clockwise from top left: An Arithmometer, A Comptometer, A Dalton adding machine, a Sundstrand and an Odhner Arithmometer</p>
+<p><img src="https://upload.wikimedia.org/wikipedia/commons/0/09/050114_2529_difference.jpg" alt="算盘"><br>不解释。。。</p>
+<h3 id="数值补码-numeric-complements"><a href="#数值补码-numeric-complements" class="headerlink" title="数值补码 (numeric complements)"></a>数值补码 (numeric complements)</h3><blockquote>
+<p>n位数字y在以b为基数的系统里的基数补码(radix complement) 是 $b^n-y$. 这里 $b^n$ 就是模。</p>
+</blockquote>
+<p>基数补码通常可以用 <strong>diminished radix complement</strong>（基数减一的补码，也就是课本上说的反码）来轻易的获取,即$(b^n-1)-y$,因为 $b^n-1$ 是 $b-1$重复了n次，即 [b-1,b-1,b-1,….b-1] , 基数减一的补码可以通过将每一位补满 b-1来得到（即，把y里每一位用b-1减掉）.</p>
+<p>x-y 可以像下面这样执行： </p>
+<ol>
+<li><p>把x的 <strong>基数减一补码</strong>加到y上得到 $b^n-1-x+y$ 或者 $b^n-1-(x-y)$,而这正是 $x-y$的基数减一补码 少了$b-1$的结果 ，例如 在 $2^4$ 计算 8-3 ， 即把 1000 的基数减1补码 0111加上0011得到<br>1010 ，而这正是$(8-3)$ 即 5（0101）的基数减1补码（1010）少了 2-1的结果 。</p>
+</li>
+<li><p>把$y$的<strong>基数补码</strong>($b^n-y$)加到$x$上得到$x+b^n-y$或者$x-y+b^n$<br>,假设 $y \le x$,那么结果永远大于等于$b^n$，而且丢掉最高有效位的 ‘1’相当于减去了$b^n$,那么结果就变成了$x-y+b^n-b^n$，或者仅仅是$x-y$,这就是需要的结果;</p>
+</li>
+</ol>
+<p><strong>这正好解释了把减法转换为加法后，如果产生了加法溢出，那么虽然溢出丢掉了进位，结果仍然是正确的，多奇妙！</strong><br><img src="http://users.dickinson.edu/~braught/courses/cs251f02/classes/images/twosCompWheel.png" alt="此处输入图片的描述"><br>当b等于2的时候，我们就得到了计算机里用的 Two’s complement.</p>
+<p><strong>补码建立起了 从 二进制数字向量 到 某一个范围内的数字 之间的 双射（bijection)</strong></p>
+<hr>
+<h2 id="二、-为什么补码的负数范围-Tmin-比-Tmax-多-1？"><a href="#二、-为什么补码的负数范围-Tmin-比-Tmax-多-1？" class="headerlink" title="二、 为什么补码的负数范围 |Tmin| 比 |Tmax| 多 1？"></a>二、 为什么补码的负数范围 |Tmin| 比 |Tmax| 多 1？</h2><p>看图说话，可以把它想象成钟表，而钟表上的刻度数量就是所能编码的数量，我们设计一套规则赋予每个刻度一个意义，建立起 意义 和 刻度 之间的 一一映射 ，这个过程就是编码的过程，用同一套规则，可以去解释意义，找到刻度本身，这就是解码的过程。</p>
+<p>而在设计补码的时候，把钟表的12个刻度分成2部分，让一部分表示负数，另一半表示非负数，而0也是非负数，所以0把最大的正数的位置占了，于是造成了范围不对称。</p>
+<p><img src="http://admin.morkalork.com/uploads/images/binaries/BinaryEightBitSignedCircle3.png" alt="此处输入图片的描述"></p>
+<blockquote>
+<p>A+B = 模，那么 A和B是互补关系<br>补数顾名思义就是那个能把自己补满成模的大小的数</p>
+</blockquote>
+<h2 id="三、为什么要有反码原码这等鸡肋概念？"><a href="#三、为什么要有反码原码这等鸡肋概念？" class="headerlink" title="三、为什么要有反码原码这等鸡肋概念？"></a>三、为什么要有反码原码这等鸡肋概念？</h2><p>上面也说过，反码(ones’ complement)的提出，只不过是因为在直观感受上，把一个二进制数<code>01011011</code><em>补满</em> 成<code>11111111</code>再加1 , 比把它直接补成<code>11111111</code>要来的容易，也容易在硬件上实现。所以产生了求补码前先用<br>diminished radix complement（反码） 求补，再加1形成结果的步骤，于是在这个中间过程中，为了描述这个中间状态，就给它起了个名字叫反码。</p>
+<hr>
+<h2 id="四、对编码的理解"><a href="#四、对编码的理解" class="headerlink" title="四、对编码的理解"></a>四、对编码的理解</h2><hr>
+<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><ol>
+<li><a href="http://users.dickinson.edu/~braught/courses/cs251f02/classes/images/twosCompWheel.png" target="_blank" rel="external">原码、反码和补码</a></li>
+<li><a href="https://courses.engr.illinois.edu/ece199/fa2012/notes/twos-complement.pdf" target="_blank" rel="external">two’s complement Representation</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Method_of_complements" target="_blank" rel="external">Method of complemet</a></li>
+<li><a href="http://www.ruanyifeng.com/blog/2009/08/twos_complement.html" target="_blank" rel="external">关于2的补码</a></li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://anboqing.github.io/2016/05/12/由补码引发的关于编码的思考/" data-id="cisoqi7e2003yrmggj5na9hyr" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/基础知识-编码/">基础知识 编码</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-Caffe教程４-Solver" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/01/15/Caffe教程４-Solver/" class="article-date">
+  <time datetime="2016-01-15T15:09:00.000Z" itemprop="datePublished">2016-01-15</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Caffe教程/">Caffe教程</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/01/15/Caffe教程４-Solver/">Caffe教程４：Solver</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="Solver简介"><a href="#Solver简介" class="headerlink" title="Solver简介"></a>Solver简介</h2><p><code>Solver</code>执行模型的优化操作，它通过协调网络的前向推断和反向梯度传播来执行参数更新，来减少误差损失。学习职能被分配到<code>solver</code>和<code>net</code>上，<code>sovler</code>负责优化和产生参数更新，<code>net</code>负责计算loss和梯度。</p>
+<p>Caffe包含了下面几个<code>Solver</code>：</p>
+<ul>
+<li>Stochastic Gradient Descent (type: “SGD”),</li>
+<li>AdaDelta (type: “AdaDelta”),</li>
+<li>Adaptive Gradient (type: “AdaGrad”),</li>
+<li>Adam (type: “Adam”),</li>
+<li>Nesterov’s Accelerated Gradient (type: “Nesterov”) and</li>
+<li>RMSprop (type: “RMSProp”)</li>
+</ul>
+<p><code>Solver</code>的功能有：</p>
+<ol>
+<li>支撑整个优化过程的簿记工作，创建训练网络和测试网络。</li>
+<li>通过调用forward/backward来迭代优化并更新参数。</li>
+<li>周期性的用测试网络评估学习状态。</li>
+<li>在优化过程中创建模型和<code>solver</code>的状态。</li>
+</ol>
+<p>每次迭代过程：</p>
+<ol>
+<li>调用网络的forward来计算输出和损失</li>
+<li>调用网络的backward来计算梯度</li>
+<li>根据solver的具体方法用梯度进行参数更新</li>
+<li>根据学习率，历史记录和方法来更新solver的状态</li>
+</ol>
+<p>Solver把weights从初始化一直保持到模型学习结束。它也有CPU/GPU模式。</p>
+<hr>
+<h2 id="Solver的方法"><a href="#Solver的方法" class="headerlink" title="Solver的方法"></a>Solver的方法</h2><p>Solver的method处理通用的损失函数最小化的优化问题。对于数据集$D$,优化目标是整个数据集的$|D|$条数据的平均损失：<br>$$L(W) = \frac{1}{|D|} \sum_i^{|D|} f_W\left(X^{(i)}\right) + \lambda r(W)$$<br>其中$f_W\left(X^{(i)}\right)$是数据对象$X^{(i)}$的损失，而$r(W)$是一个正则化项，$\lambda$是学习率。实际中数据集的数量$|D|$可以很大，所以每个solver迭代过程我们都使用随机逼近目标的方法，抽取小批量数据 $N &lt;&lt;|D|$:</p>
+<p>$$L(W) \approx \frac{1}{N} \sum_i^N f_W\left(X^{(i)}\right) + \lambda r(W)$$</p>
+<p>模型在forward步骤中计算$f_W$然后在backward步骤中把梯度$\nabla f_W$反传。<br>参数更新$\Delta W$是由solver根据误差梯度$\nabla f_W$、正则化的梯度$\nabla r(W)$、和其他和优化方法相关的参数计算的。</p>
+<hr>
+<h3 id="SGD"><a href="#SGD" class="headerlink" title="SGD"></a>SGD</h3><p><strong>Stochastic gradient descent</strong>(type: “SGD”)随机梯度下降法按照负梯度$\nabla L(W)$的线型组合和前面的权重更新$V_t$更新权重$W$。<strong>学习率</strong> $\alpha$是负梯度的权重。<strong>动量</strong>$\mu$是前面一次更新的权重。</p>
+<p>最终，我们用如下公式用当前的权重$W_t$和上一次更新值$V<em>t$来计算第$t+1$次迭代的更新值$V</em>{t+1}$和更新权重$W<em>{t+1}$:<br>$$V</em>{t+1} = \mu V_t - \alpha \nabla L(W<em>t)$$<br>$$W</em>{t+1} = W<em>t + V</em>{t+1}$$</p>
+<p>学习“超参数”($\alpha$和$\mu$）可能需要一点微调技巧以便获取最佳结果。如果你不确定怎么开始的画，可以看看下面的黄金法则，了解更多的信息你可以参看Leon Bottou’s 的<a href="http://research.microsoft.com/pubs/192769/tricks-2012.pdf" target="_blank" rel="external">Stochastic Gradient Descent Tricks </a>.</p>
+<p><strong>设置学习率$\alpha$和动量$\mu$的黄金法则</strong></p>
+<p>在深度学习中使用SGD的一个好策略是把学习率$\alpha$设置为$\alpha \approx 0.01 = 10^{-2}$,然后用一个常量因子（例如１０）来在学习过程中调整它，使得损失达到一个明显的”平台”,重复这个过程几遍，通常，你可能想用一个动量$\mu = 0.9$或者相似的值。为了在迭代过程平滑权重更新，动量可以使SGD稳定且快速。<br>　　<br>　　<br>这个过程是 Krizhevsky[^1]在他们著名的ILSVRC-2012　CNN组冠军论文里采用的策略。Caffe让整个策略易于实现，就像我们在对<a href="http://www.magicbroom.info/Papers/DuchiHaSi10.pdf" target="_blank" rel="external">1</a>进行实现的时候做的那样(./examples/imagenet/alexnet_solver.prototxt)</p>
+<p>为了这样使用学习率策略，你可以把下面这几行放在你的solver的prototxt文件里:<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">base_lr: <span class="number">0.01</span>     <span class="meta"># begin training at a learning rate of 0.01 = 1e-2</span></div><div class="line"></div><div class="line">lr_policy: <span class="string">"step"</span> <span class="meta"># learning rate policy: drop the learning rate in <span class="meta-string">"steps"</span></span></div><div class="line">                  <span class="meta"># by a factor of gamma every stepsize iterations</span></div><div class="line"></div><div class="line">gamma: <span class="number">0.1</span>        <span class="meta"># drop the learning rate by a factor of 10</span></div><div class="line">                  # (i.e., multiply it by a factor of gamma = <span class="number">0.1</span>)</div><div class="line"></div><div class="line">stepsize: <span class="number">100000</span>  <span class="meta"># drop the learning rate every 100K iterations</span></div><div class="line"></div><div class="line">max_iter: <span class="number">350000</span>  <span class="meta"># train for 350K iterations total</span></div><div class="line"></div><div class="line">momentum: <span class="number">0.9</span></div></pre></td></tr></table></figure></p>
+<p>在上面的设定中，我们总是使用<code>momentum</code>$\mu=0.9$。我们以基础学习率<code>base_lr</code>$\alpha = 0.01 = 10^{-2}$开始训练最早的100,000次迭代过程，然后将学习率乘以<code>gamma</code>$(\gamma)$,即用学习率 $\alpha’ = \alpha \gamma = (0.01) (0.1) = 0.001 = 10^{-3}$训练第100K~200K次迭代过程，然后用$\alpha’’ = 10^{-4}$来训练第200K~300K次迭代，最终用$\alpha’’’ = 10^{-5}$训练到第350K次迭代.</p>
+<p>　　<br>注意动量在很多次迭代后，把$\mu$用因子$\frac{1}{1 - \mu}$乘以你更新的次数设置，所以你如果增加了$\mu$,那么最好相应的减少$\alpha$，反之亦然。<br>　　<br>　　<br>例如，设动量$\mu＝0.9$，我们得到一个有效的更新尺寸乘数$\frac{1}{1 - 0.9} = 10$,如果我们增加动量到$\mu=0.99$,那么我们就把更新大小乘数增加到了100,于是我们应该把学习率$\alpha$下调10.</p>
+<p>注意到上面的设定仅仅是一个指导，他们肯定不能够保证是最优的，甚至都不能工作！如果学习过程误入歧途了（例如你看到很大或者NaN、inf等损失值或者输出），尝试着把<code>base_lr</code>减少，例如：减少到0.001，然后重训练，重复这个过程直到你找到一个合适的<code>base_lr</code>.</p>
+<p>[^1]: A. Krizhevsky, I. Sutskever, and G. Hinton. <a href="http://papers.nips.cc/paper/4824-imagenet-classification-with-deep-convolutional-neural-networks.pdf" target="_blank" rel="external"> ImageNet Classification with Deep Convolutional Neural Networks</a>. Advances in Neural Information Processing Systems, 2012.</p>
+<hr>
+<h2 id="AdaDelta"><a href="#AdaDelta" class="headerlink" title="AdaDelta"></a>AdaDelta</h2><p><strong>AdaDelta</strong>方法(type: “AdaDelta”)是一个”robust learning rate method”.[^2].它也是一种基于梯度的优化方法（类似SGD)，它的更新公式是：</p>
+<p>$$ \begin{align}<br>(v_t)<em>i &amp;= \frac{\operatorname{RMS}((v</em>{t-1})_i)}{\operatorname{RMS}\left( \nabla L(W<em>t) \right)</em>{i}} \left( \nabla L(W_{t’}) \right)_i<br>\<br>\operatorname{RMS}\left( \nabla L(W<em>t) \right)</em>{i} &amp;= \sqrt{E[g^2] + \varepsilon}<br>\<br>E[g^2]<em>t &amp;= \delta{E[g^2]</em>{t-1} } + (1-\delta)g<em>{t}^2<br>\end{align} $$<br>$$(W</em>{t+1})_i =<br>(W_t)_i - \alpha<br>(v_t)_i.$$</p>
+<hr>
+<h2 id="AdaGrad"><a href="#AdaGrad" class="headerlink" title="AdaGrad"></a>AdaGrad</h2><p><strong>adaptive gradient</strong>(type: “AdaGrad”)方法（Duchi, E. Hazan, and Y. Singer.<a href="http://www.magicbroom.info/Papers/DuchiHaSi10.pdf" target="_blank" rel="external"> Adaptive Subgradient Methods for Online Learning and Stochastic Optimization</a> The Journal of Machine Learning Research, 2011.）<br>是一个基于梯度的方法，它尝试“在干草堆里找缝衣针”也就是找到预测能力很强但很少见的feature（find needles in haystacks in the form of very predictive but rarely seen features,）,Duchi等人如是说。给出前面迭代的所有更新信息($\left( \nabla L(W) \right)_{t’}$其中($t’ \in {1, 2, …, t}$),论文中提出的更新公式如下，它给每个组件$i$指定一个权重W:</p>
+<p>$$<br>(W_{t+1})_i =<br>(W_t)_i - \alpha<br>\frac{\left( \nabla L(W<em>t) \right)</em>{i}}{<br>    \sqrt{\sum<em>{t’=1}^{t} \left( \nabla L(W</em>{t’}) \right)_i^2}<br>}<br>$$</p>
+<p>注意在实践中，对于权重$W \in \mathcal{R}^d$,AdaGrad实现仅用了$\mathcal{O}(d)$额外的存储来保存历史梯度信息，而传统方法要用$\mathcal{O}(dt)$来保存历史梯度信息。</p>
+<hr>
+<h2 id="Scaffolding"><a href="#Scaffolding" class="headerlink" title="Scaffolding"></a>Scaffolding</h2><p>Solver的scaffolding准备优化方法并且初始化模型，通过调用<code>Solver::Presolve()</code>方法调用来完成。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">&gt; caffe train -solver examples/mnist/lenet_solver.prototxt</div><div class="line">I0902 13:35:56.474978 16020 caffe.cpp:90] Starting Optimization</div><div class="line">I0902 13:35:56.475190 16020 solver.cpp:32] Initializing solver from parameters:</div><div class="line">test_iter: 100</div><div class="line">test_interval: 500</div><div class="line">base_lr: 0.01</div><div class="line">display: 100</div><div class="line">max_iter: 10000</div><div class="line">lr_policy: &quot;inv&quot;</div><div class="line">gamma: 0.0001</div><div class="line">power: 0.75</div><div class="line">momentum: 0.9</div><div class="line">weight_decay: 0.0005</div><div class="line">snapshot: 5000</div><div class="line">snapshot_prefix: &quot;examples/mnist/lenet&quot;</div><div class="line">solver_mode: GPU</div><div class="line">net: &quot;examples/mnist/lenet_train_test.prototxt&quot;</div></pre></td></tr></table></figure>
+<p>网络初始化<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div></pre></td><td class="code"><pre><div class="line">I0902 13:35:56.655681 16020 solver.cpp:72] Creating training net from net file: examples/mnist/lenet_train_test.prototxt</div><div class="line">[...]</div><div class="line">I0902 13:35:56.656740 16020 net.cpp:56] Memory required for data: 0</div><div class="line">I0902 13:35:56.656791 16020 net.cpp:67] Creating Layer mnist</div><div class="line">I0902 13:35:56.656811 16020 net.cpp:356] mnist -&gt; data</div><div class="line">I0902 13:35:56.656846 16020 net.cpp:356] mnist -&gt; label</div><div class="line">I0902 13:35:56.656874 16020 net.cpp:96] Setting up mnist</div><div class="line">I0902 13:35:56.694052 16020 data_layer.cpp:135] Opening lmdb examples/mnist/mnist_train_lmdb</div><div class="line">I0902 13:35:56.701062 16020 data_layer.cpp:195] output data size: 64,1,28,28</div><div class="line">I0902 13:35:56.701146 16020 data_layer.cpp:236] Initializing prefetch</div><div class="line">I0902 13:35:56.701196 16020 data_layer.cpp:238] Prefetch initialized.</div><div class="line">I0902 13:35:56.701212 16020 net.cpp:103] Top shape: 64 1 28 28 (50176)</div><div class="line">I0902 13:35:56.701230 16020 net.cpp:103] Top shape: 64 1 1 1 (64)</div><div class="line">[...]</div><div class="line">I0902 13:35:56.703737 16020 net.cpp:67] Creating Layer ip1</div><div class="line">I0902 13:35:56.703753 16020 net.cpp:394] ip1 &lt;- pool2</div><div class="line">I0902 13:35:56.703778 16020 net.cpp:356] ip1 -&gt; ip1</div><div class="line">I0902 13:35:56.703797 16020 net.cpp:96] Setting up ip1</div><div class="line">I0902 13:35:56.728127 16020 net.cpp:103] Top shape: 64 500 1 1 (32000)</div><div class="line">I0902 13:35:56.728142 16020 net.cpp:113] Memory required for data: 5039360</div><div class="line">I0902 13:35:56.728175 16020 net.cpp:67] Creating Layer relu1</div><div class="line">I0902 13:35:56.728194 16020 net.cpp:394] relu1 &lt;- ip1</div><div class="line">I0902 13:35:56.728219 16020 net.cpp:345] relu1 -&gt; ip1 (in-place)</div><div class="line">I0902 13:35:56.728240 16020 net.cpp:96] Setting up relu1</div><div class="line">I0902 13:35:56.728256 16020 net.cpp:103] Top shape: 64 500 1 1 (32000)</div><div class="line">I0902 13:35:56.728270 16020 net.cpp:113] Memory required for data: 5167360</div><div class="line">I0902 13:35:56.728287 16020 net.cpp:67] Creating Layer ip2</div><div class="line">I0902 13:35:56.728304 16020 net.cpp:394] ip2 &lt;- ip1</div><div class="line">I0902 13:35:56.728333 16020 net.cpp:356] ip2 -&gt; ip2</div><div class="line">I0902 13:35:56.728356 16020 net.cpp:96] Setting up ip2</div><div class="line">I0902 13:35:56.728690 16020 net.cpp:103] Top shape: 64 10 1 1 (640)</div><div class="line">I0902 13:35:56.728705 16020 net.cpp:113] Memory required for data: 5169920</div><div class="line">I0902 13:35:56.728734 16020 net.cpp:67] Creating Layer loss</div><div class="line">I0902 13:35:56.728747 16020 net.cpp:394] loss &lt;- ip2</div><div class="line">I0902 13:35:56.728767 16020 net.cpp:394] loss &lt;- label</div><div class="line">I0902 13:35:56.728786 16020 net.cpp:356] loss -&gt; loss</div><div class="line">I0902 13:35:56.728811 16020 net.cpp:96] Setting up loss</div><div class="line">I0902 13:35:56.728837 16020 net.cpp:103] Top shape: 1 1 1 1 (1)</div><div class="line">I0902 13:35:56.728849 16020 net.cpp:109]     with loss weight 1</div><div class="line">I0902 13:35:56.728878 16020 net.cpp:113] Memory required for data: 5169924</div></pre></td></tr></table></figure></p>
+<p>损失函数<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">I0902 13:35:56.728893 16020 net.cpp:170] loss needs backward computation.</div><div class="line">I0902 13:35:56.728909 16020 net.cpp:170] ip2 needs backward computation.</div><div class="line">I0902 13:35:56.728924 16020 net.cpp:170] relu1 needs backward computation.</div><div class="line">I0902 13:35:56.728938 16020 net.cpp:170] ip1 needs backward computation.</div><div class="line">I0902 13:35:56.728953 16020 net.cpp:170] pool2 needs backward computation.</div><div class="line">I0902 13:35:56.728970 16020 net.cpp:170] conv2 needs backward computation.</div><div class="line">I0902 13:35:56.728984 16020 net.cpp:170] pool1 needs backward computation.</div><div class="line">I0902 13:35:56.728998 16020 net.cpp:170] conv1 needs backward computation.</div><div class="line">I0902 13:35:56.729014 16020 net.cpp:172] mnist does not need backward computation.</div><div class="line">I0902 13:35:56.729027 16020 net.cpp:208] This network produces output loss</div><div class="line">I0902 13:35:56.729053 16020 net.cpp:467] Collecting Learning Rate and Weight Decay.</div><div class="line">I0902 13:35:56.729071 16020 net.cpp:219] Network initialization done.</div><div class="line">I0902 13:35:56.729085 16020 net.cpp:220] Memory required for data: 5169924</div><div class="line">I0902 13:35:56.729277 16020 solver.cpp:156] Creating test net (#0) specified by net file: examples/mnist/lenet_train_test.prototxt</div></pre></td></tr></table></figure></p>
+<p>完成<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">I0902 13:35:56.806970 16020 solver.cpp:46] Solver scaffolding done.</div><div class="line">I0902 13:35:56.806984 16020 solver.cpp:165] Solving LeNet</div></pre></td></tr></table></figure></p>
+<hr>
+<h2 id="参数更新"><a href="#参数更新" class="headerlink" title="参数更新"></a>参数更新</h2><p>实际的权重更新是由solver完成的，它通过把参数传递给<code>Sovler::ComputeUpdateValue()</code>来实现的。这个方法会整合所有权重衰减到权重梯度里（现在只包含误差梯度）来获得每个网络最终的梯度,然后这些gradients被学习率$\alpha$缩放，需要减去的更新值被存在每个参数<code>Blob</code>的<code>diff</code>属性里。最终，调用每个参数blob的<code>Blob::Update</code>方法,完成最终的权重更新（从它的<code>data</code>里减去<code>diff</code>）.</p>
+<hr>
+<h2 id="快照和恢复"><a href="#快照和恢复" class="headerlink" title="快照和恢复"></a>快照和恢复</h2><p>Solvor在训练过程中通过调用<code>Solver::Snapshot()</code>方法和<code>Solver::SnapshotSolverState()</code>方法分别保存权重和它自身的状态。权重快照导出了学习到的模型，solver快照相当一个断点，使得训练可以从该快照恢复。恢复是通过<code>Solver::Restore()</code>和<code>Solver::RestoreSolverState()</code>方法完成的.</p>
+<p>权重保存文件没有后缀，而状态保存文件有<code>.solverstate</code>的后缀。每个文件都会有一个<code>_iter_N</code>的前缀来指明是多少次迭代的快照。</p>
+<p>快照是在Solver定义prototxt里这样配置的:<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">The snapshot interval in iterations.</div><div class="line">snapshot: <span class="number">5000</span></div><div class="line"># File path prefix <span class="keyword">for</span> snapshotting model weights and solver state.</div><div class="line"># Note: <span class="keyword">this</span> is relative to the invocation of the `caffe` utility, not the</div><div class="line"><span class="meta"># solver definition file.</span></div><div class="line">snapshot_prefix: <span class="string">"/path/to/model"</span></div><div class="line"># Snapshot the diff along with the weights. This can help debugging training</div><div class="line"><span class="meta"># but takes more storage.</span></div><div class="line">snapshot_diff: <span class="literal">false</span></div><div class="line"># A final snapshot is saved at the end of training unless</div><div class="line"><span class="meta"># this flag is set to false. The default is true.</span></div><div class="line">snapshot_after_train: <span class="literal">true</span></div></pre></td></tr></table></figure></p>
+<p>[^2]: M. Zeiler ADADELTA: <a href="http://arxiv.org/pdf/1212.5701.pdf" target="_blank" rel="external">AN ADAPTIVE LEARNING RATE METHOD</a>. arXiv preprint, 2012.</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://anboqing.github.io/2016/01/15/Caffe教程４-Solver/" data-id="cisoqi7ap0001rmgg2awtqii9" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Caffe教程/">Caffe教程</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-损失函数" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/01/14/损失函数/" class="article-date">
+  <time datetime="2016-01-14T15:22:00.000Z" itemprop="datePublished">2016-01-14</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Caffe/">Caffe</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/01/14/损失函数/">损失函数</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>同所有的机器学习过程一样，在Caffe里，学习是由<code>loss function</code>损失函数驱动的（也有叫做　<code>error</code>,<code>cost</code>,或者<code>objective</code> function 的）。一个损失函数通过在<code>参数</code>（例如网络权重）和一个衡量这些参数拟合劣度的<code>标量值(scalar)</code>之间建立映射，指明了学习的目标。因此，学习的目标就是找到一组能够使<code>loss fucntion</code>最小化的参数。</p>
+<p>Caffe里的损失是通过forward过程计算出来的。每一层都通过<code>bottom</code>从下面一层获取一个blob然后产生一组输出blob给<code>top</code>指定的上层.一些层的输出可能会在损失函数里使用。一个典型的为１对多分类任务选择的损失函数是<code>SoftmaxWithLoss</code>函数，使用一个如下的网络定义:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">layer&#123;</div><div class="line">    name : <span class="string">"loss"</span></div><div class="line">    type : <span class="string">"SoftmaxWithLoss"</span></div><div class="line">    bottom: <span class="string">"pred"</span></div><div class="line">    bottom: <span class="string">"label"</span></div><div class="line">    top: <span class="string">"loss"</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>在一个<code>SoftmaxWithLoss</code>函数里，<code>top</code>blob是一个标量(empty shape)，它是由整个minibatch的所有预测标签<code>pred</code>和实际标签<code>label</code>的差计算出来的平均误差.</p>
+<hr>
+<h2 id="损失权重"><a href="#损失权重" class="headerlink" title="损失权重"></a>损失权重</h2><p>对于那些有多个输出层的网络（例如既使用了<code>SoftmaxWithLoss</code>又使用了<code>EuclideanLoss</code>），<code>loss weight</code>可以用来指明他们之间的相对重要度。</p>
+<p>出于习惯，Caffe <code>layer</code>类型使用了后缀<code>Loss</code>来指明损失函数，但是其他层可假定为纯粹用来进行中间计算。但是，任何层可以用作损失函数，只要在<code>layer</code>定义中该层产生的的<code>top</code>blob添加一个<code>loss_weight:&lt;float&gt;</code>字段即可。带有后缀<code>Loss</code>的层定义有隐含的<code>loss_weight</code>属性，对于第一个<code>top</code>blob<code>loss_weight=1</code>,对于其他附加的<code>top</code>来说<code>loss_weight=0</code>;其他层有隐含的<code>loss_weight=0</code>给所有的<code>top</code>。于是，上面的<code>SoftmaxWithLoss</code>层可以等价的写成:<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">layer &#123;</div><div class="line">  name: <span class="string">"loss"</span></div><div class="line">  type: <span class="string">"SoftmaxWithLoss"</span></div><div class="line">  bottom: <span class="string">"pred"</span></div><div class="line">  bottom: <span class="string">"label"</span></div><div class="line">  top: <span class="string">"loss"</span></div><div class="line">  loss_weight: <span class="number">1</span></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>然而，任何可以反向传播的层都可以给定一个非零的<code>loss_weigh</code>,这样做可以允许我们做一些特定操作，比如，正则化一些中间层产生的激活值。对于关联着非零损失的非单个输出来说，损失仅仅是简单的把整个blob累积起来而已。<br>　　<br>　　<br>对于Caffe的最终损失，是把整个网络的加权损失累加起来计算的，例如下面的伪代码描述的那样:<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">loss := <span class="number">0</span></div><div class="line"><span class="keyword">for</span> layer <span class="keyword">in</span> layers:</div><div class="line">  <span class="keyword">for</span> top, loss_weight <span class="keyword">in</span> layer.tops, layer.loss_weights:</div><div class="line">    loss += loss_weight * sum(top)</div></pre></td></tr></table></figure></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://anboqing.github.io/2016/01/14/损失函数/" data-id="cisoqi7e0003srmggii701dxh" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Caffe教程/">Caffe教程</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-Forward和Backward" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/01/13/Forward和Backward/" class="article-date">
+  <time datetime="2016-01-13T14:58:00.000Z" itemprop="datePublished">2016-01-13</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Caffe教程/">Caffe教程</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/01/13/Forward和Backward/">Forward 和 Backward</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><code>forward</code>和<code>backward</code>是一个<code>Net</code>的基本计算。</p>
+<p><img src="http://caffe.berkeleyvision.org/tutorial/fig/forward_backward.png" alt="forward &amp; backward"></p>
+<p>我们来考虑一个简单的logistic regression 分类器.</p>
+<p><strong>Forward</strong>计算出用来推断(inference)的输出，在forward过程中，caffe把各层的计算结果组装成模型所表达的”函数”值，这个过程是自底向上传播的。</p>
+<p><img src="http://caffe.berkeleyvision.org/tutorial/fig/forward.jpg" alt="forward logistic regression"></p>
+<p>图中数据$x$经过一个内积层成为$g(x)$，然后再经过一个softmax分类器成为<code>h(g(x))</code>,softmax的loss为$f_w(x)$.</p>
+<p><strong>Backward</strong>把顶层的损失loss向底层传播，向底层传播是通过自动求导技术生成梯度的。这个过程是自顶向下的。  </p>
+<p><img src="http://caffe.berkeleyvision.org/tutorial/fig/backward.jpg" alt="backward"></p>
+<p>反向传播用顶层的损失函数的输出作为输入，通过公式$\frac{\partial f_W}{\partial h}$ 计算顶层的梯度，剩下层的梯度是利用链式法则逐层计算的。那些带有参数的层，比如<code>INNER_PRODUCT</code>层，通过它们的参数$\frac{\partial f<em>W}{\partial W</em>{\text{ip}}}$来计算梯度（其实这都是由自动求导技术在前向传播计算好的，反向传播的时候只是收集一下，和动态规划的思想类似）。</p>
+<p>当你定义好网络的时候，这些计算就已经设置好了，caffe会自动为你做前向和后向传播计算.
+　　
+　　</p>
+<ul>
+<li><code>Net::Forward()</code>和<code>Net::Backward()</code>方法会在前向和后向的过程中把各层的<code>Layer::Forward()</code>和<code>Layer::Backward()</code>函数执行，并把结果收集起来。</li>
+<li>每个<code>layer</code>类型都有一组<code>forward_{cpu,gpu}()</code>和<code>backward_{cpu,gpu}()</code>方法来根据运行的<code>mode</code>来调用相应的方法计算本层的结果。由于条件限制或者为了方便起见，一个<code>layer</code>可能只实现了CPU或者GPU模式的代码。</li>
+</ul>
+<p><a href="http://caffe.berkeleyvision.org/tutorial/solver.html//caffe.berkeleyvision.org/tutorial/fig/backward.jpg" target="_blank" rel="external">Solver</a>是用来对整个网络求解的，它先调用forward来产生输出和loss,然后调用backward来产生gradient，最后把梯度合并用来在优化步骤中更新权重。把功能分割成<code>Solver</code>,<code>Net</code>和<code>Layer</code>使得Caffe高内聚低耦合，易于扩展。</p>
+<p>有关forward和backward的详细内容请参看<a href="http://caffe.berkeleyvision.org/tutorial/layers.html" target="_blank" rel="external">Layer catalogue</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://anboqing.github.io/2016/01/13/Forward和Backward/" data-id="cisoqi7b8000armgg4ccqsmfu" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Caffe教程/">Caffe教程</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-Caffe官方教程-Blobs,Layers,Nets-caffe模型解剖" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/01/12/Caffe官方教程-Blobs,Layers,Nets-caffe模型解剖/" class="article-date">
+  <time datetime="2016-01-12T15:25:00.000Z" itemprop="datePublished">2016-01-12</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Caffe教程/">Caffe教程</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/01/12/Caffe官方教程-Blobs,Layers,Nets-caffe模型解剖/">Caffe官方教程-Blobs,Layers,Nets-caffe模型解剖</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <blockquote>
+<p>本文译自<a href="http://caffe.berkeleyvision.org/tutorial/net_layer_blob.html" target="_blank" rel="external">官方文档</a>，权当练英语了，请各位英文好看官移步官网自行阅读</p>
+</blockquote>
+<h2 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h2><p>深度神经网络是一种聚合模型，可以自然的表示为作用于数据块上的内部相连的网络. Caffe用自己的建模方法将网络一层一层定义出来。网络由输入数据到损失层把整个模型自底向上的定义出来。数据和偏导数在网络中前向、后向流动。Caffe使用<code>blob</code>存储、交换、操纵这些信息。<code>blob</code>是整个框架的标准的数组结构和统一存储接口。<code>layer</code>作为建模和计算的基础，<code>net</code>作为<code>layer</code>的集合和链接。<code>blob</code>的细节描述了信息是怎样在<code>layers</code>和<code>nets</code>间存储和交换的.</p>
+<hr>
+<h2 id="Blob-存储和通信"><a href="#Blob-存储和通信" class="headerlink" title="Blob 存储和通信"></a>Blob 存储和通信</h2><p><code>Blob</code> 是Caffe处理和传输的真实数据的包装类，同时它还隐含提供了在CPU和GPU之间同步数据的能力。在数学上，一个<code>blob</code>就是一个N维的数组，它是按照<code>c语言风格</code>存储的。（其实就是行优先还是列优先的风格，参照<a href="https://en.wikipedia.org/wiki/Row-major_order" target="_blank" rel="external">wiki:row-major order</a>). </p>
+<p>caffe使用<code>blob</code>存储和交换数据。<code>blob</code>对不同数据提供了统一的内存接口；例如：一批图片，模型参数，优化过程的偏导数等。</p>
+<p><code>Blob</code>通过在需要时将数据从CPU同步到GPU来隐藏在GPU/CPU之间进行混合操作的计算开销和精力开销.host 和device上的内存都是惰性分配的，从而能够高效使用存储空间。</p>
+<p>传统的图片数据维数为<code>图片数量N x 通道数K x 高度H x 宽度W</code>。由于<code>Blob</code>的内存布局是<code>行优先</code>,所以最右边／后边的维度变化的最快。例如，在一个4D的blob里，下标(n,k,h,w)在物理内存中位于下标((n<em>K+k)</em>H+h)*W+w).</p>
+<ul>
+<li>Number / N 是数据的 batch size.批处理能获得更大的在GPU设备上的吞吐量。例如，对于ImageNet数据训练一批２５６个图片,N=256.</li>
+<li>通道数 / K 是 feature dimension, 例如RGB图片就是３通道的　K = 3.灰度　K=1</li>
+</ul>
+<p>注意，尽管Caffe样例中的大多数blob都是4D的带坐标的图片应用，在非图片应用使用Blob也是完全可以的。例如，你仅仅需要一个全连接网络（比如传统多层感知机），使用一个2D的blob(shape(N,D))，调用<code>InnerProductLayer</code>就可以了。</p>
+<p>参数blob的维度随着<code>layer</code>的配置和类型变化。例如，对一个有９６个filters，每个filter有１１X１１的空域维度和３个输入的卷积层,它的blob维数为: <code>96 x 3 x 11 x 11</code>.<br>对于一个有着<code>1000</code>个输出和<code>1024</code>个输入的内积 / 全连接<code>layer</code>,它的参数<code>blob</code>是<code>1000 x 1024</code>。</p>
+<p>对于定制的数据，可能需要自己手工编写输入数据预处理工具或者数据层。但是一旦你的数据准备好了，剩下的工作就交给Caffe了。</p>
+<hr>
+<h2 id="实现细节"><a href="#实现细节" class="headerlink" title="实现细节"></a>实现细节</h2><p>由于我们经常对<code>blob</code>的值和梯度感兴趣，所以<code>blob</code>存储了２块<code>data</code>和<code>diff</code>.前者是正常的传输数据，后者是网络计算的梯度。</p>
+<p>更进一步，由于真实数据可能存储在CPU或者GPU上，有２种方式来访问它们：<code>const</code>方式，不能修改值；<code>mutable</code>方式，可以修改值:</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">const</span> Dtype* <span class="title">cpu_data</span><span class="params">()</span> <span class="keyword">const</span></span>;</div><div class="line"><span class="function">Dtype* <span class="title">mutable_cpu_data</span><span class="params">()</span></span>;</div></pre></td></tr></table></figure>
+<p>(gpu 和 diff接口类似)。</p>
+<p>这样设计的原因是：<code>Blob</code>使用了<code>SyncedMem</code>类来同步CPU和GPU之间的数据以便隐藏同步细节，同时最小化<code>host</code>和<code>device</code>之间的数据交换。第一原则是：当你不需要修改值的时候总是使用<code>const</code>方式，并且绝对不要在你自己的对象里存储指针。没当你使用一个blob的时候，调用上面的函数来获取数据指针，这时<code>SyncedMem</code>就会需要根据这个指针来判断什么时候去复制数据。（这个功能怎么实现的，很有意思，等看完代码再分析）。</p>
+<p>在实践中如果使用了GPU,你从磁盘上吧数据读取到CPU模式的内存中的blob里，然后调用GPU的kernel来进行计算，然后把blob数据传给下一层，这一切过程都隐藏了底层的实现细节，并且获得很高的性能。只要所有层都有GPU实现，所有的中间数据和梯度都会保存在GPU中。</p>
+<p>如果你像检查什么时候Blob会复制数据，这里有一个演示：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// 假设数据初始在CPU模式下，我们有一个blob.</span></div><div class="line"><span class="keyword">const</span> Dtype* foo;</div><div class="line">Dtype* bar;</div><div class="line">foo = blob.gpu_data(); <span class="comment">// 数据从　cpu 复制到 gpu</span></div><div class="line">foo = blob.cpu_data(); <span class="comment">// 没有数据拷贝，因为cpu 和gpu都有最新的数据内容</span></div><div class="line">bar = blob.mutable_gpu_data(); <span class="comment">// 没有数据拷贝</span></div><div class="line"><span class="comment">// .. 一些操作 .. </span></div><div class="line">bar = blob.mutable_gpu_data(); <span class="comment">//  没有数据拷贝，因为仍然处在　GPU上</span></div><div class="line">foo = blob.cpu_data(); <span class="comment">// 数据从gpu－&gt;cpu，因为gpu上修改了数据</span></div><div class="line">foo = blob.gpu_data(); <span class="comment">// 没有数据拷贝，因为都有最新内容</span></div><div class="line">bar = blob.mutable_cpu_data(); <span class="comment">// still no data copied </span></div><div class="line">bar = blob.mutable_gpu_data(); <span class="comment">// data copied cpu-&gt;gpu</span></div><div class="line">bar = blob.mutable_cpu_data(); <span class="comment">// 数据从gpu-&gt;cpu</span></div></pre></td></tr></table></figure>
+<hr>
+<h2 id="层的连接和计算"><a href="#层的连接和计算" class="headerlink" title="层的连接和计算"></a>层的连接和计算</h2><p><code>layer</code>是一个模型的精华所在，它也是计算的基本单元。<code>layer</code>包括了<code>filter</code>过滤,<code>pool</code>池化,进行<code>inner product</code>计算，应用诸如<code>rectified-linear</code>和<code>sigmoid</code>等元素级的非线性变换,正则化，读取数据,计算诸如<code>softmax</code>或<code>hinge</code>等代价损失。查看<a href="http://caffe.berkeleyvision.org/tutorial/layers.html" target="_blank" rel="external">Layer catalogue</a>获取全部操作。大部分最新的深度学习任务都在那里。</p>
+<p><img src="http://caffe.berkeleyvision.org/tutorial/fig/layer.jpg" alt="一个从底层连接获取数据并从顶层连接输出的layer"></p>
+<p>每个<code>layer</code>都定义了３个关键的计算操作：<code>setup</code>,<code>forward</code>和<code>backward</code>.</p>
+<ul>
+<li>Setup: 在模型初始化的时候初始化<code>layer</code>和它的<code>connections</code></li>
+<li>Forward: 从底层给出输入并计算输出，然后发送给顶层</li>
+<li>Backward: 给出顶层输出的梯度，计算输入的梯度，然后发送给底层。一个有参数的层会计算关于参数的梯度然后在内部存储这些梯度。</li>
+</ul>
+<p>更详细的说，caffe将会实现２个Forward和Backward函数，一个给CPU，另一个给GPU.如果你没有实现GPU版本，那么<code>layer</code>就会退化成CPU函数作为一个后备选项。<br>如果你要做快速实验，这个会用起来很顺手，尽管它会造成附加的数据传输开销（它的输入会从GPU复制到CPU,并且它的输出会从CPU拷贝到GPU);</p>
+<p><code>layer</code>在把网络当做整体进行操作的时候有两个关键责任：<em>前向传播</em>从输入计算输出，<em>反向传播</em>获取输出的梯度，然后根据参数向前计算输入的梯度，这些梯度再依次向前传播。这些过程都是简单的前向传播和后向传播的组合。</p>
+<p>开发自己定义的层需要一点很小的努力，需要学习网络的组织和代码的模块画。定义每层的setup,forward,backward，然后你定义的这个层就可以包含进一个网络了。</p>
+<hr>
+<h2 id="网络定义和操作"><a href="#网络定义和操作" class="headerlink" title="网络定义和操作"></a>网络定义和操作</h2><p><code>net</code>通过组合和<a href="https://en.wikipedia.org/wiki/Automatic_differentiation#Operator_overloading_.28OO.29" target="_blank" rel="external">自动求导</a>联合定义了一个函数和它的导数.把每一层output组合起来计算一个特定任务的函数，把每一层的backward组合起来从loss计算梯度来学习该任务。Caffe模型是端对端的机器学习引擎。（这个和Theano类似的）</p>
+<p><code>net</code>可以看做一个由layers组成的计算图(computation graph)，确切的说是一个有向无环图。Caffe为所有层做了所有bookkeeping的工作来保证前向传播和后向传播的正确性。典型的<code>net</code>由一个从磁盘读取数据的数据层开始，以一个loss层结束，是计算诸如分类或者重构之类的目标任务的。</p>
+<p><code>net</code>用普通文本建模语言protocol buffer被定义为一组<code>layer</code>和它们之间的连接，一个简单的 logistic regression 分类器如下:</p>
+<p><img src="http://caffe.berkeleyvision.org/tutorial/fig/logreg.jpg" alt="logistic regression"></p>
+<p>定义为:</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line">name: <span class="string">"LogReg"</span></div><div class="line">layer &#123;</div><div class="line">  name: <span class="string">"mnist"</span></div><div class="line">  type: <span class="string">"Data"</span></div><div class="line">  top: <span class="string">"data"</span></div><div class="line">  top: <span class="string">"label"</span></div><div class="line">  data_param &#123;</div><div class="line">    source: <span class="string">"input_leveldb"</span></div><div class="line">    batch_size: <span class="number">64</span></div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line">layer &#123;</div><div class="line">  name: <span class="string">"ip"</span></div><div class="line">  type: <span class="string">"InnerProduct"</span></div><div class="line">  bottom: <span class="string">"data"</span></div><div class="line">  top: <span class="string">"ip"</span></div><div class="line">  inner_product_param &#123;</div><div class="line">    num_output: <span class="number">2</span></div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line">layer &#123;</div><div class="line">  name: <span class="string">"loss"</span></div><div class="line">  type: <span class="string">"SoftmaxWithLoss"</span></div><div class="line">  bottom: <span class="string">"ip"</span></div><div class="line">  bottom: <span class="string">"label"</span></div><div class="line">  top: <span class="string">"loss"</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>模型初始化由函数<code>Net::Init()</code>处理。初始化主要做了２件事：创建blobs和layers架起整个DAG(对c++使用者：在整个生命周期里network会持有blobs和layers的所有权),并且调用layer的<code>Setup()</code>函数。它同样做了一系列其他的准备工作，例如验证整个网络结构的正确性。同样，在初始化的过程中，<code>Net</code>会通过日志解释它的初始化工作，像这样:</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div></pre></td><td class="code"><pre><div class="line">I0902 22:52:17.931977 2079114000 net.cpp:39] Initializing net from parameters:</div><div class="line">name: "LogReg"</div><div class="line">[...model prototxt printout...]</div><div class="line"># construct the network layer-by-layer</div><div class="line">I0902 22:52:17.932152 2079114000 net.cpp:67] Creating Layer mnist</div><div class="line">I0902 22:52:17.932165 2079114000 net.cpp:356] mnist -&gt; data</div><div class="line">I0902 22:52:17.932188 2079114000 net.cpp:356] mnist -&gt; label</div><div class="line">I0902 22:52:17.932200 2079114000 net.cpp:96] Setting up mnist</div><div class="line">I0902 22:52:17.935807 2079114000 data_layer.cpp:135] Opening leveldb input_leveldb</div><div class="line">I0902 22:52:17.937155 2079114000 data_layer.cpp:195] output data size: 64,1,28,28</div><div class="line">I0902 22:52:17.938570 2079114000 net.cpp:103] Top shape: 64 1 28 28 (50176)</div><div class="line">I0902 22:52:17.938593 2079114000 net.cpp:103] Top shape: 64 (64)</div><div class="line">I0902 22:52:17.938611 2079114000 net.cpp:67] Creating Layer ip</div><div class="line">I0902 22:52:17.938617 2079114000 net.cpp:394] ip &lt;- data</div><div class="line">I0902 22:52:17.939177 2079114000 net.cpp:356] ip -&gt; ip</div><div class="line">I0902 22:52:17.939196 2079114000 net.cpp:96] Setting up ip</div><div class="line">I0902 22:52:17.940289 2079114000 net.cpp:103] Top shape: 64 2 (128)</div><div class="line">I0902 22:52:17.941270 2079114000 net.cpp:67] Creating Layer loss</div><div class="line">I0902 22:52:17.941305 2079114000 net.cpp:394] loss &lt;- ip</div><div class="line">I0902 22:52:17.941314 2079114000 net.cpp:394] loss &lt;- label</div><div class="line">I0902 22:52:17.941323 2079114000 net.cpp:356] loss -&gt; loss</div><div class="line"># set up the loss and configure the backward pass</div><div class="line">I0902 22:52:17.941328 2079114000 net.cpp:96] Setting up loss</div><div class="line">I0902 22:52:17.941328 2079114000 net.cpp:103] Top shape: (1)</div><div class="line">I0902 22:52:17.941329 2079114000 net.cpp:109]     with loss weight 1</div><div class="line">I0902 22:52:17.941779 2079114000 net.cpp:170] loss needs backward computation.</div><div class="line">I0902 22:52:17.941787 2079114000 net.cpp:170] ip needs backward computation.</div><div class="line">I0902 22:52:17.941794 2079114000 net.cpp:172] mnist does not need backward computation.</div><div class="line"># determine outputs</div><div class="line">I0902 22:52:17.941800 2079114000 net.cpp:208] This network produces output loss</div><div class="line"># finish initialization and report memory usage</div><div class="line">I0902 22:52:17.941810 2079114000 net.cpp:467] Collecting Learning Rate and Weight Decay.</div><div class="line">I0902 22:52:17.941818 2079114000 net.cpp:219] Network initialization done.</div><div class="line">I0902 22:52:17.941824 2079114000 net.cpp:220] Memory required for data: 201476</div></pre></td></tr></table></figure>
+<p>注意构建网络是和设备无关的，回忆前面解释blob和layer的时候他们也在构建的时候隐藏了实现细节。构建完成之后，网络就可以在CPU或者GPU上运行，只需要调用<code>Caffe::mode()</code>就能切换，<code>Caffe::set_mode()</code>是用来设置mode的函数。在GPU或者CPU上运行的过程会产生相同的结果。CPU和GPU可以无缝切换并且和模型定义无关。对研究和部署来说，把模型和实现分离是最好的方案。</p>
+<hr>
+<h2 id="模型格式"><a href="#模型格式" class="headerlink" title="模型格式"></a>模型格式</h2><p>模型是用普通文本文件存储的protocol buffer schema(存在<code>prototxt</code>文件里),学习到的模型是被序列化为二进制格式的protocol buffer(binaryproto),存在<code>caffemodel</code>文件里。</p>
+<p>模型格式是定义在<code>caffe.proto</code>文件里的。这个文件基本上是自解释的，推荐初学者仔细阅读它。</p>
+<blockquote>
+<p>Most important tip…<br>Don’t be afraid to read the code!</p>
+</blockquote>
+<hr>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://anboqing.github.io/2016/01/12/Caffe官方教程-Blobs,Layers,Nets-caffe模型解剖/" data-id="cisoqi7aj0000rmggasa9io3n" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Caffe教程/">Caffe教程</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-降维PCA" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/01/11/降维PCA/" class="article-date">
+  <time datetime="2016-01-11T13:32:00.000Z" itemprop="datePublished">2016-01-11</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/PCA-降维/">PCA 降维</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/01/11/降维PCA/">降维PCA</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>##1. 维度灾难</p>
+<p>###1.1 The curse of dimensionality<br><img src="https://upload.wikimedia.org/wikipedia/en/thumb/7/7a/Richard_Ernest_Bellman.jpg/220px-Richard_Ernest_Bellman.jpg" alt="bellman"><br><a href="https://en.wikipedia.org/wiki/Richard_E._Bellman" target="_blank" rel="external">Richard E.Bellman</a>(发明动态规划的美国应用数学家) 在１９６１年提出了这个术语：</p>
+<blockquote>
+<p>The “Curse of dimensionality”, is a term coined by Bellman to describe the problem caused by the exponential increase in volume associated with adding extra dimensions to a (mathematical) space. </p>
+</blockquote>
+<p>###1.2 用３类模式识别问题举例</p>
+<ol>
+<li>一个简单的方法是：</li>
+</ol>
+<ul>
+<li>将特征空间划分为小bins</li>
+<li>计算每个bins里边每个样本对于每一类的ratio</li>
+<li>对于一个新的样本，找到它所在的bin然后将它划分到该bin里最主要的类里<br>这个方法类似于k-nn算法，和桶算法类似</li>
+</ul>
+<ol>
+<li>比如我们用单特征来划分三个类的９个实例：<br>　<img src="http://7xia5s.com1.z0.glb.clouddn.com/pca_1.png" alt="pca1"><br>在一维我们会注意到类之间会有太多重叠,于是我们就决定引入第二个特征试图增加可分性．<br><img src="http://7xia5s.com1.z0.glb.clouddn.com/pca_2.png" alt="pca2"><br>这时，在二维空间，如果</li>
+</ol>
+<ul>
+<li>我们选择保留样本密度，那么样本点数量就从９激增至9*3=27</li>
+<li>我们选择保留样本数量，那么２维的散点图就十分稀疏<br>该怎么抉择呢？再增加一个feature？<br><img src="http://7xia5s.com1.z0.glb.clouddn.com/pca_3.png" alt="pca3"><br>在３维空间，事情变得更糟糕：</li>
+</ul>
+<ul>
+<li>bins的数量增加到２７</li>
+<li>维持样本密度不变，样本点的数量就增加到了８１</li>
+<li>维持样本点个数不变，那么3D散点图几乎就是空的</li>
+</ul>
+<p><strong>很明显，我们用相同的bins来划分样本空间的办法是十分低效率的</strong></p>
+<h3 id="1-3-我们如何打败维度灾难？"><a href="#1-3-我们如何打败维度灾难？" class="headerlink" title="1.3 我们如何打败维度灾难？"></a>1.3 我们如何打败维度灾难？</h3><ul>
+<li>引入先验知识？</li>
+<li>提高目标函数的光滑性（例如光滑核方法），可使问题的推论性增强，甚至变为解析问题．然而，这需要大量的训练样本和训练时间．</li>
+<li>减少维度！（是否和前面加入特征矛盾）</li>
+</ul>
+<p>在实践中，维度灾难意味着，给定一个样本大小，存在一个维数的上限，超过了这个上线，分类器的性能就会不升反降．<br><img src="http://7xia5s.com1.z0.glb.clouddn.com/pca_4.png" alt="pca4"><br>很多时候，在低维空间做更准确的映射比在高维空间直接映射有更好的分类性能．</p>
+<h3 id="1-4-维度灾难更加深刻的含义"><a href="#1-4-维度灾难更加深刻的含义" class="headerlink" title="1.4 维度灾难更加深刻的含义"></a>1.4 维度灾难更加深刻的含义</h3><ul>
+<li>保持样本密度需要指数级增长的样本数量<ul>
+<li>给定一个密度为N的样本和D维，需要的总样本数为$N^D$</li>
+</ul>
+</li>
+<li>密度估计的目标函数复杂性也随着维度增长呈指数增长</li>
+</ul>
+<p><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/20/Portrait_of_Milton_Friedman.jpg/220px-Portrait_of_Milton_Friedman.jpg" alt="fredman"></p>
+<blockquote>
+<p>定义在高维空间的函数比定义在低维空间的函数复杂的多，并且那些复杂性是难以辨明的复杂．这意味着，为了更好的学习它，越复杂的函数需要越密集的样本点 –by <a href="https://en.wikipedia.org/wiki/Milton_Friedman" target="_blank" rel="external">Friedman( famous for his friedman test)</a></p>
+</blockquote>
+<ul>
+<li>如果样本的分布不是高斯分布情况会更糟糕<br>  -　因为在教科书里只有大量的１维分布函数，到了高维情况就只剩下了高斯分布，而且在维度很高的情况下，高斯密度函数只能在简化的形势下处理．</li>
+<li>人脑也对４维以上的特征失去了辨识能力（但是人脑为什么可以辨识复杂的模式呢）</li>
+</ul>
+<hr>
+<p>##2. 降维</p>
+<h3 id="2-1-特征选择-vs-特征提取"><a href="#2-1-特征选择-vs-特征提取" class="headerlink" title="2.1 特征选择　vs. 特征提取"></a>2.1 特征选择　vs. 特征提取</h3><ul>
+<li><strong>Feature extraction:</strong>从现有的特征组合中生成一个特征子集</li>
+<li><strong>Feature selection:</strong>选择包含全部特征信息的子集（新的特征由原来的一维或者多维特征映射获得）<br>　　　<img src="http://7xia5s.com1.z0.glb.clouddn.com/pca_6.png" alt="pca5"></li>
+</ul>
+<hr>
+<h4 id="2-1-1-特征抽取的定义"><a href="#2-1-1-特征抽取的定义" class="headerlink" title="2.1.1 特征抽取的定义"></a>2.1.1 特征抽取的定义</h4><ul>
+<li>给定一个特征空间　$x_i \in R^N$ 找出一个映射：　$y=f(x):R^N \rightarrow R^M$ 其中　$M \lt N$，这样，变换后的特征向量　$y_i \in R^M$　保存了（大多数）原来特征空间　$R^N$内的信息（或结构）</li>
+<li>一个最优的映射的引入$y=f(x)$不会增加分类错误（就是对同一个算法说和原来的分类正确率一样）</li>
+</ul>
+<hr>
+<h3 id="2-2-最优映射-y-f-x"><a href="#2-2-最优映射-y-f-x" class="headerlink" title="2.2 最优映射 y=f(x)　"></a>2.2 最优映射 y=f(x)　</h3><p><strong>通常，一个最优映射　y=f(x)是一个非线性函数</strong>，但是，没有一个系统和成熟的方法进行非线性变换，非线性变换的数学理论还很不成熟．（对特定特征子集的选择还要结合具体问题具体分析）．因此，<strong>特征抽取常常被限定为了线性变换　$y=Wx$.</strong></p>
+<ul>
+<li>这就是说，y 是　x　的一个线性投影</li>
+<li>注意：当映射一个非线性函数时，减少后的特征空间叫做manifold(<a href="https://en.wikipedia.org/wiki/Manifold" target="_blank" rel="external">流形</a>)．参见<a href="https://en.wikipedia.org/wiki/Nonlinear_dimensionality_reduction" target="_blank" rel="external">Nonlinear dimensionality reduction</a><br><img src="http://7xia5s.com1.z0.glb.clouddn.com/pca_6.png" alt="pca6"></li>
+</ul>
+<hr>
+<h4 id="2-3-信号表示-vs-分类"><a href="#2-3-信号表示-vs-分类" class="headerlink" title="2.3 信号表示 vs. 分类"></a>2.3 信号表示 vs. 分类</h4><p>选择特征抽取映射$y=f(x)$的办法是找到一个目标函数，对其进行最大化或者最小化．按照目标函数的条件，特征提取技术被分为了两类：</p>
+<ul>
+<li><strong>Signal representation</strong>: 目标是在更低的维度对样本信息精确的表示</li>
+<li><strong>classification:</strong>目标是在低维上增强样本的可分类性．</li>
+</ul>
+<p><img src="http://7xia5s.com1.z0.glb.clouddn.com/pca_7.png" alt="pca7"><br>　　　<br>在线性特征提取的领域内，常用的技术有两个：</p>
+<ul>
+<li><strong>Pricipal Components Analysis</strong>主成分分析：用于信号表示</li>
+<li>Linear Discriminant Analysis线性判别分析(<a href="https://en.wikipedia.org/wiki/Ronald_Fisher" target="_blank" rel="external">fisher 1936</a>)：用于样本分类</li>
+</ul>
+<hr>
+<p>##3. Principal Component Analysis(<a href="https://en.wikipedia.org/wiki/Principal_component_analysis" target="_blank" rel="external">PCA</a>)</p>
+<hr>
+<h3 id="3-1-PCA的目标"><a href="#3-1-PCA的目标" class="headerlink" title="3.1 PCA的目标"></a>3.1 PCA的目标</h3><p><strong>PCA的目标是在降维的同时尽可能多的保留高维空间的随机性（方差）</strong></p>
+<h3 id="3-2-PCA-的推导"><a href="#3-2-PCA-的推导" class="headerlink" title="3.2 PCA 的推导"></a>3.2 PCA 的推导</h3><p>假设　x 是一个　N-维随机向量，表示为一组正交基向量[$\phi_1|\phi_2|….|\phi<em>N$]的线性组合<br>$$<br>x = \sum</em>{i=1}^N y_i \phi_i \quad where \quad \phi_i\cdot \phi_j =<br>\begin{cases}<br>0, &amp;\text{i $\neq$ j}\[2ex]<br>1, &amp;\text{ i = j }<br>\end{cases}<br>$$</p>
+<p>假设我们只选择了基向量中的M(Ｍ＜N)维来表示x,我们可以用预先选择的常量$b<em>j$来替换$[y</em>{M+1},…,y<em>N]^T$<br>$$<br>\hat x (M) = \sum</em>{i=1}^M y_i\phi<em>i + \sum</em>{i=M+1}^N b_i \phi<em>i<br>$$<br>两种表示形式的方差为：<br>$$<br>\Delta x(M) = x- \hat x(M) = \sum</em>{i=1}^N y_i \phi<em>i - \left \lbrace \sum</em>{i=1}^M y_i\phi<em>i + \sum</em>{i=M+1}^N b_i\phi<em>i \right\rbrace = \sum</em>{i=M+1}^N (y_i-b_i)\phi_i<br>$$<br>我们可以用均方差来表示这个误差的大小．　　　<br>　　　<br><strong>我们的目标是找到使均方误差最小的参数：基向量$\phi_i$和常量$b_i$</strong><br>$$<br>\overline \epsilon^2(M) = E [|\Delta x(M)|^2] = E \left [ \sum<em>{i=M+1}^N \sum</em>{j=M+1}^N (y_i-b_i)(y_j-b_j) \phi_i^T\phi<em>j \right] = \sum</em>{i=M+1}^N E \left [ (y_i-b_i)^2 \right]<br>$$<br>这里之所以能抵消是因为，当 $i \neq j $ 时， $ \phi_i \cdot \phi_j = 0 $<br>当 $ i = j$ 时，$ \phi_i \cdot \phi_j = 1 $</p>
+<p>问题现在转化成了求 $b_j$ 和 $\phi_i$,我们可以用对目标函数求偏导数并且令偏导数为0的方法来求$b_i$.<br><img src="http://7xia5s.com1.z0.glb.clouddn.com/pca_8.png" alt="8"></p>
+<p>现在,把$b_i = E [y_i] $ 代入上边的公式,均方误差可以变换成方差的正交化形式:</p>
+<p><img src="http://7xia5s.com1.z0.glb.clouddn.com/pca_9.png" alt="9"><br>其中 $\sum_X$ 是 x 的<strong>协方差矩阵</strong>.</p>
+<p>现在,引入拉格朗日因子:<br><img src="http://7xia5s.com1.z0.glb.clouddn.com/pca_10.png" alt="10"><br>对每个 $\phi_i$ 求偏导:<br><img src="http://7xia5s.com1.z0.glb.clouddn.com/pca_11.png" alt="11"><br>于是,$\phi_i$和$\lambda_i$就是协方差矩阵 $\sum_X$ 的<strong>特征值和特征向量</strong></p>
+<p>这样,我们就能把均方差的和表示为:<br><img src="http://7xia5s.com1.z0.glb.clouddn.com/pca_12.png" alt="12"></p>
+<p>为了最小化这个式子,$\lambda_i$ 必须是最小的特征值</p>
+<ul>
+<li>因此,用最小方差和来表示 x ,我们将会选择 最大的特征值$\lambda_i$对应的特征向量$\phi_i$</li>
+</ul>
+<hr>
+<h3 id="3-3-总结"><a href="#3-3-总结" class="headerlink" title="3.3 总结"></a>3.3 总结</h3><blockquote>
+<p>把随机向量 X 投影到 其协方差矩阵$\Sigma_X$的最大特征值$\lambda_i$对应的特征向量$\phi_i$上,我们就可以得到N维随机向量 $x \in \mathscr R^N$ 的一个最优(有误差的最小方差和)近似: M 个独立向量的线型组合.</p>
+</blockquote>
+<p><strong>注意:</strong></p>
+<ul>
+<li>由于PCA使用了协方差矩阵的特征向量,它能够找到单峰正态分布下数据的独立分布<ul>
+<li>对于非高斯分布或者多峰正态分布数据,PCA只是简单的去相关</li>
+</ul>
+</li>
+<li>PCA的主要限制是它没有考虑类别的可分性,因为它没有考虑类标签<ul>
+<li>PCA只是简单的将坐标转向了有最大方差的方向</li>
+<li>而有最大方差的方向并不保证有良好的可分类特征<br>例如:<br><img src="http://7xia5s.com1.z0.glb.clouddn.com/pca_13.png" alt="13"><br>用PCA的话,会降维到Y轴上,因为Y轴有最大的方差.然而降维到y轴之后,样本几乎不可分,因为都混杂在一起了.</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="3-4-举例"><a href="#3-4-举例" class="headerlink" title="3.4 举例"></a>3.4 举例</h3><ul>
+<li>计算下列2维数据集的 pricipal components:<br>$ X =  (x_1,x_2) = \lbrace (1,2),(3,3),(3,5),(5,4),(5,6),(6,5),(8,7),(9,8) \rbrace$<br><img src="http://7xia5s.com1.z0.glb.clouddn.com/pca_14.png" alt=""></li>
+<li>求解过程<ul>
+<li>协方差矩阵是:<br>$$<br>\Sigma_X = \begin{bmatrix} 6.25&amp; 4.25\ 4.25 &amp; 3.5 \end{bmatrix}<br>$$</li>
+<li>求特征值:<br><img src="http://7xia5s.com1.z0.glb.clouddn.com/pca_15.png" alt="15"></li>
+<li>特征向量:<br><img src="http://7xia5s.com1.z0.glb.clouddn.com/pca_16.png" alt="16"></li>
+</ul>
+</li>
+</ul>
+<hr>
+<h2 id="4-实现PCA算法"><a href="#4-实现PCA算法" class="headerlink" title="4.实现PCA算法"></a>4.实现PCA算法</h2><hr>
+<h3 id="4-1-数据预处理"><a href="#4-1-数据预处理" class="headerlink" title="4.1 数据预处理"></a>4.1 数据预处理</h3><p>在应用PCA算法之前,我们常常要对数据进行预处理,因为PCA算法对原始数据的可靠性,一致性,以及规范性十分敏感,如果不做相应的处理,算法的效果就会大打折扣.<br>通常我们希望所有的特征 $x_1,x_2,…,x_n$都有相似的取值范围(并且<strong>均值接近0</strong>).在部分应用中,我们都有必要对每个特征做预处理,即通过估算每个特征$x_j$的均值和方差,而后将其取值范围规整化为<strong>零均值</strong>和<strong>单位方差</strong>.</p>
+<p>通常,预处理主要有2步:   </p>
+<ul>
+<li>feature scaling/mean normalization 均值规整化为 0 </li>
+<li><strong>白化</strong>,一些文献中也叫 <strong>sphering</strong> ,白化的目的就是降低输入的冗余性,通过白化使得学习算法的输入具有一下性质:<ul>
+<li>(1) 特征之间相关性较低</li>
+<li>(2) 所有特征具有相同的方差(分布的离散程度相同)</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h4 id="4-1-1-均值规整化"><a href="#4-1-1-均值规整化" class="headerlink" title="4.1.1 均值规整化"></a>4.1.1 均值规整化</h4><p>假设我们有训练集: $ x^{(1)},x^{(2)},…x^{(m)}$<br>均值规整化过程:    </p>
+<ol>
+<li>求每个特征的均值 $\mu<em>i = \frac1m \sum</em>{i=1}^m x_j^{(i)}$    </li>
+<li>把每个特征的值$x_j^{(i)}$ 替换为 $x_j-\mu_j$</li>
+<li>如果不同的特征之间的取值范围不一样(例如: $x_1$ = size of house(大多取值 1000多) $x_2$ = number of bedrooms(取值不超过10) )， 就需要把每个特征的刻度转换成和其他特征差不多的取值范围:<br>$$ x_j^{(i)} = \frac{x_j^{(i)}=\mu_j}{S_j} $$<br>这里 $S_j$是某种对特征j的取值范围的度量.(常常是最大值减最小值 或者是标准差)</li>
+</ol>
+<hr>
+<h4 id="4-1-2-白化"><a href="#4-1-2-白化" class="headerlink" title="4.1.2 白化"></a>4.1.2 白化</h4><ul>
+<li>消除输入特征之间的相关性:  </li>
+</ul>
+<p>将原始样本值映射到新基上的过程 $ x<em>{rot}^{(i)} = U^T x^{(i)} $ 实际上已经消除了输入特征 $ x^{(i)}$ 之间的相关性.因为对于映射后的样本 $ x</em>{rot} $ 来说,它的协方差矩阵 $\Sigma_{rot}$是一个对角矩阵,而且对角线上的元素值为特征值,由于<strong>非对角线元素都为0</strong>,所以特征之间是<strong>不相关的</strong>.</p>
+<ul>
+<li>使所有特征具有单位方差:</li>
+</ul>
+<p>为了使所有特征具有单位方差,我们可以直接使用 $ \frac1{ \sqrt{ \lambda<em>i } }$作为缩放因子来缩放每个特征 $ x</em>{rot,i} $.具体的,我们定义白化后的数据 $x_{PCAwhite} \in \mathscr R^N $ 如下: </p>
+<p>$$<br>x<em>{PCAwhite,i} = \frac{x</em>{rot,i}}{ \sqrt{ \lambda<em>i } }<br> $$<br>这样一来,白化后的数据$x</em>{PCAwhite} $ 的协方差矩阵就变成了 <strong>单位矩阵</strong>.我们说, $x<em>{PCAwhite} $ 是数据经过 <strong>PCA白化后</strong>的版本,$x</em>{PCAwhite} $ 中不同的特征之间部相关并且具有单位方差.</p>
+<ul>
+<li>正则化</li>
+</ul>
+<p>在实践中,白化过程中,有些特征值 $ \lambda_i $ 在数值上接近于0,这样在缩放步骤时,我们除以 $ \sqrt{ \lambda<em>i } $将导致除以一个接近0的值;这可能使数据上溢或者造成数值不稳定.因而在实践中,我们使用少量的正则化实现这个缩放过程,即在取平方根的倒数之前给特征值加上一个很小的常数 $ \epsilon $ :<br>$$<br>x</em>{PCAwhite,i} = \frac{x_{rot,i}}{ \sqrt{ \lambda_i } + \epsilon }<br> $$<br>当 $ x $ 在区间 $ [-1, 1] $ 上时,一般取值为 $ \epsilon \approx 10^{-5} $ </p>
+<hr>
+<h3 id="4-2-PCA-算法"><a href="#4-2-PCA-算法" class="headerlink" title="4.2 PCA 算法"></a>4.2 PCA 算法</h3><ol>
+<li>首先,计算 <strong>协方差矩阵</strong><br>$$<br>\Sigma = \frac1m \sum_{i=1}^n (x^{(i)})(x^{(i)})^T<br>$$<br>其中 $\Sigma$ 是 n x n 大小的协方差矩阵 , 因为 $ x^{(i)}$ 是 n x 1 (一个样本), $(x^{(i)})^T$ 是  1 x n .</li>
+<li>计算协方差矩阵 $ \Sigma $ 的<strong>特征向量</strong>:<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">[U,S,V] = svd(Sigma);</div><div class="line">//或者</div><div class="line">[U,S,V] = eig(Sigma);</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<blockquote>
+<p>关于这里为什么要用 svd函数,因为 PCA 根据应用领域的不同,还有很多别名:<br>线性代数中叫 :<strong>SVD</strong>(singular value decomposition of X ) EVD(eigenvlaue decomposition of $X^TX$) ，KLT(信号处理),POD(机械工程).</p>
+</blockquote>
+<p>这样,我们得到了 [U,S,V],其中 U 就是 把特征向量按照对应的特征值大小从大到小排列所得到的一个 n x n 特征向量矩阵,这就是一个变换后的<strong>正交基</strong><br>$$<br>\begin{align}<br>U =<br>\begin{bmatrix}<br>| &amp; | &amp; &amp; |  \<br>u_1 &amp; u_2 &amp; \cdots &amp; u_n  \<br>| &amp; | &amp; &amp; |<br>\end{bmatrix}<br>\end{align}<br>$$<br>我们将要使用这个矩阵来降维,要将原来的数据 $x \in R^n$ 映射到 $z \in R^k (k&lt;n)$,需要使用前 K 个最大的特征值对应的特征向量(因特征值大的更能代表数据特征)组生成一组新的正交基:</p>
+<p>$$<br>\begin{align}<br>U_{reduce} =<br>\begin{bmatrix}<br>| &amp; | &amp; &amp; |  \<br>u_1 &amp; u_2 &amp; \cdots &amp; u_k  \<br>| &amp; | &amp; &amp; |<br>\end{bmatrix}<br>\end{align}<br>$$<br><figure class="highlight matlab"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Ureduce = U(:,<span class="number">1</span>:k);</div></pre></td></tr></table></figure></p>
+<p>这样以来,我们就可以在新基上用投影的方式表示原来的数据了:<br>$$<br>\begin{align}<br>Z =<br>\begin{bmatrix}<br>| &amp; | &amp; &amp; |  \<br>u_1 &amp; u_2 &amp; \cdots &amp; u_k  \<br>| &amp; | &amp; &amp; |<br>\end{bmatrix}^T \cdot X =<br>\begin{bmatrix} </p>
+<ul>
+<li>&amp; (u^1)^T  &amp; -  \</li>
+<li>&amp; (u^2)^T  &amp; - \<br>&amp; \vdots &amp;  \</li>
+<li>&amp; (u^k)^T  &amp; -<br>\end{bmatrix} \cdot X =<br>\begin{bmatrix}<br>z^1    \<br>z^2   \<br>\vdots  \<br>z^k<br>\end{bmatrix}<br>\end{align}<br>$$<br>这样,<br>$$<br>\begin{align}<br>\begin{bmatrix}<br>x^1    \<br>x^2   \<br>\vdots  \<br>x^n<br>\end{bmatrix} \Longrightarrow<br>\begin{bmatrix}<br>z^1    \<br>z^2   \<br>\vdots  \<br>z^k<br>\end{bmatrix}<br>\qquad\color{lime}{(k&lt;n)}\quad\color{red}{高维数据被投影到低维的正交基向量组上,实现了降维}<br>\end{align}<br>$$<figure class="highlight matlab"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">z = Ureduce'*x;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<hr>
+<h3 id="4-3-python-代码实现"><a href="#4-3-python-代码实现" class="headerlink" title="4.3 python 代码实现"></a>4.3 python 代码实现</h3><h2 id="数据下载地址"><a href="#数据下载地址" class="headerlink" title="数据下载地址"></a><a href="http://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/binary/madelon" target="_blank" rel="external">数据下载地址</a></h2><h2 id="代码github地址"><a href="#代码github地址" class="headerlink" title="代码github地址"></a><a href="https://github.com/anboqing/Algorithmlib/blob/master/PCA/python_version/pca.py" target="_blank" rel="external">代码github地址</a></h2><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#coding=utf-8</span></div><div class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</div><div class="line">__author__ = <span class="string">'anboqing'</span></div><div class="line"></div><div class="line"></div><div class="line"><span class="string">"""</span></div><div class="line">feature scaling and mean normalization</div><div class="line">零均值化</div><div class="line">"""</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">zeroMean</span><span class="params">(dataMat)</span>:</span></div><div class="line">    print(<span class="string">"feature scaling ... "</span>)</div><div class="line">    meanVal = np.mean(dataMat,axis=<span class="number">0</span>) <span class="comment"># axis = 0 means that calculate mean value by column(every feature)</span></div><div class="line">    print(<span class="string">"mean normalization ..."</span>)</div><div class="line">    newVal = dataMat - meanVal</div><div class="line">    <span class="keyword">return</span> newVal,meanVal</div><div class="line"></div><div class="line"><span class="string">"""</span></div><div class="line">    求预处理之后的样本矩阵的协方差矩阵</div><div class="line">"""</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">covarianceMat</span><span class="params">(normal_data)</span>:</span></div><div class="line">    <span class="string">'''</span></div><div class="line">    计算协方差矩阵</div><div class="line">    :param normal_data: 零均值规范化过的数据</div><div class="line">    :return: 协方差矩阵</div><div class="line">    '''</div><div class="line">    print(<span class="string">'calculate the covariance matrix ... '</span>)</div><div class="line">    covMat = np.cov(normal_data,rowvar=<span class="number">0</span>)</div><div class="line">    <span class="string">"""</span></div><div class="line">    numpy中的cov函数用于求协方差矩阵,</div><div class="line">    参数rowvar很重要,</div><div class="line">    若rowvar=0,说明传入的数据一行代表一个样本,</div><div class="line">    若rowvar!=0,说明一列代表一个样本</div><div class="line">    """</div><div class="line">    <span class="keyword">return</span> covMat</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">eigenValAndVector</span><span class="params">(covMat)</span>:</span></div><div class="line">    <span class="string">"""</span></div><div class="line">    求协方差矩阵的特征值和特征向</div><div class="line">    :param covMat: 协方差矩阵</div><div class="line">    :return: 协方差矩阵的特征值,特征向量</div><div class="line">    """</div><div class="line">    print(<span class="string">'calculate eigen value and eigen vector of covariance matrix...'</span>)</div><div class="line">    eigVals,eigVects = np.linalg.eig(np.mat(covMat))</div><div class="line">    <span class="keyword">return</span> eigVals,eigVects</div><div class="line"></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">reduceDimensionality</span><span class="params">(eigVals,eigVects,dataMat,k=<span class="number">1</span>)</span>:</span></div><div class="line">    <span class="string">"""</span></div><div class="line">    降维:保留主要成分</div><div class="line">    用前k个特征向量组成新的正交基,把原始数据映射到新的正交基上</div><div class="line">    :param eigVals: 原始数据的协方差矩阵的特征值</div><div class="line">    :param eigVects: 原始数据的协方差矩阵的特诊向量</div><div class="line">    :param dataMat: 原始数据</div><div class="line">    :param k: 要降维到多少维</div><div class="line">    :return: 降维后的数据,投影的正交基</div><div class="line">    """</div><div class="line">    print(<span class="string">'reduce the dimension ... '</span>)</div><div class="line">    eigValIndices = np.argsort(eigVals) <span class="comment"># 对特征值从小到大排序</span></div><div class="line">    n_eigValIndices = eigValIndices[<span class="number">-1</span>:-(k+<span class="number">1</span>):<span class="number">-1</span>] <span class="comment"># 最大的k个特征值的下标</span></div><div class="line">    data_mat_trans = eigVects[:,n_eigValIndices] <span class="comment"># 取出前k个最大的特征向量</span></div><div class="line"></div><div class="line">    low_dimensional_data = dataMat * data_mat_trans <span class="comment"># 将原始数据投影到新的向量空间的正交基上</span></div><div class="line">    <span class="keyword">return</span> low_dimensional_data,data_mat_trans</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">load_libsvm_data</span><span class="params">(file_path)</span>:</span></div><div class="line">    fin = open(file_path)</div><div class="line">    print(<span class="string">'load data : '</span>+file_path)</div><div class="line">    data_mat=[]</div><div class="line">    label_vec = []</div><div class="line">    <span class="keyword">for</span> strline <span class="keyword">in</span> fin.readlines():</div><div class="line">        line_arr = strline.strip().split()</div><div class="line">        label_vec.append(int(line_arr[<span class="number">0</span>]))</div><div class="line">        line_arr = line_arr[<span class="number">1</span>:]</div><div class="line">        row_arr = []</div><div class="line">        idx = <span class="number">1</span></div><div class="line">        <span class="keyword">for</span> pair <span class="keyword">in</span> line_arr:</div><div class="line">            str_indice,str_val=pair.split(<span class="string">":"</span>)</div><div class="line">            indice = int(str_indice)</div><div class="line">            fval = float(str_val)</div><div class="line">            <span class="comment">#print indice,fval</span></div><div class="line">            <span class="keyword">if</span> indice == idx:</div><div class="line">                row_arr.append(fval)</div><div class="line">            <span class="keyword">else</span>:</div><div class="line">                row_arr.append(<span class="number">0.0</span>)</div><div class="line">            idx=idx+<span class="number">1</span></div><div class="line">        data_mat.append(row_arr)</div><div class="line">    <span class="keyword">return</span> data_mat,label_vec</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">choosePCASize</span><span class="params">(eig_vals,percentage=<span class="number">0.99</span>)</span>:</span></div><div class="line">    <span class="string">'''</span></div><div class="line">    计算主成分个数的函数</div><div class="line">    :param eig_vals: 特征值数组</div><div class="line">    :param percentage: 要保留的方差的百分比</div><div class="line">    :return:应该降到的维数</div><div class="line">    '''</div><div class="line">    asc_eigs = np.sort(eig_vals) <span class="comment"># 升序</span></div><div class="line">    desc_eigs = asc_eigs[<span class="number">-1</span>::<span class="number">-1</span>] <span class="comment"># 翻转成从大到小</span></div><div class="line">    eig_sum = sum(desc_eigs)</div><div class="line">    tmpSum =<span class="number">0</span></div><div class="line">    num = <span class="number">0</span></div><div class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> desc_eigs:</div><div class="line">        tmpSum += i</div><div class="line">        num+=<span class="number">1</span></div><div class="line">        <span class="keyword">if</span> tmpSum &gt;= eig_sum * percentage:</div><div class="line">            <span class="keyword">return</span> num</div><div class="line"></div><div class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</div><div class="line">    file_path = <span class="string">'madelon'</span></div><div class="line">    <span class="comment"># 读取livsvm格式的数据</span></div><div class="line">    data_mat,label_vec = load_libsvm_data(file_path)</div><div class="line">    <span class="comment"># 转换成 numpy matrix 结构</span></div><div class="line">    dataMat = np.mat(data_mat)</div><div class="line">    <span class="comment"># 数据零均值化</span></div><div class="line">    new_dat,mean_dat = zeroMean(dataMat)</div><div class="line">    <span class="comment"># 计算协方差矩阵</span></div><div class="line">    cov_mat = covarianceMat(new_dat)</div><div class="line">    <span class="comment">#print np.shape(cov_mat)</span></div><div class="line">    <span class="comment"># 计算协方差矩阵的特征值和特征向量</span></div><div class="line">    eigen_values,eigen_vectors = eigenValAndVector(cov_mat)</div><div class="line">    <span class="comment"># 选择要降到的维数(保存99的方差)</span></div><div class="line">    num_ = choosePCASize(eigen_values)</div><div class="line">    <span class="comment"># 试着把这个数据集降维为num_2维</span></div><div class="line">    low_dim_mat,orth_base = reduceDimensionality(eigen_values,eigen_vectors,new_dat,num_2)</div><div class="line">    <span class="keyword">print</span> np.shape(low_dim_mat)</div><div class="line">    <span class="keyword">print</span> np.shape(orth_base)</div></pre></td></tr></table></figure>
+<h3 id="4-4-选择主成分的个数"><a href="#4-4-选择主成分的个数" class="headerlink" title="4.4 选择主成分的个数"></a>4.4 选择主成分的个数</h3><p>在应用PCA的时候,对于一个1000维的数据,我们怎么知道要降维到多少维才是合理的?也就是要在保留最多信息的同时取出最多的噪声.Andrew Ng的机器学习课讲的方法是: </p>
+<ol>
+<li>算出 Average squared projection error: $$\frac1m \sum<em>{i=1}^m \left\lVert x^{(i)} - x</em>{approx}^{(i)} \right\rVert^2$$</li>
+<li>算出 Total variation in the data: $$\frac1m \sum_{i=1}^m \left\lVert x^{(i)} \right\rVert^2$$</li>
+<li>然后,选择满足下列条件的 k :<br>$$ \frac{\frac1m \sum<em>{i=1}^m \left\lVert x^{(i)} - x</em>{approx}^{(i)} \right\rVert^2}{\frac1m \sum<em>{i=1}^m \left\lVert x^{(i)} \right\rVert^2} \le 0.01 \qquad(1\%)$$<br>也就是说: <strong>保留了 99 % 的方差</strong>,其中 0.01可以根据应用的不同来自己设定<br>上式也可以改成:<br>$$<br>1 - \frac{\sum</em>{i=1}^k \lambda<em>i}{\sum</em>{i=1}^n \lambda_i} \le 0.01<br>$$<br>其中$\lambda_i$ 是协方差矩阵的特征值</li>
+</ol>
+<h2 id="自动选择维数的算法"><a href="#自动选择维数的算法" class="headerlink" title="自动选择维数的算法:"></a>自动选择维数的算法:</h2><p><a href="http://research.microsoft.com/en-us/um/people/minka/papers/pca/minka-pca.pdf" target="_blank" rel="external">Automatic choice of dimensionality for PCA<br>Thomas P. Minka</a></p>
+<hr>
+<p><a href="http://anboqing.gitcafe.io" target="_blank" rel="external">欢迎访问我的博客</a></p>
+<hr>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://anboqing.github.io/2016/01/11/降维PCA/" data-id="cisoqi7e70046rmggpeodmg60" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PCA-降维/">PCA 降维</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-函数式编程" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/01/10/函数式编程/" class="article-date">
+  <time datetime="2016-01-10T15:45:00.000Z" itemprop="datePublished">2016-01-10</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/函数式编程/">函数式编程</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/01/10/函数式编程/">函数式编程-1.1编程范式</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="编程范式"><a href="#编程范式" class="headerlink" title="编程范式"></a>编程范式</h2><p><strong>范式</strong></p>
+<blockquote>
+<p> Paradigm: In science, a <strong>paradigm</strong> describes distinct concepts or thought patterns in some scientific discipline.</p>
+</blockquote>
+<p>主要的编程范式：</p>
+<ul>
+<li>命令式 : c , c++ , java …</li>
+<li>函数式 : scala , haskell , Lisp … </li>
+<li>logic programming : prolog …<br>和这种分类方式正交的：<br>面向对象编程</li>
+</ul>
+<hr>
+<p> <strong>命令式语言 和 计算机</strong></p>
+<ol>
+<li>变量   —&gt; 内存单元</li>
+<li>变量解引用 —&gt; 加载指令</li>
+<li>变量赋值 —&gt; 存储指令</li>
+<li>控制结构 —&gt; jumps 跳转命令</li>
+</ol>
+<p>命令式语言的限制：</p>
+<blockquote>
+<p>One tends to conceptualize data structures word-by-word.</p>
+</blockquote>
+<p>我们需要其他技术来定义高层次的数据抽象：集合，多项式，几何图形…</p>
+<p>理想情况下： 开发 <em>theories</em> of collections,shapes , strings…</p>
+<hr>
+<p><strong>什么是Theory</strong><br>A theory consists of :</p>
+<ul>
+<li>one or more data types</li>
+<li>operations on these types</li>
+<li>laws that describe the relationships between values and operations</li>
+</ul>
+<h2 id="a-theory-does-not-describe-mutations-mutations-mean-change-the-thing-while-keeping-the-identity-of-the-thing"><a href="#a-theory-does-not-describe-mutations-mutations-mean-change-the-thing-while-keeping-the-identity-of-the-thing" class="headerlink" title="a theory does not describe mutations ! mutations mean change the thing while keeping the identity of the thing."></a><strong>a theory does not describe mutations !</strong> mutations mean change the thing while keeping the identity of the thing.</h2><hr>
+<p>Consequences for Programming</p>
+<p>If we want to implement high-level concepts following their mathmatical theories,there’s no place for mutation.</p>
+<ul>
+<li>Theories do not admit it </li>
+<li>Mutation 会破坏Theories 里面有用的lows </li>
+</ul>
+<p>因此，让我们</p>
+<ul>
+<li>专注于定义 theories for operators expressed as functions</li>
+<li>avoid mutations</li>
+<li>have powerful ways to abstract and compose functions.</li>
+</ul>
+<hr>
+<h2 id="函数式编程"><a href="#函数式编程" class="headerlink" title="函数式编程"></a>函数式编程</h2><ul>
+<li>狭义的概念： 函数式编程是指没有 变量，赋值，循环 和其他命令式控制结构的编程</li>
+<li>广义上指：函数式编程enables the construction of elegant programs that focus on functions.</li>
+<li>特别的：functions can be values that are produced,consumed,and composed<br>在函数式编程语言里面，函数是一等公民：<br>它们可以在任何地方定义，包括在其他函数内<br>像其他任何值一样，可以当做参数和返回值<br>有一组运算符来compose函数</li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://anboqing.github.io/2016/01/10/函数式编程/" data-id="cisoqi7dv003lrmgg1b0b33s6" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/函数式编程/">函数式编程</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-GoogleProtocolBuffers简介" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/01/10/GoogleProtocolBuffers简介/" class="article-date">
+  <time datetime="2016-01-10T01:44:00.000Z" itemprop="datePublished">2016-01-10</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/caffe/">caffe</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/01/10/GoogleProtocolBuffers简介/">Google Protocol Buffers 简介</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="什么是-protocol-buffers"><a href="#什么是-protocol-buffers" class="headerlink" title="什么是　protocol buffers ?"></a>什么是　protocol buffers ?</h2><p>Protocol buffers 是一种灵活、高效的序列化结构数据的自动机制－－想想XML,但是它更小，更快，更简单。你只需要把你需要怎样结构化你的数据定义一次，你就能使用特殊生成的代码来方便的用多种语言从一系列数据流中读写你的结构化数据。你甚至不需要中断你用”老”结构编译好的已经部署的程序来更新你的数据结构。</p>
+<hr>
+<h2 id="它是怎样工作的？"><a href="#它是怎样工作的？" class="headerlink" title="它是怎样工作的？"></a>它是怎样工作的？</h2><p>你在一个名为<code>.proto</code>的文件里用protocol buffer message 定义你需要序列化数据的结构。每个protocol buffer message 是一个小的信息逻辑记录，包含了一系列的<code>name-value</code>对。这里有一个简单的<code>.proto</code>例子,它定义了一个<code>person</code>的信息。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">message Person &#123;</div><div class="line">  required string name = 1;</div><div class="line">  required int32 id = 2;</div><div class="line">  optional string email = 3;</div><div class="line"></div><div class="line">  enum PhoneType &#123;</div><div class="line">    MOBILE = 0;</div><div class="line">    HOME = 1;</div><div class="line">    WORK = 2;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  message PhoneNumber &#123;</div><div class="line">    required string number = 1;</div><div class="line">    optional PhoneType type = 2 [default = HOME];</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  repeated PhoneNumber phone = 4;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>就像你看到的，这条信息结构很简单—每条message type 都有一个或多个独特的属性，每个属性都有一个<code>name</code>和一个<code>value</code>类型，<code>value</code>类型可以是<code>numbers</code> ( 整数或浮点数),<code>booleans</code>,<code>strings</code>,<code>raw bytes</code>或者其他<code>protocol buffer message types</code>，允许你以嵌套结构组织你的结构。你可以指定<code>optional</code>,<code>required</code>、和<code>repeated</code>属性。你可以从<a href="https://developers.google.com/protocol-buffers/docs/proto" target="_blank" rel="external"> Protocol Buffer Language Guide</a>找到更多的关于如何写<code>.proto</code>文件的信息。</p>
+<p>一旦你定义了你的信息，你就可以运行protocol buffer 编译器来编译你的.proto文件来生成特定语言的数据访问类。这些类提供了简单的对属性的访问函数（例如 <code>name()</code>和<code>set_name()</code> )和用来序列化整个结构到raw bytes和从raw bytes 解析出结构的函数。例如，假如你使用的是c++语言，用编译器编译上面那个<code>person</code>的<code>.proto</code>文件会生成一个<code>Person</code>类。你可以在你的应用里用这个类来操纵<code>Person</code>类的对象。比如，你可能会写一些这样的代码:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">Person person;</div><div class="line">person.set_name(&quot;John Doe&quot;);</div><div class="line">person.set_id(1234);</div><div class="line">person.set_email(&quot;jdoe@example.com&quot;);</div><div class="line">fstream output(&quot;myfile&quot;, ios::out | ios::binary);</div><div class="line">person.SerializeToOstream(&amp;output);</div></pre></td></tr></table></figure>
+<p>然后，你可以通过这样的代码来把你的message读进来:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">fstream input(&quot;myfile&quot;, ios::in | ios::binary);</div><div class="line">Person person;</div><div class="line">person.ParseFromIstream(&amp;input);</div><div class="line">cout &lt;&lt; &quot;Name: &quot; &lt;&lt; person.name() &lt;&lt; endl;</div><div class="line">cout &lt;&lt; &quot;E-mail: &quot; &lt;&lt; person.email() &lt;&lt; endl;</div></pre></td></tr></table></figure></p>
+<p>你可以给你的message添加新的属性而不打破向后兼容性(backwards-compatibility);旧的二进制文件仅仅在编译的时候忽略那些新的属性。这样一来，如果你有一个通信协议使用了protocol buffers当做它传输的数据格式，你可以扩展你的通信协议而不用担心破坏现有的代码。</p>
+<p>你可以在<a href="https://developers.google.com/protocol-buffers/docs/reference/overview" target="_blank" rel="external">API Reference section</a>找到完整的文档，并且你可以在<a href="https://developers.google.com/protocol-buffers/docs/encoding" target="_blank" rel="external">Protocol buffer encoding</a>找出关于protocol buffer 编码的更多信息.</p>
+<hr>
+<h2 id="为什么不用XML等其他技术"><a href="#为什么不用XML等其他技术" class="headerlink" title="为什么不用XML等其他技术?"></a>为什么不用XML等其他技术?</h2><p>Protocol buffers相对XML在序列化数据的时候有很多优势。protocol buffers :</p>
+<ul>
+<li>更简单</li>
+<li>比XML小３到１０倍</li>
+<li>比XML快２０到１００倍</li>
+<li>更少歧义</li>
+<li>可以生成方便编程的数据访问类</li>
+</ul>
+<p>例如，假若你要给<code>person</code>建模，它有<code>name</code>和<code>email</code>属性。在XML里，你需要：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&lt;person&gt;</div><div class="line">    &lt;name&gt;John Doe&lt;/name&gt;</div><div class="line">    &lt;email&gt;jdoe@example.com&lt;/email&gt;</div><div class="line">&lt;/person&gt;</div></pre></td></tr></table></figure></p>
+<p>用protocol buffer message（在protocol buffer 的text format）是这样的<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"># Textual representation of a protocol buffer.</div><div class="line"># This is *not* the binary format used on the wire.</div><div class="line">person &#123;</div><div class="line">  name: &quot;John Doe&quot;</div><div class="line">  email: &quot;jdoe@example.com&quot;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>当上面这段代码被编译成<code>binary format</code>（上面那段text format只是为了方便人类读写编辑的）的时候，它可能只占28字节长，仅仅需要100~200纳秒就能编译。那个XML版本即使移除所有空白也至少需要69字节，并且需要5000~10000纳秒来编译。</p>
+<p>同样，操作protocol buffer 更容易:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">cout &lt;&lt; &quot;Name: &quot; &lt;&lt; person.name() &lt;&lt; endl;</div><div class="line">cout &lt;&lt; &quot;E-mail:&quot; &lt;&lt; person.email() &lt;&lt; endl;</div></pre></td></tr></table></figure></p>
+<p>然而如果使用XML你需要这样做：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">cout &lt;&lt; &quot;Name: &quot;</div><div class="line">       &lt;&lt; person.getElementsByTagName(&quot;name&quot;)-&gt;item(0)-&gt;innerText()</div><div class="line">       &lt;&lt; endl;</div><div class="line">cout &lt;&lt; &quot;E-mail: &quot;</div><div class="line">       &lt;&lt; person.getElementsByTagName(&quot;email&quot;)-&gt;item(0)-&gt;innerText()</div><div class="line">       &lt;&lt; endl;</div></pre></td></tr></table></figure></p>
+<hr>
+<h2 id="嗯～听起来能解决我的问题！我该怎样开始呢？"><a href="#嗯～听起来能解决我的问题！我该怎样开始呢？" class="headerlink" title="嗯～听起来能解决我的问题！我该怎样开始呢？"></a>嗯～听起来能解决我的问题！我该怎样开始呢？</h2><p><a href="https://developers.google.com/protocol-buffers/docs/downloads.html" target="_blank" rel="external">下载地址</a>–这个包包含了完整的c++,python和java语言的编译器源代码，和I/O和测试的类。安装请参阅README。</p>
+<p>一旦你安装好了，就可以跟着<a href="https://developers.google.com/protocol-buffers/docs/tutorials" target="_blank" rel="external">入门教程</a>来学习了。</p>
+<hr>
+<h2 id="入门教程c-版"><a href="#入门教程c-版" class="headerlink" title="入门教程c++版"></a>入门教程c++版</h2><p>这个教程会带你走一遍使用protocol buffer的流程，创建一个简单的实例程序，学会基本的使用方法：</p>
+<ul>
+<li>在<code>.proto</code>文件里定义信息格式</li>
+<li>使用protocol buffer编译器</li>
+<li>使用c++ protocol buffer API来读写信息</li>
+</ul>
+<hr>
+<h3 id="为什么使用protocol-buffers"><a href="#为什么使用protocol-buffers" class="headerlink" title="为什么使用protocol buffers?"></a>为什么使用protocol buffers?</h3><p>在这个教程里我们要创建一个简单的“地址簿”程序来在文件里读写人们的联系人信息。每个人都有一个name,id,email address和一个联系电话。</p>
+<p>你怎样序列化和读取这样一个结构数据呢？这里有三种方法:</p>
+<ul>
+<li>内存中原始的字节数据结构可以存储为２进制形式。这种方法很脆弱，因为读取代码必须用同样的内存布局编译，还要考虑使用相同的内存大小端等等。当文件积累了很多数据之后，拷贝到处都是，扩展结构就很困难了。</li>
+<li>你可以发明一个点对点的方式来把数据编码为一个简单的字符串—例如编码４个整数为”12:3:-23:67”.这是一个简单且灵活的方法，尽管它需要你编写一次性的读写代码，读取需要一些运行时间。这种方法适用于编码十分简单的数据。</li>
+<li>序列化数据到XML文件。如果你需要和其他程序共享数据，那么这将是个好方法。然而，XML占内存已经臭名昭著了，解析编码它会造成程序性能大幅下降。在XML DOM tree里巡弋也远比在类里查找属性复杂的多。</li>
+</ul>
+<p>protocol buffers 灵活高效，可以解决上述问题。你只需要编写一个<code>.proto</code>文件来描述你要使用的数据结构。protocol buffer 编译器可以把<code>.proto</code>文件编译成一个类似于ORM(object relation mapping)实现类的数据访问类，这个类可以把高效的用二进制文件方式存储的数据读写出来。更多的是，它提供了一种向后兼容的扩展机制，使你可以不用担心兼容性问题来扩展你的数据格式。</p>
+<hr>
+<h3 id="定义你的protocol-Format"><a href="#定义你的protocol-Format" class="headerlink" title="定义你的protocol Format"></a>定义你的protocol Format</h3><p>为了创建地址簿程序，你需要首先定义一个<code>.proto</code>文件。定义<code>.proto</code>文件十分简单：　你添加一个 <code>message</code> 给你想序列化的每个数据结构　，然后指定一个 <code>name</code>和一个<code>type</code>给<code>message</code>的每个属性。下面是一个<code>.proto</code>文件，定义了地址簿数据结构,<code>addressbook.proto</code>:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line">package tutorial;</div><div class="line"></div><div class="line">message Person &#123;</div><div class="line">  required string name = 1;</div><div class="line">  required int32 id = 2;</div><div class="line">  optional string email = 3;</div><div class="line"></div><div class="line">  enum PhoneType &#123;</div><div class="line">    MOBILE = 0;</div><div class="line">    HOME = 1;</div><div class="line">    WORK = 2;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  message PhoneNumber &#123;</div><div class="line">    required string number = 1;</div><div class="line">    optional PhoneType type = 2 [default = HOME];</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  repeated PhoneNumber phone = 4;</div><div class="line">&#125;</div><div class="line"></div><div class="line">message AddressBook &#123;</div><div class="line">  repeated Person person = 1;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>protobuffer支持的内建数据类型包括<code>bool</code>,<code>int32</code>,<code>float</code>,<code>double</code>,<code>string</code>.<br>注意：message可以嵌套，比如　PhoneNumber 就定义在Person里。<br>“＝１”，“＝２”标记了每个元素的唯一“tag”,这是用在二进制编码里的。使用１－１５可以在１个字节里表示这些tag，节省空间，一般把常用的需要大量重复的元素使用1-15来编码，把１６以上的tag留给不常用的元素。</p>
+<p>每个属性必须标记为下列修饰符之一：</p>
+<ul>
+<li><code>required</code> : 故名思议就是必须提供值的属性，当你把属性设置为required的时候要小心，因为如果以后想修改为其他类型，老的读取类就不兼容新的数据了。</li>
+<li><code>optional</code>: 就是可以不提供值的属性,如果没有提供值，会设置为默认值。默认值可以自己提供，如果没有自己提供默认值，会设置为系统默认值：numeric类型会置为０，字符串置为空串，bool置为false;对于内嵌类型，默认值永远是空实例。</li>
+<li><code>repeated</code>:就是可能重复任意次（包含０次).重复值的顺序会在二进制文件保存下来，可以把重复的属性看做动态大小的数组。注意，由于历史原因，<code>repeated</code>数值属性不能有效的被编码成二进制，新的代码可以使用<code>[packed=true]</code>来获得更好的编码效率<blockquote>
+<p>例如：　<figure class="highlight plain"><figcaption><span>int32 samples = 4 [packed=true];```</span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">---</div><div class="line">### 编译你的protocol buffers文件</div><div class="line">现在你拥有一个`.proto`文件，接下来你需要生成一个读写你的`AddressBook`类的访问类。你需要用protocol buffer编译器`protoc`来编译你的`.proto`文件:</div><div class="line"></div><div class="line">&gt; ```protoc -I=\$SRC_DIR --cpp_out=\$DST_DIR \$SRC_DIR/addressbook.proto</div></pre></td></tr></table></figure></p>
+</blockquote>
+</li>
+</ul>
+<p><code>cpp_out</code>可以换成<code>python_out</code>或者<code>java_out</code>。<br>编译完成后，就会在<em>DST_DIR</em>下面生成２个文件：</p>
+<ul>
+<li><code>addressbook.pb.h</code></li>
+<li><code>addressbook.pb.cc</code></li>
+</ul>
+<hr>
+<h3 id="Protocol-Buffer-API"><a href="#Protocol-Buffer-API" class="headerlink" title="Protocol Buffer API"></a>Protocol Buffer API</h3><p>我们现在来看一些生成的code是什么样的，编译器为我们生成了什么类和函数呢？<br>如果我们打开<code>tutorial.pb.h</code>，我们会看到编译器给我们在<code>.proto</code>文件里定义的每一个<code>message</code>都生成了一个<strong>class</strong>，我们再看<code>Person</code>类，会发现编译器给<em>message</em>的每个属性都生成了<em>getters和setters</em>，例如，对于<code>name</code>,<code>id</code>,<code>email</code>,和<code>phone</code>属性，我们可以找到这些函数:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line">// name</div><div class="line">  inline bool has_name() const;</div><div class="line">  inline void clear_name();</div><div class="line">  inline const ::std::string&amp; name() const;</div><div class="line">  inline void set_name(const ::std::string&amp; value);</div><div class="line">  inline void set_name(const char* value);</div><div class="line">  inline ::std::string* mutable_name();</div><div class="line"></div><div class="line">  // id</div><div class="line">  inline bool has_id() const;</div><div class="line">  inline void clear_id();</div><div class="line">  inline int32_t id() const;</div><div class="line">  inline void set_id(int32_t value);</div><div class="line"></div><div class="line">  // email</div><div class="line">  inline bool has_email() const;</div><div class="line">  inline void clear_email();</div><div class="line">  inline const ::std::string&amp; email() const;</div><div class="line">  inline void set_email(const ::std::string&amp; value);</div><div class="line">  inline void set_email(const char* value);</div><div class="line">  inline ::std::string* mutable_email();</div><div class="line"></div><div class="line">  // phone</div><div class="line">  inline int phone_size() const;</div><div class="line">  inline void clear_phone();</div><div class="line">  inline const ::google::protobuf::RepeatedPtrField&lt; ::tutorial::Person_PhoneNumber &gt;&amp; phone() const;</div><div class="line">  inline ::google::protobuf::RepeatedPtrField&lt; ::tutorial::Person_PhoneNumber &gt;* mutable_phone();</div><div class="line">  inline const ::tutorial::Person_PhoneNumber&amp; phone(int index) const;</div><div class="line">  inline ::tutorial::Person_PhoneNumber* mutable_phone(int index);</div><div class="line">  inline ::tutorial::Person_PhoneNumber* add_phone();</div></pre></td></tr></table></figure>
+<p>正如你所能看到的那样，getters和小写属性名一样，setters以<code>set_</code>开头。还有<code>has_</code>开头的判断是否设置了值的函数。还有<code>clear_</code>开头的函数用于清空设置的值。</p>
+<p>不同类型的属性方法不尽相同，例如 <code>id</code>只有基本的getter,setter方法，而<code>name</code>,<code>email</code>等字符串类型的属性多了一个<code>mutable_</code>开头的getter,和一个多出来的setter。即使还没有设置<code>email</code>仍然可以调用<code>mutable_email</code>。它可以自动初始化为一个空字符串。</p>
+<p><code>repeated</code>属性同样有些特别的方法，例如<code>phone</code>属性：</p>
+<ul>
+<li>可以查看<code>_size</code>（这个人有多少个电话号码)</li>
+<li>可以通过<code>index</code>访问一个特定的值</li>
+<li>可以添加一个新值(通过<code>add_</code>方法)</li>
+</ul>
+<p>更多关于编译器生成函数的信息请参看<a href="https://developers.google.com/protocol-buffers/docs/reference/cpp-generated" target="_blank" rel="external">C++ generated code reference</a></p>
+<hr>
+<h4 id="枚举和嵌套类"><a href="#枚举和嵌套类" class="headerlink" title="枚举和嵌套类"></a>枚举和嵌套类</h4><p>生成的代码包含了一个<code>PhoneType</code>枚举对应你的<code>.proto</code>文件里的enum.你可以通过<code>Person::PhoneType</code>来使用这个枚举，和它的值<code>Person::MOBILE</code>,<code>Person::HOME</code>,<code>Person::WORK</code>(具体实现很复杂，但我们不需要了解它）</p>
+<p>编译器同样生成了一个嵌套类<code>Person::PhoneNumber</code>。如果查看代码，会发现实际的类是叫做<code>Person_PhoneNumber</code>,但是使用了一个<code>typedef</code>来重命名了它，唯一的区别是当你想在另一个文件里<strong>前向声明</strong>这个类的时候，必须使用<code>Person_PhoneNumber</code>来前向声明它。</p>
+<hr>
+<h4 id="标准-Message方法"><a href="#标准-Message方法" class="headerlink" title="标准 Message方法"></a>标准 Message方法</h4><p>每个message类还包含了一些其他方法来使你能检查或者操作整个message,包括:</p>
+<ul>
+<li><code>bool IsInitialized() const</code>;: checks if all the required fields have been set.</li>
+<li><code>string DebugString() const</code>;: returns a human-readable representation of the message, particularly useful for debugging.</li>
+<li><code>void CopyFrom(const Person&amp; from)</code>;: overwrites the message with the given message’s values.</li>
+<li><code>void Clear()</code>;: clears all the elements back to the empty state. </li>
+</ul>
+<hr>
+<h4 id="解析和序列化"><a href="#解析和序列化" class="headerlink" title="解析和序列化"></a>解析和序列化</h4><p>最终，每个protocol buffer class使用读写方法来解析和序列化message到二进制文件里，这些方法包括:</p>
+<ul>
+<li><code>bool SerializeToString(string* output) const</code>;: 序列化一个message并且把字节文件存储到string里，这里使用string仅仅是为了把它当做一个方便的容器.</li>
+<li><code>bool ParseFromString(const string&amp; data)</code>;: 从指定的string里解析message</li>
+<li><code>bool SerializeToOstream(ostream* output) const</code>;: 把message写到指定的c++｀ostream`里。</li>
+<li><code>bool ParseFromIstream(istream* input)</code>;: 从指定的c++<code>istream</code>读取message</li>
+</ul>
+<p>查看<a href="https://developers.google.com/protocol-buffers/docs/reference/cpp/google.protobuf.message.html#Message" target="_blank" rel="external">Message API</a>获取更详细内容.</p>
+<hr>
+<h3 id="写一个Message"><a href="#写一个Message" class="headerlink" title="写一个Message"></a>写一个Message</h3><p>现在,让我们试着使用编译器为我们生成的类。我们让我们的地址簿程序做的第一件事情是把一个人的个人信息写到地址簿文件里。我们需要生成一个该类的实例然后把它写入到输出流里。</p>
+<p>这里有一个实例程序:<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;fstream&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"addressbook.pb.h"</span></span></div><div class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</div><div class="line"></div><div class="line"><span class="comment">// This function fills in a Person message based on user input.</span></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">PromptForAddress</span><span class="params">(tutorial::Person* person)</span> </span>&#123;</div><div class="line">  <span class="built_in">cout</span> &lt;&lt; <span class="string">"Enter person ID number: "</span>;</div><div class="line">  <span class="keyword">int</span> id;</div><div class="line">  <span class="built_in">cin</span> &gt;&gt; id;</div><div class="line">  person-&gt;set_id(id);</div><div class="line">  <span class="built_in">cin</span>.ignore(<span class="number">256</span>, <span class="string">'\n'</span>);</div><div class="line"></div><div class="line">  <span class="built_in">cout</span> &lt;&lt; <span class="string">"Enter name: "</span>;</div><div class="line">  getline(<span class="built_in">cin</span>, *person-&gt;mutable_name());</div><div class="line"></div><div class="line">  <span class="built_in">cout</span> &lt;&lt; <span class="string">"Enter email address (blank for none): "</span>;</div><div class="line">  <span class="built_in">string</span> email;</div><div class="line">  getline(<span class="built_in">cin</span>, email);</div><div class="line">  <span class="keyword">if</span> (!email.empty()) &#123;</div><div class="line">    person-&gt;set_email(email);</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="keyword">while</span> (<span class="literal">true</span>) &#123;</div><div class="line">    <span class="built_in">cout</span> &lt;&lt; <span class="string">"Enter a phone number (or leave blank to finish): "</span>;</div><div class="line">    <span class="built_in">string</span> number;</div><div class="line">    getline(<span class="built_in">cin</span>, number);</div><div class="line">    <span class="keyword">if</span> (number.empty()) &#123;</div><div class="line">      <span class="keyword">break</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    tutorial::Person::PhoneNumber* phone_number = person-&gt;add_phone();</div><div class="line">    phone_number-&gt;set_number(number);</div><div class="line"></div><div class="line">    <span class="built_in">cout</span> &lt;&lt; <span class="string">"Is this a mobile, home, or work phone? "</span>;</div><div class="line">    <span class="built_in">string</span> type;</div><div class="line">    getline(<span class="built_in">cin</span>, type);</div><div class="line">    <span class="keyword">if</span> (type == <span class="string">"mobile"</span>) &#123;</div><div class="line">      phone_number-&gt;set_type(tutorial::Person::MOBILE);</div><div class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (type == <span class="string">"home"</span>) &#123;</div><div class="line">      phone_number-&gt;set_type(tutorial::Person::HOME);</div><div class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (type == <span class="string">"work"</span>) &#123;</div><div class="line">      phone_number-&gt;set_type(tutorial::Person::WORK);</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">      <span class="built_in">cout</span> &lt;&lt; <span class="string">"Unknown phone type.  Using default."</span> &lt;&lt; <span class="built_in">endl</span>;</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">// Main function:  Reads the entire address book from a file,</span></div><div class="line"><span class="comment">//   adds one person based on user input, then writes it back out to the same</span></div><div class="line"><span class="comment">//   file.</span></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span>* argv[])</span> </span>&#123;</div><div class="line">  <span class="comment">// Verify that the version of the library that we linked against is</span></div><div class="line">  <span class="comment">// compatible with the version of the headers we compiled against.</span></div><div class="line">  GOOGLE_PROTOBUF_VERIFY_VERSION;</div><div class="line"></div><div class="line">  <span class="keyword">if</span> (argc != <span class="number">2</span>) &#123;</div><div class="line">    <span class="built_in">cerr</span> &lt;&lt; <span class="string">"Usage:  "</span> &lt;&lt; argv[<span class="number">0</span>] &lt;&lt; <span class="string">" ADDRESS_BOOK_FILE"</span> &lt;&lt; <span class="built_in">endl</span>;</div><div class="line">    <span class="keyword">return</span> <span class="number">-1</span>;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  tutorial::AddressBook address_book;</div><div class="line"></div><div class="line">  &#123;</div><div class="line">    <span class="comment">// Read the existing address book.</span></div><div class="line">    <span class="function">fstream <span class="title">input</span><span class="params">(argv[<span class="number">1</span>], ios::in | ios::binary)</span></span>;</div><div class="line">    <span class="keyword">if</span> (!input) &#123;</div><div class="line">      <span class="built_in">cout</span> &lt;&lt; argv[<span class="number">1</span>] &lt;&lt; <span class="string">": File not found.  Creating a new file."</span> &lt;&lt; <span class="built_in">endl</span>;</div><div class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (!address_book.ParseFromIstream(&amp;input)) &#123;</div><div class="line">      <span class="built_in">cerr</span> &lt;&lt; <span class="string">"Failed to parse address book."</span> &lt;&lt; <span class="built_in">endl</span>;</div><div class="line">      <span class="keyword">return</span> <span class="number">-1</span>;</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="comment">// Add an address.</span></div><div class="line">  PromptForAddress(address_book.add_person());</div><div class="line"></div><div class="line">  &#123;</div><div class="line">    <span class="comment">// Write the new address book back to disk.</span></div><div class="line">    <span class="function">fstream <span class="title">output</span><span class="params">(argv[<span class="number">1</span>], ios::out | ios::trunc | ios::binary)</span></span>;</div><div class="line">    <span class="keyword">if</span> (!address_book.SerializeToOstream(&amp;output)) &#123;</div><div class="line">      <span class="built_in">cerr</span> &lt;&lt; <span class="string">"Failed to write address book."</span> &lt;&lt; <span class="built_in">endl</span>;</div><div class="line">      <span class="keyword">return</span> <span class="number">-1</span>;</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="comment">// Optional:  Delete all global objects allocated by libprotobuf.</span></div><div class="line">  google::protobuf::ShutdownProtobufLibrary();</div><div class="line"></div><div class="line">  <span class="keyword">return</span> <span class="number">0</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>注意代码中的<code>GOOGLE_PROTOBUF_VERIFY_VERSION</code>宏,在使用c++ Protocol Buffer 之前执行这个宏是一个好的习惯（尽管不是强制要求的)。它会验证你是否链接了正确的库，防止你链接版本不匹配的库。</p>
+<p>注意代码中的<code>ShutdownProtobufLibrary()</code>，它会清楚所有protocol buffer libarary分配的全局对象。通常这是不需要的，因为这个进程总是会退出，系统会接管剩下的内存。但是，如果你使用了一个内存泄露检查工具，比如<code>valgrand</code>之类的，这类工具会要求你把所有分配的内存释放掉，或者你在写一个库文件，这个库文件会被同一个进程加载和卸载多次，这两种情况你就需要清理所有东西。</p>
+<hr>
+<h3 id="读取一个Message"><a href="#读取一个Message" class="headerlink" title="读取一个Message"></a>读取一个Message</h3><p>这是一个从二进制文件读取地址簿的例子:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div></pre></td><td class="code"><pre><div class="line">#include &lt;iostream&gt;</div><div class="line">#include &lt;fstream&gt;</div><div class="line">#include &lt;string&gt;</div><div class="line">#include &quot;addressbook.pb.h&quot;</div><div class="line">using namespace std;</div><div class="line"></div><div class="line">// Iterates though all people in the AddressBook and prints info about them.</div><div class="line">void ListPeople(const tutorial::AddressBook&amp; address_book) &#123;</div><div class="line">  for (int i = 0; i &lt; address_book.person_size(); i++) &#123;</div><div class="line">    const tutorial::Person&amp; person = address_book.person(i);</div><div class="line"></div><div class="line">    cout &lt;&lt; &quot;Person ID: &quot; &lt;&lt; person.id() &lt;&lt; endl;</div><div class="line">    cout &lt;&lt; &quot;  Name: &quot; &lt;&lt; person.name() &lt;&lt; endl;</div><div class="line">    if (person.has_email()) &#123;</div><div class="line">      cout &lt;&lt; &quot;  E-mail address: &quot; &lt;&lt; person.email() &lt;&lt; endl;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    for (int j = 0; j &lt; person.phone_size(); j++) &#123;</div><div class="line">      const tutorial::Person::PhoneNumber&amp; phone_number = person.phone(j);</div><div class="line"></div><div class="line">      switch (phone_number.type()) &#123;</div><div class="line">        case tutorial::Person::MOBILE:</div><div class="line">          cout &lt;&lt; &quot;  Mobile phone #: &quot;;</div><div class="line">          break;</div><div class="line">        case tutorial::Person::HOME:</div><div class="line">          cout &lt;&lt; &quot;  Home phone #: &quot;;</div><div class="line">          break;</div><div class="line">        case tutorial::Person::WORK:</div><div class="line">          cout &lt;&lt; &quot;  Work phone #: &quot;;</div><div class="line">          break;</div><div class="line">      &#125;</div><div class="line">      cout &lt;&lt; phone_number.number() &lt;&lt; endl;</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">// Main function:  Reads the entire address book from a file and prints all</div><div class="line">//   the information inside.</div><div class="line">int main(int argc, char* argv[]) &#123;</div><div class="line">  // Verify that the version of the library that we linked against is</div><div class="line">  // compatible with the version of the headers we compiled against.</div><div class="line">  GOOGLE_PROTOBUF_VERIFY_VERSION;</div><div class="line"></div><div class="line">  if (argc != 2) &#123;</div><div class="line">    cerr &lt;&lt; &quot;Usage:  &quot; &lt;&lt; argv[0] &lt;&lt; &quot; ADDRESS_BOOK_FILE&quot; &lt;&lt; endl;</div><div class="line">    return -1;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  tutorial::AddressBook address_book;</div><div class="line"></div><div class="line">  &#123;</div><div class="line">    // Read the existing address book.</div><div class="line">    fstream input(argv[1], ios::in | ios::binary);</div><div class="line">    if (!address_book.ParseFromIstream(&amp;input)) &#123;</div><div class="line">      cerr &lt;&lt; &quot;Failed to parse address book.&quot; &lt;&lt; endl;</div><div class="line">      return -1;</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  ListPeople(address_book);</div><div class="line"></div><div class="line">  // Optional:  Delete all global objects allocated by libprotobuf.</div><div class="line">  google::protobuf::ShutdownProtobufLibrary();</div><div class="line"></div><div class="line">  return 0;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h3 id="扩展一个Protocol-Buffer"><a href="#扩展一个Protocol-Buffer" class="headerlink" title="扩展一个Protocol Buffer"></a>扩展一个Protocol Buffer</h3><p>当一段时间之后你需要在你发布使用你的protocol buffer后改进你的protocol buffer定义。如果你希望你的新buffer能够向前兼容，而你的老buffer能向后兼容，那么你就需要遵守下面这几个规则：</p>
+<ul>
+<li><strong>不要修改</strong><code>tag</code>数字</li>
+<li><strong>不要增删任何</strong><code>required</code>属性</li>
+<li><strong>可以</strong>删除<code>repeated</code>或者<code>optional</code>属性</li>
+<li><strong>可以添加</strong> <code>repeated</code>或者<code>optional</code>属性，但是必须使用<strong>新tag number</strong></li>
+</ul>
+<hr>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://anboqing.github.io/2016/01/10/GoogleProtocolBuffers简介/" data-id="cisoqi7ba000crmggs4d6az91" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/caffe-proto/">caffe .proto</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-为什么负梯度方向下降最快" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/12/27/为什么负梯度方向下降最快/" class="article-date">
+  <time datetime="2015-12-27T07:09:00.000Z" itemprop="datePublished">2015-12-27</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/机器学习/">机器学习</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/12/27/为什么负梯度方向下降最快/">为什么负梯度方向是使函数值下降最快的方向</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="名字解释"><a href="#名字解释" class="headerlink" title="名字解释"></a>名字解释</h2><p>梯度下降法又叫最速下降法，它只使用目标函数的一阶导数信息，从“梯度法”这个名字也可见一斑。并且，它的本意就是取目标函数值“最快下降”的方向作为搜索方向。于是我们就想知道这个问题的答案：沿着什么方向，目标函数 $f(x)$ 的值下降最快呢？</p>
+<p>##　为什么负梯度方向下降最快</p>
+<blockquote>
+<p>先说结论：沿着负梯度 $d=-g_k$,函数值下降最快</p>
+</blockquote>
+<p>下面就来推导一下：</p>
+<ul>
+<li><p>由于目标函数 $f(x)$ 具有一阶连续偏导数，若第k次迭代值为 $x_k$,则可将目标函数 $f(x_k)$ 在点 $x_k$ 处 一阶泰勒展开(<strong>由于我们讨论的是： n维空间中的一个点移动到另一个点后，目标函数值的改变情况</strong>)，因此我们展开的是<strong>改变后的函数值（$f(x_k+ad)$）</strong>：<br>$$<br>\begin{align}  f(x_k+ad) = f(x_k) +g_k^Td +o(\alpha) \end{align}<br>$$<br>$d$:单位方向（一个向量），即 |d| = 1;<br>$\alpha$: 步长（一个实数）。<br>$g_k^T = \nabla f(x_k) $ :　目标函数在 $x_k$ 这一点的梯度（一个向量).</p>
+</li>
+<li><p>显然，这个数学表达式用泰勒公式展开得到的，样子有点难看，所以对比一下自变量为一维的情况下的泰勒展开式：<br>$$ \begin{align} f(x+h) = f(x) + f’(x)h ＋o(h) \end{align} $$<br>就知道多维情况下的泰勒展开式是怎么回事了。</p>
+</li>
+<li><p>在[1] 式中，高阶无穷小可以忽略，因此，要使[1]式取到最小值，应使$g_k^T d$取到最小——这是两个向量的点积（数量积），何种情况下其值最小呢？来看两向量$\vec a ,\vec b$的夹角θ的余弦是如何定义的：<br>$$ cos \theta = \frac{a \cdot b}{ \vert a \vert \vert b \vert } $$<br>假设向量 d  与 负梯度 $ -g_k$ 夹角为 $\theta$ ， 我们便可以求出点积 $g_k^T \cdot d $ 的值为：<br>$$ g_k^T \cdot d = - \vert g_k \vert \vert d \vert cos\theta $$<br>可见，θ为0时，上式取得最小值。也就是说，direction取negative gradient时，目标函数值下降得最快，这就是称负梯度方向为“最速下降”方向的由来了。</p>
+</li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://anboqing.github.io/2015/12/27/为什么负梯度方向下降最快/" data-id="cisoqi7dr003frmggh8bhbe1s" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/梯度下降/">梯度下降</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+
+
+  <nav id="page-nav">
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/2/">__('next') &raquo;</a>
+  </nav>
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Caffe/">Caffe</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Caffe教程/">Caffe教程</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Learning/">Learning</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/PCA-降维/">PCA 降维</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/RMI/">RMI</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/SOA/">SOA</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/c/">c++</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/caffe/">caffe</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/epoll/">epoll</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/linux/">linux</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/pandas/">pandas</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/tcp-ip/">tcp/ip</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/函数式编程/">函数式编程</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/协程/">协程</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/工具配置/">工具配置</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/推荐系统/">推荐系统</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/数据挖掘/">数据挖掘</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/机器学习/">机器学习</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/算法学习/">算法学习</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/统计/">统计</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/编码/">编码</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/编译原理/">编译原理</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/设计模式/">设计模式</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/贝叶斯分类/">贝叶斯分类</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Caffe教程/">Caffe教程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Composite，组合模式/">Composite，组合模式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Decorator/">Decorator</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/LaTex-数学公式-Pelican-MathJax/">LaTex  数学公式  Pelican  MathJax</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Learning/">Learning</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PCA-降维/">PCA 降维</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RMI/">RMI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SOA/">SOA</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c-c-linkage-incomplete-type/">c c++ linkage incomplete-type</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/caffe-proto/">caffe .proto</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/datamining/">datamining</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/datamining-Apriori-FPGrowth/">datamining Apriori FPGrowth</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/epoll-网络编程/">epoll 网络编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux-source-code/">linux source code</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tcp-ip/">tcp/ip</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/web-service-axis-xfire-lomboz-tomcat/">web-service axis xfire lomboz tomcat</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/函数式编程/">函数式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/动态规划/">动态规划</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/协程/">协程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/可视化-pandas/">可视化 pandas</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/基础知识-编码/">基础知识 编码</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/感知机/">感知机</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/推荐系统/">推荐系统</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/机器学习/">机器学习</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/机器学习-算法/">机器学习 算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/梯度下降/">梯度下降</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编译原理-Compiler-上下文无关文法/">编译原理 Compiler 上下文无关文法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编译编译原理/">编译编译原理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/贝叶斯分类器/">贝叶斯分类器</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Caffe教程/" style="font-size: 20px;">Caffe教程</a> <a href="/tags/Composite，组合模式/" style="font-size: 10px;">Composite，组合模式</a> <a href="/tags/Decorator/" style="font-size: 10px;">Decorator</a> <a href="/tags/LaTex-数学公式-Pelican-MathJax/" style="font-size: 10px;">LaTex  数学公式  Pelican  MathJax</a> <a href="/tags/Learning/" style="font-size: 10px;">Learning</a> <a href="/tags/PCA-降维/" style="font-size: 10px;">PCA 降维</a> <a href="/tags/RMI/" style="font-size: 10px;">RMI</a> <a href="/tags/SOA/" style="font-size: 10px;">SOA</a> <a href="/tags/c-c-linkage-incomplete-type/" style="font-size: 10px;">c c++ linkage incomplete-type</a> <a href="/tags/caffe-proto/" style="font-size: 10px;">caffe .proto</a> <a href="/tags/datamining/" style="font-size: 10px;">datamining</a> <a href="/tags/datamining-Apriori-FPGrowth/" style="font-size: 10px;">datamining Apriori FPGrowth</a> <a href="/tags/epoll-网络编程/" style="font-size: 10px;">epoll 网络编程</a> <a href="/tags/linux-source-code/" style="font-size: 10px;">linux source code</a> <a href="/tags/tcp-ip/" style="font-size: 10px;">tcp/ip</a> <a href="/tags/web-service-axis-xfire-lomboz-tomcat/" style="font-size: 10px;">web-service axis xfire lomboz tomcat</a> <a href="/tags/函数式编程/" style="font-size: 10px;">函数式编程</a> <a href="/tags/动态规划/" style="font-size: 13.33px;">动态规划</a> <a href="/tags/协程/" style="font-size: 13.33px;">协程</a> <a href="/tags/可视化-pandas/" style="font-size: 10px;">可视化 pandas</a> <a href="/tags/基础知识-编码/" style="font-size: 10px;">基础知识 编码</a> <a href="/tags/感知机/" style="font-size: 10px;">感知机</a> <a href="/tags/推荐系统/" style="font-size: 13.33px;">推荐系统</a> <a href="/tags/机器学习/" style="font-size: 16.67px;">机器学习</a> <a href="/tags/机器学习-算法/" style="font-size: 10px;">机器学习 算法</a> <a href="/tags/梯度下降/" style="font-size: 10px;">梯度下降</a> <a href="/tags/编译原理-Compiler-上下文无关文法/" style="font-size: 10px;">编译原理 Compiler 上下文无关文法</a> <a href="/tags/编译编译原理/" style="font-size: 10px;">编译编译原理</a> <a href="/tags/贝叶斯分类器/" style="font-size: 10px;">贝叶斯分类器</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">July 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/06/">June 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">July 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/06/">June 2014</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2016/05/13/epoll/">事件驱动模型epoll</a>
+          </li>
+        
+          <li>
+            <a href="/2016/05/12/由补码引发的关于编码的思考/">由补码引发的关于编码的思考</a>
+          </li>
+        
+          <li>
+            <a href="/2016/01/15/Caffe教程４-Solver/">Caffe教程４：Solver</a>
+          </li>
+        
+          <li>
+            <a href="/2016/01/14/损失函数/">损失函数</a>
+          </li>
+        
+          <li>
+            <a href="/2016/01/13/Forward和Backward/">Forward 和 Backward</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2016 安勃卿<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

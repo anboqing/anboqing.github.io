@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>暗时间</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta property="og:type" content="website">
+<meta property="og:title" content="暗时间">
+<meta property="og:url" content="http://anboqing.github.io/page/3/index.html">
+<meta property="og:site_name" content="暗时间">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="暗时间">
+  
+    <link rel="alternate" href="/atom.xml" title="暗时间" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">暗时间</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">书写是最好的思考</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://anboqing.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main">
+  
+    <article id="post-pattern_discovery_1" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/05/12/pattern_discovery_1/" class="article-date">
+  <time datetime="2015-05-12T13:49:00.000Z" itemprop="datePublished">2015-05-12</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/数据挖掘/">数据挖掘</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/05/12/pattern_discovery_1/">数据挖掘基本概念</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>[TOC]</p>
+<h2 id="Basic-Concepts"><a href="#Basic-Concepts" class="headerlink" title="Basic Concepts"></a>Basic Concepts</h2><p><img src="http://7xia5s.com1.z0.glb.clouddn.com/pattern_discoverypd2_1.png" alt="基本概念 Frequent itemsets(patterns)"></p>
+<ul>
+<li><strong>Itemset</strong> : 在表中 每一行就是一个itemset</li>
+<li><strong>k-itemset</strong> : 每一个itemset中有几个元素就叫几-itemset，例如图中第一行是3-itemset,第5行是5-itemset</li>
+<li><strong>（absolute)support(count) of X</strong> : 对beer来说， 在表中，how many times beer happens? 答案是3，所以support(beer) = 3;</li>
+<li><strong>(relative) support,s</strong> : 图中总共有5个transactions，3个含有beer，所以 relative support of beer is 3/5;</li>
+<li><strong>frequent itemset</strong> : 如果item set X的support不小于一个minsup threshold （最小支持阈值），X 就是一个frequent support;</li>
+</ul>
+<p><img src="http://7xia5s.com1.z0.glb.clouddn.com/pattern_discoverypd2_2.png" alt="关联规则"></p>
+<ul>
+<li><p><strong>关联规则</strong> : X-&gt;Y(s,c)<br>  关联规则就是说，如果客户买了X，那么客户也购买了Y的support 和confidence是什么</p>
+<ul>
+<li>support，s ：一笔交易同时包含X和Y的概率</li>
+<li>confidence,c: 一笔交易同时包含X和Y的<strong>条件</strong>概率</li>
+</ul>
+</li>
+<li><p><strong>关联规则挖掘</strong> ：找到所有满足最小support和confidence的规则X-&gt;Y;</p>
+</li>
+</ul>
+<ul>
+<li><strong>关联规则</strong> <ul>
+<li>let minsup = 50%</li>
+<li>Beer-&gt;Diaper (support(beer)/total,support(beer,diaper)/support(diaper))</li>
+<li>diaper-&gt;beer (support(diaper)/total,support(beer,diaper)/support(beer))</li>
+</ul>
+</li>
+</ul>
+<p> <strong>问题：这是所有的满足minsup = 50%的规则吗？</strong><br>答案是否定的！<br>我们可以注意到后面两行中 {nuts,eggs} {eggs,milk} 都出现了；</p>
+<ul>
+<li>support(nuts,eggs) = 2;    support(eggs,milk) = 2;</li>
+<li>support(nuts) = 3;  support(eggs) = 3; support(milk) = 2;</li>
+<li>nuts-&gt;eggs(40%,60%)</li>
+<li>eggs-&gt;nuts(40%,60%)</li>
+<li>milk-&gt;eggs(40%,60%)</li>
+<li>eggs-&gt;milk(40%,100%)</li>
+</ul>
+<hr>
+<p>##compressed representation: closed patternsand max-patterns</p>
+<p><img src="http://7xia5s.com1.z0.glb.clouddn.com/pattern_discoverypd2_3.png" alt="3"></p>
+<p>如果我们用frequent pattern的话，我们会遇到一个挑战，那就是有太多太多的frequent pattern了。<br>比如说：    </p>
+<ul>
+<li>一个长的pattern里面包含了组合数级别的子pattern</li>
+<li><p>假如我们有一个transaction database: $\mathbb{tdb_1}$:<br>$t_1$:{$a<em>1$,…,$a</em>{50}$} ; $t_2$:{$a<em>1$,…,$a</em>{100}$}</p>
+<ul>
+<li>假设 absolute(就是count) minsup = 1  就是说every thing is frequent</li>
+<li>那么 1-itemsets 有100个</li>
+<li>2-itemsets 有$c^2<em>{50}$+$c^2</em>{100}$个</li>
+<li>…..</li>
+<li>最终，总共有 $c^1<em>{100}+c^2</em>{100}+….+c^100_{100} = 2^{100}-1$ 个子模式！！！天啊，这也太多了！</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>所以我们需要一个<strong>简洁紧凑</strong>的表示方法</p>
+</blockquote>
+<p><img src="http://7xia5s.com1.z0.glb.clouddn.com/pattern_discoverypd2_4.png" alt="4"><br>第一种解决办法是：</p>
+<blockquote>
+<p><strong>Closed patterns</strong> : 只有一个pattern 既frequent，并且不存在一个包含了这个pattern且和这个pattern <strong>有相同的support</strong> 的父pattern,才是一个<strong>Closed Pattern</strong></p>
+</blockquote>
+<p>继续以上面的transaction database: $tdb_1$: $t_1$:{$a<em>1$,…,$a</em>{50}$} ; $t_2$:{$a<em>1$,…,$a</em>{100}$}为例：<br>假设minsupport(absolute) = 1,那么有多少个Closed Pattern?<br>答案是2个：  </p>
+<ul>
+<li>“$p_1$:{$a<em>1$,…,$a</em>{50}$}:<strong>support=2</strong>“ </li>
+<li>“$p_2$:{$a<em>1$,…,$a</em>{100}$}:<strong>support=1</strong>“;  </li>
+</ul>
+<p>因为 {$a<em>1$,…,$a</em>{51}$}虽然多了一个$a_{51}$,但是它的<strong>support=1</strong>，小于2，所以找不出一个super-pattern和$p_1$的 <strong>support相同</strong>；所以$p_1$是一个<strong>Closed Pattern</strong>;$p_2$证明相同；</p>
+<p><strong>那么这样表示的好处是什么呢？</strong>    </p>
+<blockquote>
+<p>我们注意到，对于$p_1$的 sub-pattern  {$a<em>1$,…,$a</em>{49}$} 来说，它的support也是2， 对于$p_2$的 sub-pattern  {$a<em>1$,…,$a</em>{99}$} 来说，它的support也是1。所以closed pattern包含了它的所有sub-pattern的support信息，我们用这种紧凑简洁的表示方法并没有损失任何信息。<br>用closed pattern可以用2个pattern表示原来$2^{100}$-1个pattern可以表示的信息。这就是这种表示法的好处。</p>
+</blockquote>
+<hr>
+<p>我们再看看另一个表示方法叫做:<strong>Compressed Pattern</strong><br><img src="http://7xia5s.com1.z0.glb.clouddn.com/pattern_discoverypd2_5.png" alt="5"></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://anboqing.github.io/2015/05/12/pattern_discovery_1/" data-id="cisoqi7dg0035rmggntjvc55l" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/datamining/">datamining</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-webservice1" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/05/12/webservice1/" class="article-date">
+  <time datetime="2015-05-12T03:37:00.000Z" itemprop="datePublished">2015-05-12</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/SOA/">SOA</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/05/12/webservice1/">web service 编程初步</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="web-service-的原理以及概念"><a href="#web-service-的原理以及概念" class="headerlink" title="web service 的原理以及概念"></a>web service 的原理以及概念</h2><p>summary: SOA架构本身是一个虚拟的架构，它不依赖任何的服务组件，包括web service 组件，因为soa可以随意绑定各种服务组件。但是，从另外一个方面来说，web service的逐渐成熟为实施打下了良好的基础。因为web service的soap/http毕竟是一个标准的服务传输协议，从本质上来说，应用集成是离不开标准化的传输协议的。如果说企业内部的软件服务集成可以采用某种非标准化的传输协议的话，那么企业内外服务的集成则需要借助于标准化的服务组件了。<br>web service 组件不同于其他组件的根本之处在于web service 采用了一种标准传输协议soap。开发服务组件的目的就是要让客户端能够调用其服务。所谓web service就是定义了一套标准的调用过程：</p>
+<ul>
+<li>服务器端首先用一套标准的方法向外界描述它所提供的服务的内容，这属于wsdl;</li>
+<li>客户端需要以一种标准的协议来调用此服务，这属于soap;</li>
+<li>服务提供者将服务内容方在一个公共的网址让大家来查询，这属于uddi;</li>
+</ul>
+<hr>
+<h3 id="1-1-命名空间-name-space"><a href="#1-1-命名空间-name-space" class="headerlink" title="1.1 命名空间(name space)"></a>1.1 命名空间(name space)</h3><p>web service 是一种基于xml的标准化的服务组件，它会大量地使用命名空间(name space)，所以在介绍web service之前，有必要介绍命名空间。</p>
+<p>命名空间（name space)是指逻辑上相关的唯一一组名称，其实也不用用这么学术的解释，命名空间不就是和java里面的packege机制还有c++里面的 namespace机制是一样的嘛，就是为了防止不同的人定义了相同的变量名称，整合到一个程序中编译器解析时会遇到命名冲突的问题，所以要在每个人的变量名外面包一层命名空间，相当于给每个符号名字前面隐形的加了一个前缀，这样就能区分开来了。</p>
+<p>wsdl有大量地使用命名空间的地方，有必要先简单地介绍一下wsdl中的命名空间。     </p>
+<p>本质上wsdl是一个xml文件，作为一个xml文件，为了区别同名的元素，就需要采用命名空间的概念。下面用一个示例来说明这个问题。<br><img src="http://7xia5s.com1.z0.glb.clouddn.com/soasoa2-1.png" alt="命名空间示例"></p>
+<p>假设服务器有两个雷，两个类都有同样的方法名 ： method A1 , method A2 为了区分他们，就可以定义两个命名空间 class A 和 Class B 如下：<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">class:class</span> <span class="attr">xmlns:classA</span>=<span class="string">http://class/classA</span> <span class="attr">xmlns:classB</span>=<span class="string">http://class/classB</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">classA:method</span> <span class="attr">A1</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">classA:method</span> <span class="attr">A2</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">classB:method</span> <span class="attr">A1</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">classB:method</span> <span class="attr">A2</span>&gt;</span></div></pre></td></tr></table></figure></p>
+<p>   通过上面这个定义，就可以知道每个方法是属于哪个类的了。这样，客户端如果想要调用class A的A1方法和class B的A2方法，就可以这样写：<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">method</span> <span class="attr">A1</span> <span class="attr">xmlns</span>=<span class="string">"http://class/classA"</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">method</span> <span class="attr">A2</span> <span class="attr">xmlns</span>=<span class="string">"http://class/classB"</span>&gt;</span></div></pre></td></tr></table></figure></p>
+<p>一旦服务器收到这样一条消息，它就知道调用class A的 A1方法而不是class B中的同名方法，调用class B中的A2方法而不是class A中的同名方法。</p>
+<blockquote>
+<p>XML Namespace (xmlns) 属性<br>XML 命名空间属性被放置于元素的开始标签之中，并使用以下的语法：</p>
+<blockquote>
+<p>xmlns:namespace-prefix=”namespaceURI”</p>
+</blockquote>
+</blockquote>
+<p>   请访问 <a href="http://www.w3.org/TR/html4/" target="_blank" rel="external">http://www.w3.org/TR/html4/</a></p>
+<blockquote>
+<p>当命名空间被定义在元素的开始标签中时，所有带有相同前缀的子元素都会与同一个命名空间相关联。<br>注释：<strong>用于标示命名空间的地址不会被解析器用于查找信息</strong>。其惟一的作用是赋予命名空间一个惟一的名称。不过，很多公司常常会作为指针来使用命名空间指向实际存在的网页，这个网页包含关于命名空间的信息。</p>
+</blockquote>
+<p><strong>默认的命名空间（Default Namespaces）</strong><br>为元素定义默认的命名空间可以让我们省去在所有的子元素中使用前缀的工作。<br>请使用下面的语法：</p>
+<blockquote>
+<p>xmlns=”namespaceURI”</p>
+</blockquote>
+<p>这个 XML 文档携带着某个表格中的信息：<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">table</span> <span class="attr">xmlns</span>=<span class="string">"http://www.w3.org/TR/html4/"</span>&gt;</span></div><div class="line">   <span class="tag">&lt;<span class="name">tr</span>&gt;</span></div><div class="line">   <span class="tag">&lt;<span class="name">td</span>&gt;</span>Apples<span class="tag">&lt;/<span class="name">td</span>&gt;</span></div><div class="line">   <span class="tag">&lt;<span class="name">td</span>&gt;</span>Bananas<span class="tag">&lt;/<span class="name">td</span>&gt;</span></div><div class="line">   <span class="tag">&lt;/<span class="name">tr</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">table</span>&gt;</span></div></pre></td></tr></table></figure></p>
+<hr>
+<h3 id="1-2-WSDL的本质：服务内容的标准化描述"><a href="#1-2-WSDL的本质：服务内容的标准化描述" class="headerlink" title="1.2 WSDL的本质：服务内容的标准化描述"></a>1.2 WSDL的本质：服务内容的标准化描述</h3><p>WSDL的全称是web service description language,是一种基于xml格式的关于web服务的描述语言，其主要目的在于web service的提供者将自己的web服务的所有相关内容，如所提供服务的传输方式、服务方法接口、接口参数、服务路径等，生成相应的完全的文档，发布给使用者。使用者可以通过这个wsdl文档，创建相应的soap请求（request）消息，通过http传递给web sercive提供者；web 服务在完成服务请求之后，将soap消息返回（response）消息传回请求者，服务请求者再根据wsdl文档将soap返回的消息解析成自己能够理解的内容。 </p>
+<p>WSDL的目的就是要告诉外界自己能够提供什么样的服务，类似于java的interface。它就是用来<strong>描述服务接口的标记语言</strong>。</p>
+<p><a href="http://www.w3school.com.cn/wsdl/index.asp" target="_blank" rel="external">学习WSDL请猛戳这里：w3cschool上的WSDL教程</a> </p>
+<hr>
+<h4 id="WSDL写法简要介绍"><a href="#WSDL写法简要介绍" class="headerlink" title="WSDL写法简要介绍"></a>WSDL写法简要介绍</h4><p><strong>WSDL文档结构</strong><br>WSDL主要是用来描述某个web service 的：</p>
+<ul>
+<li><porttype> web service执行的操作</porttype></li>
+<li><message> web service 使用的消息</message></li>
+<li><types>   web service 使用的数据类型</types></li>
+<li><binding>   web service 使用的通信协议</binding></li>
+</ul>
+<p>一个WSDL文档的主要结构是类似这样的：<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">definitions</span>&gt;</span></div><div class="line"></div><div class="line"><span class="tag">&lt;<span class="name">types</span>&gt;</span></div><div class="line">    definition of types ...</div><div class="line"><span class="tag">&lt;/<span class="name">types</span>&gt;</span></div><div class="line"></div><div class="line"><span class="tag">&lt;<span class="name">message</span>&gt;</span></div><div class="line">     definition of a message...</div><div class="line"><span class="tag">&lt;/<span class="name">message</span>&gt;</span></div><div class="line"></div><div class="line"><span class="tag">&lt;<span class="name">portType</span>&gt;</span></div><div class="line">    definition of a port....</div><div class="line"><span class="tag">&lt;/<span class="name">portType</span>&gt;</span></div><div class="line"></div><div class="line"><span class="tag">&lt;<span class="name">binding</span>&gt;</span></div><div class="line">    definition of a binding...</div><div class="line"><span class="tag">&lt;/<span class="name">binding</span>&gt;</span></div><div class="line"></div><div class="line"><span class="tag">&lt;/<span class="name">definitions</span>&gt;</span></div></pre></td></tr></table></figure></p>
+<p>WSDL文档可包含其他的元素，比如extension 元素，以及一个service元素，此元素可以把若干个web sercives的定义组合在一个单一的WSDL文档中。</p>
+<p><strong>WSDL 端口</strong><br><code>&lt;portType&gt;</code> 元素是最重要的 WSDL 元素。<br>它可描述一个 web service、可被执行的操作，以及相关的消息。<br>可以把 <code>&lt;portType&gt;</code> 元素比作传统编程语言中的一个函数库（或一个模块、或一个类）。</p>
+<p><strong>WSDL 消息</strong><br><code>&lt;message&gt;</code> 元素定义一个操作的数据元素。<br>每个消息均由一个或多个部件组成。可以把这些部件比作传统编程语言中一个函数调用的参数。</p>
+<p><strong>WSDL types</strong><br><code>&lt;types&gt;</code> 元素定义 web service 使用的数据类型。<br>为了最大程度的平台中立性，WSDL 使用 XML Schema 语法来定义数据类型。</p>
+<p><strong>WSDL Bindings</strong><br><code>&lt;binding&gt;</code> 元素为每个端口定义消息格式和协议细节。</p>
+<p><strong>WSDL 实例</strong><br>这是某个 WSDL 文档的简化的片段：<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">message</span> <span class="attr">name</span>=<span class="string">"getTermRequest"</span>&gt;</span></div><div class="line">   <span class="tag">&lt;<span class="name">part</span> <span class="attr">name</span>=<span class="string">"term"</span> <span class="attr">type</span>=<span class="string">"xs:string"</span>/&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">message</span>&gt;</span></div><div class="line"></div><div class="line"><span class="tag">&lt;<span class="name">message</span> <span class="attr">name</span>=<span class="string">"getTermResponse"</span>&gt;</span></div><div class="line">   <span class="tag">&lt;<span class="name">part</span> <span class="attr">name</span>=<span class="string">"value"</span> <span class="attr">type</span>=<span class="string">"xs:string"</span>/&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">message</span>&gt;</span></div><div class="line"></div><div class="line"><span class="tag">&lt;<span class="name">portType</span> <span class="attr">name</span>=<span class="string">"glossaryTerms"</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">operation</span> <span class="attr">name</span>=<span class="string">"getTerm"</span>&gt;</span></div><div class="line">        <span class="tag">&lt;<span class="name">input</span> <span class="attr">message</span>=<span class="string">"getTermRequest"</span>/&gt;</span></div><div class="line">        <span class="tag">&lt;<span class="name">output</span> <span class="attr">message</span>=<span class="string">"getTermResponse"</span>/&gt;</span></div><div class="line">  <span class="tag">&lt;/<span class="name">operation</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">portType</span>&gt;</span></div></pre></td></tr></table></figure></p>
+<p>在这个例子中，<code>&lt;portType&gt;</code>元素把 “glossaryTerms” 定义为某个端口的名称，把 “getTerm” 定义为某个操作的名称。<br>操作 “getTerm” 拥有一个名为 “getTermRequest” 的输入消息，以及一个名为 “getTermResponse” 的输出消息。</p>
+<p><message> 元素可定义每个消息的部件，以及相关联的数据类型。<br>对比传统的编程，glossaryTerms 是一个函数库，而 “getTerm” 是带有输入参数 “getTermRequest” 和返回参数 getTermResponse 的一个函数。</message></p>
+<h4 id="WSDL-和-UDDI"><a href="#WSDL-和-UDDI" class="headerlink" title="WSDL 和 UDDI"></a>WSDL 和 UDDI</h4><p>UDDI 是一种目录服务，企业可以使用它对 Web services 进行注册和搜索。<br>UDDI，英文为 “Universal Description, Discovery and Integration”，可译为“通用描述、发现与集成服务”。<br>UDDI 是一个独立于平台的框架，用于通过使用 Internet 来描述服务，发现企业，并对企业服务进行集成。<br>UDDI 指的是通用描述、发现与集成服务<br>UDDI 是一种用于存储有关 web services 的信息的目录。<br>UDDI 是一种由 WSDL 描述的 web services 界面的目录。<br>UDDI 经由 SOAP 进行通信<br>UDDI 被构建入了微软的 .NET 平台</p>
+<h4 id="WSDL语法"><a href="#WSDL语法" class="headerlink" title="WSDL语法"></a><strong>WSDL语法</strong></h4><figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">wsdl:definitions</span> <span class="attr">name</span>=<span class="string">"nmtoken"</span>? <span class="attr">targetNamespace</span>=<span class="string">"uri"</span>&gt;</span></div><div class="line"></div><div class="line">    <span class="tag">&lt;<span class="name">import</span> <span class="attr">namespace</span>=<span class="string">"uri"</span> <span class="attr">location</span>=<span class="string">"uri"</span>/&gt;</span> *</div><div class="line">	</div><div class="line">    <span class="tag">&lt;<span class="name">wsdl:documentation</span> <span class="attr">....</span> /&gt;</span> ?</div><div class="line"></div><div class="line">    <span class="tag">&lt;<span class="name">wsdl:types</span>&gt;</span> ?</div><div class="line">        <span class="tag">&lt;<span class="name">wsdl:documentation</span> <span class="attr">....</span> /&gt;</span> ?</div><div class="line">        <span class="tag">&lt;<span class="name">xsd:schema</span> <span class="attr">....</span> /&gt;</span> *</div><div class="line">    <span class="tag">&lt;/<span class="name">wsdl:types</span>&gt;</span></div><div class="line"></div><div class="line">    <span class="tag">&lt;<span class="name">wsdl:message</span> <span class="attr">name</span>=<span class="string">"ncname"</span>&gt;</span> *</div><div class="line">        <span class="tag">&lt;<span class="name">wsdl:documentation</span> <span class="attr">....</span> /&gt;</span> ?</div><div class="line">        <span class="tag">&lt;<span class="name">part</span> <span class="attr">name</span>=<span class="string">"ncname"</span> <span class="attr">element</span>=<span class="string">"qname"</span>? <span class="attr">type</span>=<span class="string">"qname"</span>?/&gt;</span> *</div><div class="line">    <span class="tag">&lt;/<span class="name">wsdl:message</span>&gt;</span></div><div class="line"></div><div class="line">    <span class="tag">&lt;<span class="name">wsdl:portType</span> <span class="attr">name</span>=<span class="string">"ncname"</span>&gt;</span> *</div><div class="line">        <span class="tag">&lt;<span class="name">wsdl:documentation</span> <span class="attr">....</span> /&gt;</span> ?</div><div class="line">        <span class="tag">&lt;<span class="name">wsdl:operation</span> <span class="attr">name</span>=<span class="string">"ncname"</span>&gt;</span> *</div><div class="line">            <span class="tag">&lt;<span class="name">wsdl:documentation</span> <span class="attr">....</span> /&gt;</span> ?</div><div class="line">            <span class="tag">&lt;<span class="name">wsdl:input</span> <span class="attr">message</span>=<span class="string">"qname"</span>&gt;</span> ?</div><div class="line">                <span class="tag">&lt;<span class="name">wsdl:documentation</span> <span class="attr">....</span> /&gt;</span> ?</div><div class="line">            <span class="tag">&lt;/<span class="name">wsdl:input</span>&gt;</span></div><div class="line">            <span class="tag">&lt;<span class="name">wsdl:output</span> <span class="attr">message</span>=<span class="string">"qname"</span>&gt;</span> ?</div><div class="line">                <span class="tag">&lt;<span class="name">wsdl:documentation</span> <span class="attr">....</span> /&gt;</span> ?</div><div class="line">            <span class="tag">&lt;/<span class="name">wsdl:output</span>&gt;</span></div><div class="line">            <span class="tag">&lt;<span class="name">wsdl:fault</span> <span class="attr">name</span>=<span class="string">"ncname"</span> <span class="attr">message</span>=<span class="string">"qname"</span>&gt;</span> *</div><div class="line">                <span class="tag">&lt;<span class="name">wsdl:documentation</span> <span class="attr">....</span> /&gt;</span> ?</div><div class="line">            <span class="tag">&lt;/<span class="name">wsdl:fault</span>&gt;</span></div><div class="line">        <span class="tag">&lt;/<span class="name">wsdl:operation</span>&gt;</span></div><div class="line">    <span class="tag">&lt;/<span class="name">wsdl:portType</span>&gt;</span></div><div class="line"></div><div class="line">    <span class="tag">&lt;<span class="name">wsdl:serviceType</span> <span class="attr">name</span>=<span class="string">"ncname"</span>&gt;</span> *</div><div class="line">        <span class="tag">&lt;<span class="name">wsdl:portType</span> <span class="attr">name</span>=<span class="string">"qname"</span>/&gt;</span> +</div><div class="line">    <span class="tag">&lt;/<span class="name">wsdl:serviceType</span>&gt;</span></div><div class="line"></div><div class="line">    <span class="tag">&lt;<span class="name">wsdl:binding</span> <span class="attr">name</span>=<span class="string">"ncname"</span> <span class="attr">type</span>=<span class="string">"qname"</span>&gt;</span> *</div><div class="line">        <span class="tag">&lt;<span class="name">wsdl:documentation</span> <span class="attr">....</span> /&gt;</span> ?</div><div class="line">        <span class="tag">&lt;<span class="name">--</span> <span class="attr">binding</span> <span class="attr">details</span> <span class="attr">--</span>&gt;</span> *</div><div class="line">        <span class="tag">&lt;<span class="name">wsdl:operation</span> <span class="attr">name</span>=<span class="string">"ncname"</span>&gt;</span> *</div><div class="line">            <span class="tag">&lt;<span class="name">wsdl:documentation</span> <span class="attr">....</span> /&gt;</span> ?</div><div class="line">            <span class="tag">&lt;<span class="name">--</span> <span class="attr">binding</span> <span class="attr">details</span> <span class="attr">--</span>&gt;</span> *</div><div class="line">            <span class="tag">&lt;<span class="name">wsdl:input</span>&gt;</span> ?</div><div class="line">                <span class="tag">&lt;<span class="name">wsdl:documentation</span> <span class="attr">....</span> /&gt;</span> ?</div><div class="line">                <span class="tag">&lt;<span class="name">--</span> <span class="attr">binding</span> <span class="attr">details</span> <span class="attr">--</span>&gt;</span></div><div class="line">            <span class="tag">&lt;/<span class="name">wsdl:input</span>&gt;</span></div><div class="line">            <span class="tag">&lt;<span class="name">wsdl:output</span>&gt;</span> ?</div><div class="line">                <span class="tag">&lt;<span class="name">wsdl:documentation</span> <span class="attr">....</span> /&gt;</span> ?</div><div class="line">                <span class="tag">&lt;<span class="name">--</span> <span class="attr">binding</span> <span class="attr">details</span> <span class="attr">--</span>&gt;</span> *</div><div class="line">            <span class="tag">&lt;/<span class="name">wsdl:output</span>&gt;</span></div><div class="line">            <span class="tag">&lt;<span class="name">wsdl:fault</span> <span class="attr">name</span>=<span class="string">"ncname"</span>&gt;</span> *</div><div class="line">                <span class="tag">&lt;<span class="name">wsdl:documentation</span> <span class="attr">....</span> /&gt;</span> ?</div><div class="line">                <span class="tag">&lt;<span class="name">--</span> <span class="attr">binding</span> <span class="attr">details</span> <span class="attr">--</span>&gt;</span> *</div><div class="line">            <span class="tag">&lt;/<span class="name">wsdl:fault</span>&gt;</span></div><div class="line">        <span class="tag">&lt;/<span class="name">wsdl:operation</span>&gt;</span></div><div class="line">    <span class="tag">&lt;/<span class="name">wsdl:binding</span>&gt;</span></div><div class="line"></div><div class="line">    <span class="tag">&lt;<span class="name">wsdl:service</span> <span class="attr">name</span>=<span class="string">"ncname"</span> <span class="attr">serviceType</span>=<span class="string">"qname"</span>&gt;</span> *</div><div class="line">        <span class="tag">&lt;<span class="name">wsdl:documentation</span> <span class="attr">....</span> /&gt;</span> ?</div><div class="line">        <span class="tag">&lt;<span class="name">wsdl:port</span> <span class="attr">name</span>=<span class="string">"ncname"</span> <span class="attr">binding</span>=<span class="string">"qname"</span>&gt;</span> *</div><div class="line">            <span class="tag">&lt;<span class="name">wsdl:documentation</span> <span class="attr">....</span> /&gt;</span> ?</div><div class="line">            <span class="tag">&lt;<span class="name">--</span> <span class="attr">address</span> <span class="attr">details</span> <span class="attr">--</span>&gt;</span></div><div class="line">        <span class="tag">&lt;/<span class="name">wsdl:port</span>&gt;</span></div><div class="line">    <span class="tag">&lt;/<span class="name">wsdl:service</span>&gt;</span></div><div class="line"></div><div class="line"><span class="tag">&lt;/<span class="name">wsdl:definitions</span>&gt;</span></div></pre></td></tr></table></figure>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://anboqing.github.io/2015/05/12/webservice1/" data-id="cisoqi7dn003drmggfrvi3qh5" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/web-service-axis-xfire-lomboz-tomcat/">web-service axis xfire lomboz tomcat</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-SOA读书报告" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/05/11/SOA读书报告/" class="article-date">
+  <time datetime="2015-05-11T14:11:00.000Z" itemprop="datePublished">2015-05-11</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/SOA/">SOA</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/05/11/SOA读书报告/">SOA读书报告</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>##SOA思想概述</p>
+<hr>
+<p> SOA 超越了所有的具体技术，也超越了所有的具体架构，同事soa也包容这些具体的技术和架构。理解soa关键是要理解里面的”S”即service 服务。服务可以说是一种既超越具体技术，又包容具体实现技术的业务功能。</p>
+<p>以“ESB服务总线”为例，之所以这样称呼，而不是称呼”RMI总线”、SOAP总线等等，就是因为它既可以同时接受各种不同的传输协议，同时也不限制于这些具体的传输协议。再比如”SCA服务组件架构”，之所以如此称呼，而不是称呼”EJB组件架构”、“Webservice组件架构”等等，就在于SCA实现了业务组件和传输协议的分离。SCA服务组件可以自由绑定RMI传输协议、SOAP传输协议和JMS传输协议等。因为SOA的出现并不是仅仅为了创造一种新的标准，虽然SOA非常受欢迎，也能容纳新的标准。</p>
+<p>SOA这种既超越一切具体技术，又包容一切具体技术的思想和《金刚经》中佛陀所说的“所谓佛法者，即非佛法，是名佛法”是相通的。所以，作为SOA的理念思想，首先需要有一种超越一切具体技术的思想。以soa的服务中线思想为例子，在刚开始设计一个具体的服务总线产品的时候，不能只想到我只要能够支持一个soap/http传输协议就够了，应该能够想到需要支持目前所有的和将来有可能新出现的传输协议。在设计中即使现在不能实现，也应该预留这样的扩展空间。</p>
+<p>SOA的服务理念思想，本质上是一种业务和技术的完全分离，业务又能和技术自由组合的思想。它达到了目前软件设计思想的最高境界。soa的出现，预示着一个以服务为导向的新的it时代的到来。</p>
+<p>##从面向过程到web service</p>
+<p>###1.面向过程<br>面向过程的编程语言写出来的程序是紧密耦合的，整个应用程序依赖于一些预先定义的全局变量，函数的可重用性很差。   </p>
+<p>###2.面向对象<br>面向对象的编程将面向过程相关的函数封装起来，消除全局变量，形成能够独立调用的对象。相对于面向过程的含有全局变量的编程，其耦合度已经降低。类可以重用，可以扩展。然而，对象之间还有互相调用，互相组合的现象。还存在一定的耦合度。这些对象只能本地调用，不能远程调用。   </p>
+<p>###3.面向组件<br>将面向对象的程序进行封装，定义一些接口让外部调用。如j2ee(ejb) 、corba、dcom等。其最初动机是为了实现远程分布式的调用。它有接口类，另外专门有实现方法类，因为它要实现定义接口类，客户端调用的也是接口类。接口类和接口实现类之间实现了一定程度的解耦。也就是说，客户端调用接口类时，不需要知道接口类是如何具体实现的，不需要引用服务器端的实现类。<br>但是客户端和远程服务端的传输协议是特定的。比如j2ee采用rmi传输协议，客户端需要安装特定的stub程序。<br>上述的组件编程需要和特定的程序实现语言绑定。传输协议也是非标准化的，传输协议的不一致，导致各种不同组件之间无法互相调用，例如j2ee和dcom无法互相调用。</p>
+<p>###4.标准化的webservice编程<br>采用标准化的soap协议，不同厂商实现的web service 之间可以互相调用。作为web service,客户端不需要知道服务器端是如何实现的，服务器端所用的是什么样的程序语言，客户端也不需要安装特定的stub程序。</p>
+<p> 从上面可以看到，程序设计的发展过程实际上是一个逐步降低耦合性的过程，也是一个接口和接口实现逐渐分离的过程。但是web service 的soap传输协议尽管是一种标准的传输协议，但是它毕竟还是一种特殊的传输协议，一种特定的技术。web service 并不支持其他的传输协议。所以说web service还是和特定的soap技术绑定在一起的。</p>
+<h2 id="soa的基本思想：面向服务"><a href="#soa的基本思想：面向服务" class="headerlink" title="soa的基本思想：面向服务"></a>soa的基本思想：面向服务</h2><hr>
+<p>从本质上来讲，面向对象是面向过程的一次解耦和封装，就是把面向过程的程序进行分解，把逻辑紧密相关的程序结合在一起，封装成独立的对象单元，对象单元里面含有对外公开的api。    </p>
+<p>面向组件的编程是将面向对象的程序进行进一步的封装，封装成独立的组件，里面含有一些粒度大于api的接口。面向组件和面向对象的最大区别是组件是通过传输协议来进行远程调用的，组件是和传输协议绑定、应用程序服务器的端口绑定在一起的。     </p>
+<p>理解了上面的思想，就可以进一步理解什么是面向服务了。面向服务的编程是对面向组件的编程的进一步解耦和封装。所谓解耦，就是将业务组件和传输协议和端口解耦，也就是说业务组件可以自由的绑定各种传输协议。目前面向组件的编程，客户端在调用服务组件时，需要知道服务组件的传输协议，从而创建相应的客户端的调用程序来调用服务组件。比如ejb组件，需要创建基于rmi的ejb的客户端调用程序;对于web service组件，需要创建基于soap的传输协议等。   </p>
+<p>作为面向服务的编程，由于服务组件可以和各种传输协议自由绑定。这样作为服务的消费者，就不需要关心服务提供者的具体的技术细节，只需要知道有这么一个完全和技术细节无关的业务接口。我们可以把这种完全和技术无关的接口，称为“服务接口”。作为客户，不需要去理解这到底是web service接口，还是ejb的接口等。这个接口，只和业务相关，和技术无关。   </p>
+<p>因此，可以这么说，所谓服务，就是只和业务相关，独立于技术的业务接口。所谓面向服务，就是如何实现独立于技术的服务接口。所以soa是以服务为导向的架构，也可以进一步翻译为“以独立于具体技术为导向的架构”。</p>
+<p>理解soa和web service的区别，有助于更好的理解soa的思想。soa和web service的区别在于：soa是在web service的基础上发展起来的；而web service实现了松散耦合的服务和粗粒度的服务。但是，web service本质上只是一个服务组件，因而它需要运行于一个特定的应用服务器上。web service服务组件的实现也是和应用服务器紧密关联的，适合应用程序紧密耦合的。客户端如果调用web service组件时，需要知道应用服务器的位置和具体的传输协议。这样一旦应用服务器的位置或者传输协议发生改变时，相应的客户端程序也需要做相应的更改。</p>
+<h2 id="SOA的基本要素"><a href="#SOA的基本要素" class="headerlink" title="SOA的基本要素"></a>SOA的基本要素</h2><hr>
+<p>如何区分现有编程思想和SOA思想呢？它有下面3个基本的要素，只有这3个基本要素全部都满足了，这个应用才能成为SOA编程。</p>
+<p>###<strong>松散耦合</strong><br>松散耦合是指相互之间不依赖，踏实针对目前紧密耦合的应用系统所提出的一个概念，包括3个方面的内涵。<br><strong>1. 服务之间的松散耦合</strong><br>    一个服务应该能够实现自己所提供的接口的所有功能，不要依赖其他服务。<br><strong>2. 接口和实现之间的松散耦合</strong><br>   比如用wdsl定义的web service 服务接口，既可以用j2ee来实现，也可以用.net来实现。<br><strong>3. 业务组件和传输协议之间的松散耦合</strong><br>  这是目前业务组件不能实现的。比如ejb需要rmi的传输协议，web service需要soap的传输协议。jms需要jms的传输协议。<br>这是新的soa思想要实现的。</p>
+<p>###<strong>粗粒度</strong></p>
+<p>粗粒度的意义就是说，soa中服务的接口应该比面向对象编程的api要大很多，需要更接近用户的实际操作。比如ATM取款功能，包含用户身份校验、账户是否有足够的取款数额、取款3个步骤，作为soa的业务接口，就不能将“用户身份校验”，“账户是否有足够余额”这样的接口公布给用户，这样粒度太细了，不符合用户的操作习惯，所以系统只提供给符合操作习惯的一个服务接口“取款”，它里面包含了前面2个api的功能。</p>
+<p>###<strong>位置和传输协议透明</strong></p>
+<p>位置和传输协议透明是soa最根本的区别于前面面向组件编程的地方。<br>目前的服务组件比如ejb、web service、jms的发布都是和特定的应用服务器绑定在一起的。比如ibm的websphere服务器、BEA的weblogic应用服务器，apache tomcat应用服务器等。客户端必须知道具体的应用服务器的url才能调用相应的组件.在全球经济一体化的浪潮下，各企业的服务集成是必然的，如果没有新的集成架构思想，那么会导致客户端程序必须要做相应的修改，否则整个集成就不能正常工作了。这就是服务组件的位置的不透明。所谓位置的透明，就是指不论服务组件的实际位置url如何变化，客户端的调用程序的url都不需要改变。</p>
+<p>同理，目前的服务组件比如ejb、web service、jms 都只能接受特殊的传输协议，比如ejb只能接受rmi的传输洗衣，web service只能接受soap的传输协议，jms组件只接受jms的传输协议。这样导致客户端调用这些服务组件时，也必须采用相应的传输协议才能调用，一旦组建的传输协议改变了，客户端也必须做出相应的修改，这就是传输协议的不透明。所谓传输协议的透明，就是不论服务组件的传输协议如何变化，客户端的调用程序的传输协议都不需要改变。</p>
+<p>目前组件的位置不透明，实际上是对应的信息的保存位置不透明，组件的传输协议不透明，实际上是对应信息的调用方式不透明。SOA的思想通过服务总线对目前的组建的接口进行进一步的封装（新的sca编程模型将可以自由绑定传输协议），将能保证服务的位置的透明和传输协议的透明。<br>下图显示了soa的服务调用方式，传输协议和位置都是透明的。不论实际服务者的传输协议和位置如何修改，客户端都不需要相应的程序。<br><img src="http://7xia5s.com1.z0.glb.clouddn.com/soasoa1.jpg" alt="soa的传输协议和位置透明的调用方式"><br>图中所说的任何传输协议，是指服务总线所能支持的传输协议。从理论上讲，服务总线应该能够支持任何的传输协议，否则，就不能称为“服务”总线，而只能称为“某种或者某些特殊协议”的总线了。</p>
+<p>其实由图中我们可以看出，sca架构是通过让客户端针对服务总线编程，从而达到了客户端不需要和具体的传输协议和应用服务器位置打交道（解耦合），而服务总线和具体的传输协议和应用服务器位置紧密耦合着，服务总线就相当于一个中间件。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://anboqing.github.io/2015/05/11/SOA读书报告/" data-id="cisoqi7bl000prmggnqicmdlz" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/SOA/">SOA</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-soaLearning_one" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/05/11/soaLearning_one/" class="article-date">
+  <time datetime="2015-05-11T10:30:00.000Z" itemprop="datePublished">2015-05-11</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/SOA/">SOA</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/05/11/soaLearning_one/">hello SOA</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="SOA思想概述"><a href="#SOA思想概述" class="headerlink" title="##SOA思想概述"></a>##SOA思想概述</h2><p> SOA 超越了所有的具体技术，也超越了所有的具体架构，同事soa也包容这些具体的技术和架构。理解soa关键是要理解里面的”S”即service 服务。服务可以说是一种既超越具体技术，又包容具体实现技术的业务功能。</p>
+<p>以“ESB服务总线”为例，之所以这样称呼，而不是称呼”RMI总线”、SOAP总线等等，就是因为它既可以同时接受各种不同的传输协议，同时也不限制于这些具体的传输协议。再比如”SCA服务组件架构”，之所以如此称呼，而不是称呼”EJB组件架构”、“Webservice组件架构”等等，就在于SCA实现了业务组件和传输协议的分离。SCA服务组件可以自由绑定RMI传输协议、SOAP传输协议和JMS传输协议等。因为SOA的出现并不是仅仅为了创造一种新的标准，虽然SOA非常受欢迎，也能容纳新的标准。</p>
+<p>SOA这种既超越一切具体技术，又包容一切具体技术的思想和《金刚经》中佛陀所说的“所谓佛法者，即非佛法，是名佛法”是相通的。所以，作为SOA的理念思想，首先需要有一种超越一切具体技术的思想。以soa的服务中线思想为例子，在刚开始设计一个具体的服务总线产品的时候，不能只想到我只要能够支持一个soap/http传输协议就够了，应该能够想到需要支持目前所有的和将来有可能新出现的传输协议。在设计中即使现在不能实现，也应该预留这样的扩展空间。</p>
+<p>SOA的服务理念思想，本质上是一种业务和技术的完全分离，业务又能和技术自由组合的思想。它达到了目前软件设计思想的最高境界。soa的出现，预示着一个以服务为导向的新的it时代的到来。</p>
+<p>##从面向过程到web service</p>
+<p>###1.面向过程<br>面向过程的编程语言写出来的程序是紧密耦合的，整个应用程序依赖于一些预先定义的全局变量，函数的可重用性很差。   </p>
+<p>###2.面向对象<br>面向对象的编程将面向过程相关的函数封装起来，消除全局变量，形成能够独立调用的对象。相对于面向过程的含有全局变量的编程，其耦合度已经降低。类可以重用，可以扩展。然而，对象之间还有互相调用，互相组合的现象。还存在一定的耦合度。这些对象只能本地调用，不能远程调用。   </p>
+<p>###3.面向组件<br>将面向对象的程序进行封装，定义一些接口让外部调用。如j2ee(ejb) 、corba、dcom等。其最初动机是为了实现远程分布式的调用。它有接口类，另外专门有实现方法类，因为它要实现定义接口类，客户端调用的也是接口类。接口类和接口实现类之间实现了一定程度的解耦。也就是说，客户端调用接口类时，不需要知道接口类是如何具体实现的，不需要引用服务器端的实现类。<br>但是客户端和远程服务端的传输协议是特定的。比如j2ee采用rmi传输协议，客户端需要安装特定的stub程序。<br>上述的组件编程需要和特定的程序实现语言绑定。传输协议也是非标准化的，传输协议的不一致，导致各种不同组件之间无法互相调用，例如j2ee和dcom无法互相调用。</p>
+<p>###4.标准化的webservice编程<br>采用标准化的soap协议，不同厂商实现的web service 之间可以互相调用。作为web service,客户端不需要知道服务器端是如何实现的，服务器端所用的是什么样的程序语言，客户端也不需要安装特定的stub程序。</p>
+<p> 从上面可以看到，程序设计的发展过程实际上是一个逐步降低耦合性的过程，也是一个接口和接口实现逐渐分离的过程。但是web service 的soap传输协议尽管是一种标准的传输协议，但是它毕竟还是一种特殊的传输协议，一种特定的技术。web service 并不支持其他的传输协议。所以说web service还是和特定的soap技术绑定在一起的。</p>
+<h2 id="soa的基本思想：面向服务"><a href="#soa的基本思想：面向服务" class="headerlink" title="soa的基本思想：面向服务"></a>soa的基本思想：面向服务</h2><hr>
+<p>从本质上来讲，面向对象是面向过程的一次解耦和封装，就是把面向过程的程序进行分解，把逻辑紧密相关的程序结合在一起，封装成独立的对象单元，对象单元里面含有对外公开的api。    </p>
+<p>面向组件的编程是将面向对象的程序进行进一步的封装，封装成独立的组件，里面含有一些粒度大于api的接口。面向组件和面向对象的最大区别是组件是通过传输协议来进行远程调用的，组件是和传输协议绑定、应用程序服务器的端口绑定在一起的。     </p>
+<p>理解了上面的思想，就可以进一步理解什么是面向服务了。面向服务的编程是对面向组件的编程的进一步解耦和封装。所谓解耦，就是将业务组件和传输协议和端口解耦，也就是说业务组件可以自由的绑定各种传输协议。目前面向组件的编程，客户端在调用服务组件时，需要知道服务组件的传输协议，从而创建相应的客户端的调用程序来调用服务组件。比如ejb组件，需要创建基于rmi的ejb的客户端调用程序;对于web service组件，需要创建基于soap的传输协议等。   </p>
+<p>作为面向服务的编程，由于服务组件可以和各种传输协议自由绑定。这样作为服务的消费者，就不需要关心服务提供者的具体的技术细节，只需要知道有这么一个完全和技术细节无关的业务接口。我们可以把这种完全和技术无关的接口，称为“服务接口”。作为客户，不需要去理解这到底是web service接口，还是ejb的接口等。这个接口，只和业务相关，和技术无关。   </p>
+<p>因此，可以这么说，所谓服务，就是只和业务相关，独立于技术的业务接口。所谓面向服务，就是如何实现独立于技术的服务接口。所以soa是以服务为导向的架构，也可以进一步翻译为“以独立于具体技术为导向的架构”。</p>
+<p>理解soa和web service的区别，有助于更好的理解soa的思想。soa和web service的区别在于：soa是在web service的基础上发展起来的；而web service实现了松散耦合的服务和粗粒度的服务。但是，web service本质上只是一个服务组件，因而它需要运行于一个特定的应用服务器上。web service服务组件的实现也是和应用服务器紧密关联的，适合应用程序紧密耦合的。客户端如果调用web service组件时，需要知道应用服务器的位置和具体的传输协议。这样一旦应用服务器的位置或者传输协议发生改变时，相应的客户端程序也需要做相应的更改。</p>
+<h2 id="SOA的基本要素"><a href="#SOA的基本要素" class="headerlink" title="SOA的基本要素"></a>SOA的基本要素</h2><hr>
+<p>如何区分现有编程思想和SOA思想呢？它有下面3个基本的要素，只有这3个基本要素全部都满足了，这个应用才能成为SOA编程。</p>
+<p>###<strong>松散耦合</strong><br>松散耦合是指相互之间不依赖，踏实针对目前紧密耦合的应用系统所提出的一个概念，包括3个方面的内涵。</p>
+<p><strong>1. 服务之间的松散耦合</strong>     </p>
+<p>一个服务应该能够实现自己所提供的接口的所有功能，不要依赖其他服务。</p>
+<p><strong>2. 接口和实现之间的松散耦合</strong>    </p>
+<p>   比如用wdsl定义的web service 服务接口，既可以用j2ee来实现，也可以用.net来实现。</p>
+<p><strong>3. 业务组件和传输协议之间的松散耦合</strong></p>
+<p>  这是目前业务组件不能实现的。比如ejb需要rmi的传输协议，web service需要soap的传输协议。jms需要jms的传输协议。<br>这是新的soa思想要实现的。</p>
+<p>###<strong>粗粒度</strong></p>
+<p>粗粒度的意义就是说，soa中服务的接口应该比面向对象编程的api要大很多，需要更接近用户的实际操作。比如ATM取款功能，包含用户身份校验、账户是否有足够的取款数额、取款3个步骤，作为soa的业务接口，就不能将“用户身份校验”，“账户是否有足够余额”这样的接口公布给用户，这样粒度太细了，不符合用户的操作习惯，所以系统只提供给符合操作习惯的一个服务接口“取款”，它里面包含了前面2个api的功能。</p>
+<p>###<strong>位置和传输协议透明</strong></p>
+<p>位置和传输协议透明是soa最根本的区别于前面面向组件编程的地方。<br>目前的服务组件比如ejb、web service、jms的发布都是和特定的应用服务器绑定在一起的。比如ibm的websphere服务器、BEA的weblogic应用服务器，apache tomcat应用服务器等。客户端必须知道具体的应用服务器的url才能调用相应的组件.在全球经济一体化的浪潮下，各企业的服务集成是必然的，如果没有新的集成架构思想，那么会导致客户端程序必须要做相应的修改，否则整个集成就不能正常工作了。这就是服务组件的位置的不透明。所谓位置的透明，就是指不论服务组件的实际位置url如何变化，客户端的调用程序的url都不需要改变。</p>
+<p>同理，目前的服务组件比如ejb、web service、jms 都只能接受特殊的传输协议，比如ejb只能接受rmi的传输洗衣，web service只能接受soap的传输协议，jms组件只接受jms的传输协议。这样导致客户端调用这些服务组件时，也必须采用相应的传输协议才能调用，一旦组建的传输协议改变了，客户端也必须做出相应的修改，这就是传输协议的不透明。所谓传输协议的透明，就是不论服务组件的传输协议如何变化，客户端的调用程序的传输协议都不需要改变。</p>
+<p>目前组件的位置不透明，实际上是对应的信息的保存位置不透明，组件的传输协议不透明，实际上是对应信息的调用方式不透明。SOA的思想通过服务总线对目前的组建的接口进行进一步的封装（新的sca编程模型将可以自由绑定传输协议），将能保证服务的位置的透明和传输协议的透明。<br>下图显示了soa的服务调用方式，传输协议和位置都是透明的。不论实际服务者的传输协议和位置如何修改，客户端都不需要相应的程序。<br><img src="http://7xia5s.com1.z0.glb.clouddn.com/soasoa1.jpg" alt="soa的传输协议和位置透明的调用方式"><br>图中所说的任何传输协议，是指服务总线所能支持的传输协议。从理论上讲，服务总线应该能够支持任何的传输协议，否则，就不能称为“服务”总线，而只能称为“某种或者某些特殊协议”的总线了。</p>
+<p>其实由图中我们可以看出，sca架构是通过让客户端针对服务总线编程，从而达到了客户端不需要和具体的传输协议和应用服务器位置打交道（解耦合），而服务总线和具体的传输协议和应用服务器位置紧密耦合着，服务总线就相当于一个中间件。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://anboqing.github.io/2015/05/11/soaLearning_one/" data-id="cisoqi7dj0037rmgg2qzo8llt" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-TheConceptsOfBison" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/05/04/TheConceptsOfBison/" class="article-date">
+  <time datetime="2015-05-04T12:16:00.000Z" itemprop="datePublished">2015-05-04</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/05/04/TheConceptsOfBison/">Bison的基本概念</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>#一、语言和上下文无关文法</p>
+<p>Bison只能解析<strong>上下文无关文法描述</strong>的语言。这说明你要指定一个或多个<strong>句法群Semantic Groups</strong>并且给出构造他们的相关规则。比如说，在c语言中，有一种Semantic Groups叫做“expression”。构件表达式的一个规则可能是：”一个表达式可以由一个减号和其他表达式构成“。另一个规则可能是”一个表达式可以是一个整数“。你可以看出，规则常常是递归的，但是至少要有一个规则可以终止递归。</p>
+<p>最常见的用人类可读的方式表达这种规则的描述范式叫 <strong>Backus-Naur Form</strong> or “BNF” (巴科斯-范式)，它是为了描述 Algol 60 语言而开发出来的。任何用BNF表达的语法都是上下文无关的语法。输入到Bison的代码本质上是机器可读的BNF。</p>
+<p>当然，并不是所有的上下文无关语言都可以被Bison处理，只有<strong>LALR（1）</strong>/*Look Ahead 1 and left-to-right Rightmost derivation 左递归最右推导前窥1 */语法才可以被Bison接受。简单的说，它必须能够在只多读取一个字符的前提下知道如何去解析输入字符串的任何一个部分。严格的说，它是一个LR(1)语法的描述，LALR(1)文法有许多额外的宪制很难简单的解释清楚;但是在实践中很少能找到一个不是LALR(1)文法的LR(1)语法。</p>
+<p>在正式的文法规则中，每种syntactic unit或者grouping 是用一个 <strong>symbol</strong>标示的。那些用来根据语法规则构建更小的语法结构的符号被称为<strong><em>nonterminal symbols</em></strong> <strong>非终结符</strong>；那些不能再切分的符号被叫做 <strong>terminal symbols</strong> <strong>终结符</strong> 或者 <strong>token types</strong>。我们把输入串中的一个终结符叫做<strong>token</strong>，把一个非终结符叫做<strong>grouping</strong>。We call a piece of input corresponding to a single terminal symbol a <strong>token</strong>,and a piece corresbonding to a single nonterminal symbol a <strong>grouping</strong>.</p>
+<p>我们可以用c语言为例子来说明 符号，终结符和非终结符的意义。 c语言的记号token分为 identifiers,constants(numeric and string),和一系列关键词，算数运算符和标点符号；C语言的终结符包括了 ‘identifier’,’number’,’string’,加上每一个关键词的符号，还有运算符和标点符号：’if’,’return’,’const’,’static’,’int’,’char’,’plus-sign’,’open-brace’,’close-brace’,’comma’ 等等。（这些记号可以被分成单个字符，但是这是一个词法学问题，不是语法问题。）</p>
+<p>这里有一个简单的C函数切分成记号的例子：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">int</span> 			<span class="comment">/* keyword 'int'*/</span></div><div class="line">square(x) 		<span class="comment">/* identifier,open-paren, */</span></div><div class="line">				<span class="comment">/* identifier,close-paren*/</span></div><div class="line"><span class="keyword">int</span> x;			<span class="comment">/* keyword 'int',identifier,semicolon*/</span></div><div class="line">&#123; 				<span class="comment">/* open-brace */</span></div><div class="line">	<span class="keyword">return</span> x*x; <span class="comment">/* keyword 'return',identifier,*/</span></div><div class="line">				<span class="comment">/* asterisk,identifier,semicolon */</span></div><div class="line">&#125;				<span class="comment">/* close-brace */</span></div></pre></td></tr></table></figure></p>
+<p>C语言的语法分组(syntactic groupings)包含了：expression,statement,delcaration,function definition.这在c语言的语法中被表示成非终结符 ‘expression’,’statement’,’declaration’,’function definition’。完整的语法使用了几十种其他的语言规则（每一个都有自己的非终结符）用来表示上面四个的意义。在上面的例子中，是一个函数定义，它包含了一个声明和一个定义。在定义中，每一个x是一个表达式，’x*x’也是一个表达式。</p>
+<p>没一个非终结符必须有相应的语法规则来说明它是如何用其他简单的语法构件来组合的。例如，一种c语言语句return,这可能用（非正式的）语法规则描述成下面这种形式：</p>
+<blockquote>
+<p>A ‘statement’ can be made of a ‘return’ keyword, an ‘expression’ and a ‘semicolon’.</p>
+</blockquote>
+<p>还有其它许多种表示语句的规则，每个规则对应了一种c语言语句.</p>
+<p>一个非终结符必须区别于一个特殊的完全的语言中的话语定义。one nonterminal symbol must be distinguished as the special one whick defines a complete utterance in the language. 它被称作 <strong>start symbol</strong>。在一个编译器里，这表示一个完整的输入程序。在c语言中，非终结符 ‘sequcence of definitions and declarations’扮演了这个角色；</p>
+<p>例如，’1+2’是一个合法的c语言expression–c语言的一个合法部分—但是它在整个c程序里面不合法。在上下文无关文法中，这遵从了一个事实：’expression’不是一个起始符<strong>start symbol</strong>.</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://anboqing.github.io/2015/05/04/TheConceptsOfBison/" data-id="cisoqi7bw000zrmggn4p5hg6h" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/编译原理-Compiler-上下文无关文法/">编译原理 Compiler 上下文无关文法</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-incompletetype" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/04/21/incompletetype/" class="article-date">
+  <time datetime="2015-04-21T15:09:00.000Z" itemprop="datePublished">2015-04-21</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/c/">c++</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/04/21/incompletetype/">c/c++中的incomplete type(不完全类型）</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>[TOC]</p>
+<h2 id="问题的引入"><a href="#问题的引入" class="headerlink" title="##问题的引入"></a>##问题的引入</h2><p>《The C Programming Language》里讲到：</p>
+<blockquote>
+<p>If a specifier with a tag but with out a list appears when the tag is not declared,an <strong><em>incomplete tpye</em></strong> is specified.   </p>
+</blockquote>
+<p>它包括：</p>
+<blockquote>
+<p>void、   未指定长度的数组   以及具有非指定内容的结构和联合   </p>
+</blockquote>
+<hr>
+<p>##它的应用场景</p>
+<blockquote>
+<p>为了将私有模块的内部实现细节对提供公共接口的模块隐藏，在公共接口模块中使用<em>不完全类型</em>：共有头文件中只定义结构体的标识符，实现的定义是有私有头文件传给公有头文件的。</p>
+</blockquote>
+<p>比如:<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//private.h</span></div><div class="line"><span class="comment">/*</span></div><div class="line">    下面这个结构定义本身是供解释器内部使用的数据结构，不应该向外公开，所以是隐藏的，</div><div class="line">    而在公有头文件中定义了一个它的不完全定义CRB_Interpreter</div><div class="line">*/</div><div class="line"><span class="keyword">struct</span> CRB_Interpreter_tag&#123;</div><div class="line">    MEM_Storage interpreter_storage;</div><div class="line">    MEM_Storage execute_storage;</div><div class="line">    Variable *variable;</div><div class="line">    FunctionDefinition *function_list;</div><div class="line">    StatementList statementlist;</div><div class="line">    <span class="keyword">int</span> current_line_number;</div><div class="line">&#125;</div><div class="line"><span class="comment">//public.h </span></div><div class="line">    <span class="function">CRB_Interpreter *<span class="title">CRB_create_interpreter</span><span class="params">(<span class="keyword">void</span>)</span></span>;</div><div class="line"><span class="comment">/*</span></div><div class="line">    生成解释器的函数CRB_create_interpreter()定义在公有头文件中,</div><div class="line">    它返回类型为CRB_interpreter，为了支持这样的原型定义必须首先定义CRB_Interpreter结构体。但是不能把     私有头文件中的内部定义直接拿来用放在公有头文件中。</div><div class="line">    为了应对这种情况，就使用了**不完全类型**</div><div class="line">*/</div><div class="line">    <span class="keyword">typedef</span> <span class="keyword">struct</span> CRB_Interpreter_tag CRB_Interpreter;</div><div class="line"> <span class="comment">//（注意public.h中并没有#include "private.h"）这种状态的CRB_Interpreter就是不完全类型</span></div></pre></td></tr></table></figure></p>
+<hr>
+<p>##不完全类型什么时候会变成 “完全的”</p>
+<ul>
+<li>当后续的一个包含声明列表的一个同样的标识符出现时</li>
+<li>即使包含了声明列表的标识符的列表中，该标识符也是不完全的，只有当}出现时，该标识符才完全</li>
+</ul>
+<hr>
+<p>##不完全类型的特性</p>
+<ol>
+<li>由于struct 或者 union 不能包含 incomplete type的成员，所以因为上面的第二条原因，结构和联合不能包含自己的实例（因为在自己的声明列表还没有遇到}之前，自己的标识符还是一个incomplete type）。   </li>
+<li>但是，structure or union type可以包含自引用类型的结构，比如指向自身实例的指针，因为指向不完全类型的指针可以被声明。</li>
+<li>对不完全类型也不能使用<strong>sizeof</strong>,因此，在compile time，我们是无法知道一个不完全类型的大小的。</li>
+</ol>
+<p>##<strong>精髓来了！！！</strong><br>为什么c/c++中如果定义了两个头文件，其中的类或者结构互相引用(写程序经常会遇到这种情况)，这种情况下，要想通过编译，不能在两个头文件中都#include对方，只能在其中一个里面#include，而在另一个被#include的头文件中 <strong>对用到的另一个文件中定义的类或者结构进行声明</strong>（<strong>其实这个声明就是一个不完全类型啊</strong>)</p>
+<p>关于这个特性，《The C Programming Language》p213中有一段话特别精髓：</p>
+<blockquote>
+<p>A very special rule applies to declarations of the form <strong><em>struct-or-union identifier;</em></strong>  that declare a structure of union,but have no declaration list and no declarators. Even if the identifier is a structure or union tag <strong>already declared in an outer scope,</strong> this declaration makes the identifier the tag of a <strong>new,incompletely-typed</strong> structure or union in the current scope.</p>
+<blockquote>
+<p>this recondite rule is new with ANSI. It is intended to <strong>deal with mutually-recursive structures declared in an inner scope,but whose tags might already be declared in the outer scope.</strong></p>
+</blockquote>
+</blockquote>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">ifndef</span> __COMPLETETYPEB_H__</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> __COMPLETETYPEB_H__</span></div><div class="line"><span class="comment">// 这个类中包含了一个头文件中定义的类的指针CompleteClass * others_pointer</span></div><div class="line"><span class="comment">// 用#include 的方式让这个编译单元（translation unit)获取关于CompleteClass的类型信息</span></div><div class="line"></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"completetype.h"</span></span></div><div class="line"></div><div class="line"><span class="keyword">class</span> CompleteClassB&#123;</div><div class="line">    <span class="keyword">int</span> member;</div><div class="line">    CompleteClass *others_pointer;</div><div class="line">    CompleteClassB *self_pointer;</div><div class="line">&#125;;</div><div class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></div></pre></td></tr></table></figure>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">ifndef</span> __COMPLETETYPE_H__</span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> __COMPLETETYPE_H__</span></div><div class="line"></div><div class="line"><span class="comment">// 由于在这个类中包含了另一个类CompleteClassB的一个指针，但是CompleteClassB已经#include了这个头文件，如果这个头文件再通过#include来获取CompleteCassB的类型信息的话，就会造成mutualy-recursive include,编译不会通过。怎么解决呢？**incomplete type **隆重登场！！！</span></div><div class="line"><span class="comment">// incomplete type declaration（不完全类型声明）</span></div><div class="line"><span class="keyword">class</span> CompleteClassB;</div><div class="line"></div><div class="line"><span class="keyword">class</span> CompleteClass&#123;</div><div class="line">    <span class="keyword">int</span> member;</div><div class="line">    <span class="comment">//Completeclass self_instance;</span></div><div class="line">    CompleteClassB *others_pointer;</div><div class="line">    CompleteClass *self_pointer;</div><div class="line">&#125;;</div><div class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></div></pre></td></tr></table></figure>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://anboqing.github.io/2015/04/21/incompletetype/" data-id="cisoqi7c6001crmgg8j0kaaqa" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/c-c-linkage-incomplete-type/">c c++ linkage incomplete-type</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-贝叶斯分类器" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/04/14/贝叶斯分类器/" class="article-date">
+  <time datetime="2015-04-13T17:06:00.000Z" itemprop="datePublished">2015-04-14</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/贝叶斯分类/">贝叶斯分类</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/04/14/贝叶斯分类器/">贝叶斯分类器的技巧</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>当特征是连续变量时，无法用计数方法获得先验概率，有两种方法可以解决这个问题：<br>1.一个技巧是将连续值变为离散值，计算区间的概率。比如将F1分解成[0, 0.05]、(0.05, 0.2)、[0.2, +∞]三个区间，然后计算每个区间的概率</p>
+<p>2.当样本太小，不足分割区间时：<br>通过样本计算出均值和方差，也就是得到正态分布的密度函数。有了密度函数，就可以把值代入，算出某一点的密度函数的值。<br>比如，男性的身高是均值5.855、方差0.035的正态分布。所以，男性的身高为6英尺的概率的相对值等于1.5789（大于1并没有关系，因为这里是密度函数的值，只用来反映各个值的相对可能性）。</p>
+<p><a href="http://www.ruanyifeng.com/blog/2013/12/naive_bayes_classifier.html" target="_blank" rel="external">reference</a></p>
+<p><a href="http://blog.csdn.net/xiaoyao3857/article/details/8180565" target="_blank" rel="external">http://blog.csdn.net/xiaoyao3857/article/details/8180565</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://anboqing.github.io/2015/04/14/贝叶斯分类器/" data-id="cisoqi7e50044rmggy1f7v5yn" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/贝叶斯分类器/">贝叶斯分类器</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-java_remote_method_invocation" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/03/29/java_remote_method_invocation/" class="article-date">
+  <time datetime="2015-03-29T10:15:00.000Z" itemprop="datePublished">2015-03-29</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/RMI/">RMI</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/03/29/java_remote_method_invocation/">java远程方法调用　Remote Method Invocation</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>#定义</p>
+<p>Java RMI 指的是远程方法调用 (Remote Method Invocation)。它是一种机制，能够让在某个 Java 虚拟机上的对象调用另一个 Java 虚拟机中的对象上的方法。可以用此方法调用的任何对象必须实现该远程接口。</p>
+<p><strong>如何调用另一个JVM中的对象的方法？</strong><br>由于不能取得另一个堆的对象的引用，换句话说，不可以这样写：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Duck d = &lt;另一个堆的对象&gt;</div></pre></td></tr></table></figure></p>
+<p>变量d只能引用当前代码语句的同一堆空间的对象．那怎么办？该是Java远程方法调用出现的时刻了…..RMI可以让我们找到远程JVM内的对象，并允许我们调用它们的方法．</p>
+<p>假如我们要设计一个系统，能够调用本地对象，然后将每个请求转发到远程对象上进行．要如何设计？我们需要一些辅助对象，帮我们真正进行沟通．这些辅助对象使客户就像在调用本地对象的方法（事实也如此）一样．客户调用客户辅助对象上的方法，仿佛客户辅助对象就是真正的服务．客户辅助对象再负责为我们转发这些请求．</p>
+<p>换句话说，客户对象以为它调用的是远程服务上的方法，因为客户辅助对象乔装成服务对象，假装自己有客户所要调用的方法．</p>
+<p>但是客户辅助对象并不是真正的远程服务.虽然操作看起来很像（因为具有服务所宣称的相同的方法），但是并不真正拥有客户所期望的方法罗辑．客户辅助对象会联系服务器，传送方法调用信息（例如，方法名称，变量），然后等待服务器的返回．</p>
+<p>在服务器端，服务辅助对象从客户辅助对象中接受请求（透过Socket连接),将调用的信息解包,然后调用真正服务对象上的真正方法.所以,对于服务对象来说,调用是本地的,来自服务辅助对象,而不是远程客户.</p>
+<p>服务辅助对象从服务中得到返回值,将他打包,然后运回到客户辅助对象(通过网络Socket的输出流),客户辅助对象对信息解包,最后将返回值交给客户对象.</p>
+<p><img src="http://7xia5s.com1.z0.glb.clouddn.com/07211453-ca7892e2a15747e8a34d9c946fd3d55d.png" alt="198843"></p>
+<p>#方法调用是如何发生的</p>
+<p><img src="http://7xia5s.com1.z0.glb.clouddn.com/选区_001.png" alt="2"><br><img src="http://7xia5s.com1.z0.glb.clouddn.com/选区_003.png" alt="3432"><br><img src="http://7xia5s.com1.z0.glb.clouddn.com/选区_004.png" alt="44532"><br><img src="http://7xia5s.com1.z0.glb.clouddn.com/选区_005.png" alt="521"><br><img src="http://7xia5s.com1.z0.glb.clouddn.com/选区_006.png" alt="00988"><br><img src="http://7xia5s.com1.z0.glb.clouddn.com/选区_007.png" alt="1932"></p>
+<p><strong>RMI提供了 客户辅助对象和服务辅助对象,为客户辅助对象创建和服务对象相同的方法.RMI的好处在于你不必亲自写任何网络或IO代码.客户程序调用远程方法就和运行在客户自己的本地JVM上对对象进行正常方法调用一样.</strong></p>
+<p>#制作远程服务</p>
+<ul>
+<li>步骤1:<strong>制作远程接口</strong><br>  远程接口定义出可以让客户远程调用的方法.客户将用它作为服务的类类型.<br>  Stub和实际的服务都实现自此接口.</li>
+<li>步骤2:<strong>制作远程实现</strong><br>  这是做实际工作的类,为远程接口中定义的远程方法提供了真正的实现.这就是客户真正想要调用方法的对象.</li>
+<li>步骤3:<strong>利用rmic产生的stub和skeleton</strong><br>  这就是客户和服务的辅助类.你不许自己创建这些类,甚至连生成他们的代码都不用看,因为当你在运行rmic工具时,这都会自动处理.你可以在jdk中找到rmic<br>  <img src="http://7xia5s.com1.z0.glb.clouddn.com/rmic.png" alt="1"></li>
+<li>步骤4:<strong>启动RMI registry(rmiregistry)</strong><br>  rmiregistry就像是电话本,客户可以从中查到代理的位置</li>
+<li>步骤5:<strong>开始远程服务</strong><br>  你必须让服务对象开始运行.你的服务实现类会去实例化一个服务的实例,并将这个服务注册到RMI registry.注册之后,这个服务就可以提供客户调用了.</li>
+</ul>
+<p>###1.制作远程接口</p>
+<ul>
+<li><p>扩展java.rmi.Remote:Remote是一个记号接口,所以Remote不具有方法.对于RMI来说,Remote接口具有特别的意义,所以我们必须遵守规则.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">MyRemote</span> <span class="keyword">extends</span> <span class="title">Remote</span></span>&#123;&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>声明所有的方法都会抛出RemoteException</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> java.rmi.*;</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">MyRemote</span> <span class="keyword">extends</span> <span class="title">Remote</span></span>&#123;</div><div class="line">	<span class="function"><span class="keyword">public</span> String <span class="title">method</span><span class="params">()</span> <span class="keyword">throws</span> RemoteException</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>确定变量和返回值是属于原语(primitive)类型或者可以序列化(Serializable)类型<br>远程方法的变量和返回值,必须属于原语类型或Serializable类型.这不难理解.远程方法的变量必须被打包并通过网络运送,这要靠序列化来完成.如果你使用原语类型,字符串和许多API中内定的类型(包括数组和集合),都不会有问题.如果你传送自己定义的类,就必须保证你的类实现了Serializable.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> String<span class="comment">//这个返回值将从服务器通过网络运回给客户,所以必须是Serializable的.这样才可以将变量和返回值打包并传送.</span></div><div class="line">	method() <span class="keyword">throws</span> RemoteException;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>###2.制作远程实现</p>
+<ul>
+<li><p>实现远程接口,扩展UnicastRemoteObject<br>  为了要成为远程服务对象,你的对象需要某些”远程的”功能.最简单的方式是扩展java.rmi.server.UnicastRemoteObject,让超类帮你做这些工作.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyRemoteImpl</span> <span class="keyword">extends</span> <span class="title">UnicastRemoteObject</span> <span class="keyword">implements</span> <span class="title">MyRemote</span></span>&#123;&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>设计一个无参数的构造器,并声明RemoteException;<br>你的新超类UnicastRemoteObject带来一个小问题:它的构造器抛出一个RemoteExceoption;解决办法就是子类的构造器也抛出异常;</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="title">MyremoteImpl</span><span class="params">()</span> <span class="keyword">throws</span> RemoteException</span>&#123;&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>用RMI Registry注册此服务 :<br>现在已经有了一个远程服务了,必须让它可以被远程客户调用.你要做的是将此服务实例化,然后放进RMI registry中.当注册这个实现对象时,RMI系统其实注册的是Stub,因为这是客户真正需要的.注册服务使用了java.rmi.Naming类的静态rebind()方法;</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">try</span>&#123;</div><div class="line">	MyRemote service = <span class="keyword">new</span> MyRemoteImpl();</div><div class="line">	Naming.rebind(<span class="string">"RemoteMethod"</span>,service);</div><div class="line">&#125; <span class="keyword">catch</span>(Exception ex)&#123;...&#125;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>###3.产生Stub和Skeleton<br>rmic 是jdk内置的一个工具,用来为一个服务类产生stub和skeleton.命名习惯是在远程实现的名字后面加上_stub或者＿Skel．</p>
+<p>###4．执行remiregistry<br><strong>开启一个终端，启动rmiregistry</strong><br>先确定启动目录必须可以访问你的类.最简单的做法是从你的’．class’所在目录启动</p>
+<p>###5.启动服务<br><strong>开启另一个终端，启动服务</strong><br>从哪里启动？可能是从你的远程实现类中的main()方法中，也可能是从一个独立的启动类；</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://anboqing.github.io/2015/03/29/java_remote_method_invocation/" data-id="cisoqi7c8001frmggw3xnaxzo" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/RMI/">RMI</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-DesignPattern_Proxy" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/03/28/DesignPattern_Proxy/" class="article-date">
+  <time datetime="2015-03-28T08:00:00.000Z" itemprop="datePublished">2015-03-28</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/设计模式/">设计模式</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/03/28/DesignPattern_Proxy/">设计模式之代理模式Proxy</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>#Intent</p>
+<blockquote>
+<p>Provide a surrogate(替身) or placeholder for another object to control access to it;</p>
+</blockquote>
+<p>#定义<br><strong>代理模式</strong>为另一个对象提供一个替身或占位符以控制对这个对象的访问;</p>
+<p>#动机<br>控制对对象的访问的一个原因是：推迟创建和初始化该对象的全部耗费，直到我们确确实实需要用它；</p>
+<p>#适用性<br>代理模式适用于需要更多功能或更复杂的对象引用而不是一个简单的指针；下面是几个常见的适用代理模式的情景：</p>
+<ul>
+<li>远程代理：提供了一个本地代表，它可以代表另一个地址空间的对象；</li>
+<li>虚拟代理：可以在需要的时候创建那些创建开销很大的对象；</li>
+<li>保护代理：控制对原生对象的访问；</li>
+<li>智能指针：参见<effective c++="">；</effective></li>
+</ul>
+<p>#结构图<br><img src="http://7xia5s.com1.z0.glb.clouddn.com/proxy.jpg" alt="proxy"></p>
+<p>#参与者</p>
+<ul>
+<li>代理Proxy<ul>
+<li>保存一个对真实对象的引用．若RealSubject和Subject的接口相同，Proxy会引用Subject.</li>
+<li>提供一个与Subject的接口相同的接口，这样代理就可以用来替代视体；</li>
+<li>提供对实体的存取，并可能负责创建和删除它；</li>
+<li>其他功能依赖于代理的类型：<ul>
+<li>Remote Proxy负责对请求及其参数进行编码，并向不同地址空间中的实体发送已编码的请求；</li>
+<li>Virtual　proxy可以缓存实体的附加信息，以便延迟对它的访问；例如，动机一节中提到的ImageProxy缓存了图像实体的尺寸;</li>
+<li>Protection Proxy检查调用者是否具有实现一个请求所必须的访问权限；</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>对象接口(Subject)<ul>
+<li>定义RealSubject 和Proxy的公用接口，这样就可以在任何使用RealSubject的地方都可以使用Proxy;</li>
+</ul>
+</li>
+<li>真实对象RealSubject<ul>
+<li>定义Proxy所代表的实体;</li>
+</ul>
+</li>
+</ul>
+<p>#Consequences<br>Proxy模式在访问对象时引入了一定程度的间接性；</p>
+<ol>
+<li>Remote proxy可以隐藏一个对象存在于不同地址空间的事实；</li>
+<li>virtual proxy可以进行优化，例如根据要求创建对象；</li>
+<li>Protection Proxy和Smart reference都允许在访问一个对象时有一些附加的Housekeeping task;<br>#Implementation<br>一个虚拟代理：定义了接口<figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">class</span> Graphic &#123;</div><div class="line"><span class="keyword">public</span>:</div><div class="line">    <span class="keyword">virtual</span> ~Grahpic();</div><div class="line">    <span class="function"><span class="keyword">virtual</span> viod <span class="title">Draw</span><span class="params">(<span class="keyword">const</span> Point&amp; at)</span> </span>= <span class="number">0</span>;</div><div class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">HandleMouse</span><span class="params">(Event&amp; event)</span> </span>= <span class="number">0</span>;</div><div class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">const</span> Point&amp; <span class="title">GetExtent</span><span class="params">()</span> </span>= <span class="number">0</span>;</div><div class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">Load</span><span class="params">(istream&amp; from)</span> </span>= <span class="number">0</span>;</div><div class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">Save</span><span class="params">(ostream&amp; to)</span> </span>= <span class="number">0</span>;</div><div class="line"><span class="keyword">protected</span>:</div><div class="line">    Graphic();</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>Image类实现了Graphic接口用来显示图像文件.Image　override了Handlemouse操作,使得用户可以交互的调整图像的尺寸；<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">class</span> Image:<span class="keyword">public</span> Graphic &#123;</div><div class="line"><span class="keyword">public</span>:</div><div class="line">    Image(<span class="keyword">const</span> <span class="keyword">char</span>* file); <span class="comment">// loads image from a file</span></div><div class="line">    <span class="keyword">virtual</span> ~Image();</div><div class="line">    </div><div class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">Draw</span><span class="params">(<span class="keyword">const</span> Point&amp; at)</span></span>;</div><div class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">HandleMouse</span><span class="params">(Event&amp; event)</span></span>;</div><div class="line">    </div><div class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">const</span> Point&amp; <span class="title">GetExtent</span><span class="params">()</span></span>;</div><div class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">Load</span><span class="params">(istream&amp; from)</span></span>;</div><div class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">Save</span><span class="params">(ostream&amp; to)</span></span>;</div><div class="line"><span class="keyword">private</span>:</div><div class="line">    <span class="comment">// ...</span></div><div class="line">&#125;;</div></pre></td></tr></table></figure></p>
+<p>ImageProxy 和 Image具有相同的接口:<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">class</span> ImageProxy : <span class="keyword">public</span> Graphic &#123;</div><div class="line"><span class="keyword">public</span>:</div><div class="line">    ImageProxy(<span class="keyword">const</span> <span class="keyword">char</span>* imageFile);</div><div class="line">    <span class="keyword">virtual</span> ~ImageProxy();</div><div class="line">    </div><div class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">Draw</span><span class="params">(<span class="keyword">const</span> Point&amp; at)</span></span>;</div><div class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">HandleMouse</span><span class="params">(Event&amp; event)</span></span>;</div><div class="line">    </div><div class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">const</span> Point&amp; <span class="title">getExtent</span><span class="params">()</span></span>;</div><div class="line">    </div><div class="line">    <span class="function"><span class="keyword">virtual</span> viod <span class="title">Load</span><span class="params">(istream&amp; from)</span></span>;</div><div class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">Save</span><span class="params">(ostream&amp; to)</span></span>;</div><div class="line"><span class="keyword">protected</span>:</div><div class="line">    <span class="function">Image* <span class="title">GetImage</span><span class="params">()</span></span>;</div><div class="line"><span class="keyword">private</span>:</div><div class="line">    Image* <span class="number">_</span>image;</div><div class="line">    Point <span class="number">_</span>extent;</div><div class="line">    <span class="keyword">char</span>* <span class="number">_f</span>ileName;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>构造函数保存了文件名的本地拷贝，并且初始化了成员变量<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">ImageProxy::ImageProxy(<span class="keyword">const</span> <span class="keyword">char</span>* filename) &#123;</div><div class="line">    <span class="number">_f</span>ileName = strdup(fileName);</div><div class="line">    <span class="number">_</span>extent = Point::Zero;</div><div class="line">    <span class="number">_</span>image = <span class="number">0</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">Image* ImageProxy::GetImage() &#123;</div><div class="line">    <span class="keyword">if</span>(<span class="number">_</span>image == <span class="number">0</span>)&#123;</div><div class="line">        <span class="number">_</span>image = <span class="keyword">new</span> Image(<span class="number">_f</span>ileName);</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> <span class="number">_</span>image;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>如果可能的话，GetExtent返回的是缓存过图像的extent;否则从文件中读取图像（开销大）;这和单例模式很像;<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> Point&amp; ImageProxy::GetExtent() &#123;</div><div class="line">    <span class="keyword">if</span>(<span class="number">_</span>extent == Point::Zero) &#123;</div><div class="line">        <span class="number">_</span>extent = GetImage()-&gt;GetExtent();</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> <span class="number">_</span>extent;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">void</span> ImageProxy::Draw(<span class="keyword">const</span> Point&amp; at) &#123;</div><div class="line">    GetImage()-&gt;Draw(at);</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">void</span> ImageProxy::HandleMouse(Event&amp; event) &#123;</div><div class="line">    GetImage()-&gt;HandleMouse(event);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>save操作将缓存的图像尺寸和文件名保存在一个流中.Load得到这个信息并初始化相应的成员函数;<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">void</span> ImageProxy::Save(ostream&amp; to) &#123;</div><div class="line">    to &lt;&lt; <span class="number">_</span>extent &lt;&lt; <span class="number">_f</span>ileName;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">void</span> ImageProxy::Load(istream&amp; from) &#123;</div><div class="line">    from &gt;&gt; <span class="number">_</span>extent &gt;&gt; <span class="number">_f</span>ileName;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>最终，假设我们有一个文本文档类，包含了Graphic对象：<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">class</span> TextDocument &#123;</div><div class="line"><span class="keyword">public</span>:</div><div class="line">    TextDocument();</div><div class="line">    <span class="function"><span class="keyword">void</span> <span class="title">Insert</span><span class="params">(Graphic*)</span></span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>我们就可以使用图像代理来代替真实的图像对象来插入文本文档,以实现推迟加载图片文件的效果,加快文档的打开速度;<br><code>`c++
+TextDocument* text = new TextDocument();
+text-&gt;Insert(new GraphicProxy(&quot;anImageFileName&quot;));</code></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://anboqing.github.io/2015/03/28/DesignPattern_Proxy/" data-id="cisoqi7b30006rmggcrl260gl" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-DesignPattern_Decorator" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/03/28/DesignPattern_Decorator/" class="article-date">
+  <time datetime="2015-03-28T07:45:00.000Z" itemprop="datePublished">2015-03-28</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/设计模式/">设计模式</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/03/28/DesignPattern_Decorator/">设计模式之　装饰器 Decorator</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>#Intent</p>
+<blockquote>
+<p>Attach additional responsibilities to an object dynamically.Decorators provide a flexible alternative to subclassing for extending functionality.</p>
+<hr>
+<p>为对象动态添加责任．装饰者提供了扩展功能的一种比继承更灵活的方法．</p>
+</blockquote>
+<p>###认识装饰者模式<br>用继承无法解决的问题:类数量爆炸，设计死板，基类加入的新功能并不适用于所有的子类．</p>
+<ul>
+<li>装饰者和被装饰者有相同的父类</li>
+<li>你可以用一个或者多个装饰者包装一个对象</li>
+<li>既然装饰者和被装饰者有相同的超类型，所以在任何需要原始对象（被包装）的场合，可以用装饰过的对象代替它.</li>
+<li>装饰者可以在所委托被装饰者的行为之前或之后，加上自己的行为，以达到特定的目的．</li>
+<li>对象可以在任何时候被装饰，所以可以在运行时动态的，不限量的用你喜欢的装饰者来装饰对象.</li>
+</ul>
+<p>#类图<br><img src="http://7xia5s.com1.z0.glb.clouddn.com/Decorator.png" alt="装饰者类图"></p>
+<ul>
+<li>Decorator继承了Component，这么做的重点在于，装饰者和被装饰者必须是一样的类型，也就是有共同的超类，在这里，我们用继承达到<strong>类型匹配</strong>，而不是利用继承<strong>获得＂行为＂</strong></li>
+<li>装饰者需要和被装饰者有相同的<strong>“接口”</strong>，因为装饰者必须能取代被装饰者．<strong>新的行为</strong>是从哪里来的？我们将Decorator与component组合时，就是在加入行为．所得到的新行为，并不是继承自超类，而是由组合对象得来的．行为来自装饰者和component或者与其他装饰者之间的组合关系.</li>
+<li>如果以来继承，那么类的行为智能在编译时动态决定．in other word，行为如果不是来自超类，就是子类overide后的版本．In the opposite，利用组合，可以把decorator混着用，而且是在<strong>运行时</strong>；</li>
+<li>如果异类继承，每次需要新的行为时，还得<strong>修改现有代码</strong>;<br>###具体例子的类图<br><img src="http://7xia5s.com1.z0.glb.clouddn.com/11193337-157d75fdf84f43809d1d2a302c26cf20.png" alt="headFirst上的例子"></li>
+</ul>
+<p>#代码</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//component.java</span></div><div class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">Component</span> </span>&#123;</div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">operation</span><span class="params">()</span></span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// concreateComponent.java</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ConcreateComponent</span> <span class="keyword">extends</span> <span class="title">Component</span> </span>&#123;</div><div class="line">	<span class="keyword">private</span> String attribute = <span class="string">"Concreate Component attribute"</span>;</div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">operation</span><span class="params">()</span> </span>&#123;</div><div class="line">		System.out.println(attribute);</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// Decorator.java</span></div><div class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">Decorator</span> <span class="keyword">extends</span> <span class="title">Component</span> </span>&#123;</div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">operation</span><span class="params">()</span></span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//ConcreateDecoratorA</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ConcreateDecoratorA</span> <span class="keyword">extends</span> <span class="title">Decorator</span> </span>&#123;</div><div class="line">	<span class="comment">// 这里用　被包装类的父类引用保存被包装对象　实现多态</span></div><div class="line">	<span class="keyword">private</span> Component concreate_component ;</div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="title">ConcreateDecoratorA</span><span class="params">(Component cct)</span></span>&#123;</div><div class="line">		concreate_component = cct;</div><div class="line">	&#125;</div><div class="line">	<span class="meta">@Override</span></div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">operation</span><span class="params">()</span> </span>&#123;</div><div class="line">		concreate_component.operation();</div><div class="line">		<span class="comment">//添加了新的功能（职责)</span></div><div class="line">		System.out.println(<span class="string">"ConcreateDecoratorA added operation!"</span>);</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//ConcreateDecoratorB.java</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ConcreateDecoratorB</span> <span class="keyword">extends</span> <span class="title">Decorator</span> </span>&#123;</div><div class="line">	<span class="keyword">private</span> Component component;</div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="title">ConcreateDecoratorB</span><span class="params">(Component component)</span></span>&#123;</div><div class="line">		<span class="keyword">this</span>.component = component;</div><div class="line">	&#125;</div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">operation</span><span class="params">()</span> </span>&#123;</div><div class="line">		component.operation();</div><div class="line">		System.out.println(<span class="string">"Concreate decorator B added operation ! "</span>);</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>#讨论</p>
+<p>####优点</p>
+<ul>
+<li>比静态的继承更灵活：与对象的静态继承相比，Decorator提供了更加灵活的想对象添加responsbility 的方式，可以使用添加和分离的方法，在运行时增加和删除职责．使用继承机制增加responsbility需要创建新的子类，如果要为原来已有的所有子类增加新功能的话，每个子类都要重写，增加系统的复杂度，此外可以为一个特定的Component类提供多个Decorator，这种混合匹配是使用继承很难做到的.</li>
+<li><strong>打个比方：盖楼用建筑构件，写oo程序用类，制造构件（写类）是编译时（compile-time），而用构件盖楼（用类）是运行时(run-time);如果不用decorator，那么要使用新的形状的构件（新功能的类），那么必须重新烧新的构件（编写新的类），会造成生产过程不能标准化，生产效率太低了；如果使用了decorator，那么就可以在写类时只写基础的组件（制造标准的建筑组件（砖头，楼板等））,在使用的时候用装饰器把基础组件包装起来，产生新的功能满足不同的需求</strong></li>
+<li>避免在层次结构的高层类中提供太多特征，Decorator模式提供了一种”即用即付”的方法来添加职责,他并不试图在一个复杂的可定制的类中支持所有可预见的特征,相反可以定义一个简单的类,并且用Decorator类给他逐渐的添加功能,可以从简单的部件组合出复杂的功能.</li>
+<li>把添加职责的活动从编写类时推迟到使用类时,因为在编写类的时候，不可能知道所有新功能是什么，所以把类设计为可以定制新功能的结构，让类的用户自己添加要增加的新功能这就避免了在设计类的时候需要用子类来扩展功能的局限性（子类爆炸）</li>
+</ul>
+<p>####缺点</p>
+<ul>
+<li>Decorator会在设计中加入大量的小类，这会偶尔导致别人不容易了解Decorator的设计方式</li>
+<li>从对象的角度出发,被装饰的对象和它原来的对象不是一个对象,被装饰的对象只是调用了原来对象的方法,并且在原来对象的方法附近添加了新的操作.一旦使用装饰者模式,不止需要实例化组件,还要把此组件包装进装饰者中.(工厂和生成器模式对这个问题有帮助)</li>
+</ul>
+<h1 id="OO设计的一点总结"><a href="#OO设计的一点总结" class="headerlink" title="OO设计的一点总结"></a>OO设计的一点总结</h1><ul>
+<li>继承属于扩展的形式之一,但不见得是达到弹性设计的最佳方式;</li>
+<li>在我们的设计中,应该允许行为可以被扩展,而无需修改现有的代码;</li>
+<li>组合和委托可用于在运行时动态的加上新的行为;</li>
+<li>除了继承,装饰者模式也可以让我们扩展行为;</li>
+<li>装饰者模式意味着一群装饰者类,这些类用来包装具体组件;</li>
+<li>装饰者类反映出被装饰的组件类型;</li>
+<li>装饰者可以在被装饰者的行为附近加上自己的行为,甚至将被装饰者的行为整个取代掉,而达到特定的目的;</li>
+<li>可以用无数个装饰者包装一个组件</li>
+<li>装饰者一般对组件的客户是透明的,除非客户程序依赖于组件的具体类型;</li>
+<li>装饰者会导致设计中出现许多小对象,如果过度使用,会让程序变得很复杂;</li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://anboqing.github.io/2015/03/28/DesignPattern_Decorator/" data-id="cisoqi7ay0005rmgg491q0v95" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Decorator/">Decorator</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+
+
+  <nav id="page-nav">
+    <a class="extend prev" rel="prev" href="/page/2/">&laquo; __('prev')</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/4/">__('next') &raquo;</a>
+  </nav>
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Caffe/">Caffe</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Caffe教程/">Caffe教程</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Learning/">Learning</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/PCA-降维/">PCA 降维</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/RMI/">RMI</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/SOA/">SOA</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/c/">c++</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/caffe/">caffe</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/epoll/">epoll</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/linux/">linux</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/pandas/">pandas</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/tcp-ip/">tcp/ip</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/函数式编程/">函数式编程</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/协程/">协程</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/工具配置/">工具配置</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/推荐系统/">推荐系统</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/数据挖掘/">数据挖掘</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/机器学习/">机器学习</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/算法学习/">算法学习</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/统计/">统计</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/编码/">编码</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/编译原理/">编译原理</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/设计模式/">设计模式</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/贝叶斯分类/">贝叶斯分类</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Caffe教程/">Caffe教程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Composite，组合模式/">Composite，组合模式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Decorator/">Decorator</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/LaTex-数学公式-Pelican-MathJax/">LaTex  数学公式  Pelican  MathJax</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Learning/">Learning</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PCA-降维/">PCA 降维</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RMI/">RMI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SOA/">SOA</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c-c-linkage-incomplete-type/">c c++ linkage incomplete-type</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/caffe-proto/">caffe .proto</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/datamining/">datamining</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/datamining-Apriori-FPGrowth/">datamining Apriori FPGrowth</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/epoll-网络编程/">epoll 网络编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux-source-code/">linux source code</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tcp-ip/">tcp/ip</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/web-service-axis-xfire-lomboz-tomcat/">web-service axis xfire lomboz tomcat</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/函数式编程/">函数式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/动态规划/">动态规划</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/协程/">协程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/可视化-pandas/">可视化 pandas</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/基础知识-编码/">基础知识 编码</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/感知机/">感知机</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/推荐系统/">推荐系统</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/机器学习/">机器学习</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/机器学习-算法/">机器学习 算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/梯度下降/">梯度下降</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编译原理-Compiler-上下文无关文法/">编译原理 Compiler 上下文无关文法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编译编译原理/">编译编译原理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/贝叶斯分类器/">贝叶斯分类器</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Caffe教程/" style="font-size: 20px;">Caffe教程</a> <a href="/tags/Composite，组合模式/" style="font-size: 10px;">Composite，组合模式</a> <a href="/tags/Decorator/" style="font-size: 10px;">Decorator</a> <a href="/tags/LaTex-数学公式-Pelican-MathJax/" style="font-size: 10px;">LaTex  数学公式  Pelican  MathJax</a> <a href="/tags/Learning/" style="font-size: 10px;">Learning</a> <a href="/tags/PCA-降维/" style="font-size: 10px;">PCA 降维</a> <a href="/tags/RMI/" style="font-size: 10px;">RMI</a> <a href="/tags/SOA/" style="font-size: 10px;">SOA</a> <a href="/tags/c-c-linkage-incomplete-type/" style="font-size: 10px;">c c++ linkage incomplete-type</a> <a href="/tags/caffe-proto/" style="font-size: 10px;">caffe .proto</a> <a href="/tags/datamining/" style="font-size: 10px;">datamining</a> <a href="/tags/datamining-Apriori-FPGrowth/" style="font-size: 10px;">datamining Apriori FPGrowth</a> <a href="/tags/epoll-网络编程/" style="font-size: 10px;">epoll 网络编程</a> <a href="/tags/linux-source-code/" style="font-size: 10px;">linux source code</a> <a href="/tags/tcp-ip/" style="font-size: 10px;">tcp/ip</a> <a href="/tags/web-service-axis-xfire-lomboz-tomcat/" style="font-size: 10px;">web-service axis xfire lomboz tomcat</a> <a href="/tags/函数式编程/" style="font-size: 10px;">函数式编程</a> <a href="/tags/动态规划/" style="font-size: 13.33px;">动态规划</a> <a href="/tags/协程/" style="font-size: 13.33px;">协程</a> <a href="/tags/可视化-pandas/" style="font-size: 10px;">可视化 pandas</a> <a href="/tags/基础知识-编码/" style="font-size: 10px;">基础知识 编码</a> <a href="/tags/感知机/" style="font-size: 10px;">感知机</a> <a href="/tags/推荐系统/" style="font-size: 13.33px;">推荐系统</a> <a href="/tags/机器学习/" style="font-size: 16.67px;">机器学习</a> <a href="/tags/机器学习-算法/" style="font-size: 10px;">机器学习 算法</a> <a href="/tags/梯度下降/" style="font-size: 10px;">梯度下降</a> <a href="/tags/编译原理-Compiler-上下文无关文法/" style="font-size: 10px;">编译原理 Compiler 上下文无关文法</a> <a href="/tags/编译编译原理/" style="font-size: 10px;">编译编译原理</a> <a href="/tags/贝叶斯分类器/" style="font-size: 10px;">贝叶斯分类器</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">July 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/06/">June 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">July 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/06/">June 2014</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2016/05/13/epoll/">事件驱动模型epoll</a>
+          </li>
+        
+          <li>
+            <a href="/2016/05/12/由补码引发的关于编码的思考/">由补码引发的关于编码的思考</a>
+          </li>
+        
+          <li>
+            <a href="/2016/01/15/Caffe教程４-Solver/">Caffe教程４：Solver</a>
+          </li>
+        
+          <li>
+            <a href="/2016/01/14/损失函数/">损失函数</a>
+          </li>
+        
+          <li>
+            <a href="/2016/01/13/Forward和Backward/">Forward 和 Backward</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2016 安勃卿<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

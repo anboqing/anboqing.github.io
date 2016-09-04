@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Caffe教程４：Solver | 暗时间</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Solver简介Solver执行模型的优化操作，它通过协调网络的前向推断和反向梯度传播来执行参数更新，来减少误差损失。学习职能被分配到solver和net上，sovler负责优化和产生参数更新，net负责计算loss和梯度。
+Caffe包含了下面几个Solver：
+
+Stochastic Gradient Descent (type: “SGD”),
+AdaDelta (type: “AdaDel">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Caffe教程４：Solver">
+<meta property="og:url" content="http://anboqing.github.io/2016/01/15/Caffe教程４-Solver/index.html">
+<meta property="og:site_name" content="暗时间">
+<meta property="og:description" content="Solver简介Solver执行模型的优化操作，它通过协调网络的前向推断和反向梯度传播来执行参数更新，来减少误差损失。学习职能被分配到solver和net上，sovler负责优化和产生参数更新，net负责计算loss和梯度。
+Caffe包含了下面几个Solver：
+
+Stochastic Gradient Descent (type: “SGD”),
+AdaDelta (type: “AdaDel">
+<meta property="og:updated_time" content="2016-09-04T02:27:56.474Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Caffe教程４：Solver">
+<meta name="twitter:description" content="Solver简介Solver执行模型的优化操作，它通过协调网络的前向推断和反向梯度传播来执行参数更新，来减少误差损失。学习职能被分配到solver和net上，sovler负责优化和产生参数更新，net负责计算loss和梯度。
+Caffe包含了下面几个Solver：
+
+Stochastic Gradient Descent (type: “SGD”),
+AdaDelta (type: “AdaDel">
+  
+    <link rel="alternate" href="/atom.xml" title="暗时间" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">暗时间</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">书写是最好的思考</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://anboqing.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-Caffe教程４-Solver" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/01/15/Caffe教程４-Solver/" class="article-date">
+  <time datetime="2016-01-15T15:09:00.000Z" itemprop="datePublished">2016-01-15</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Caffe教程/">Caffe教程</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Caffe教程４：Solver
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="Solver简介"><a href="#Solver简介" class="headerlink" title="Solver简介"></a>Solver简介</h2><p><code>Solver</code>执行模型的优化操作，它通过协调网络的前向推断和反向梯度传播来执行参数更新，来减少误差损失。学习职能被分配到<code>solver</code>和<code>net</code>上，<code>sovler</code>负责优化和产生参数更新，<code>net</code>负责计算loss和梯度。</p>
+<p>Caffe包含了下面几个<code>Solver</code>：</p>
+<ul>
+<li>Stochastic Gradient Descent (type: “SGD”),</li>
+<li>AdaDelta (type: “AdaDelta”),</li>
+<li>Adaptive Gradient (type: “AdaGrad”),</li>
+<li>Adam (type: “Adam”),</li>
+<li>Nesterov’s Accelerated Gradient (type: “Nesterov”) and</li>
+<li>RMSprop (type: “RMSProp”)</li>
+</ul>
+<p><code>Solver</code>的功能有：</p>
+<ol>
+<li>支撑整个优化过程的簿记工作，创建训练网络和测试网络。</li>
+<li>通过调用forward/backward来迭代优化并更新参数。</li>
+<li>周期性的用测试网络评估学习状态。</li>
+<li>在优化过程中创建模型和<code>solver</code>的状态。</li>
+</ol>
+<p>每次迭代过程：</p>
+<ol>
+<li>调用网络的forward来计算输出和损失</li>
+<li>调用网络的backward来计算梯度</li>
+<li>根据solver的具体方法用梯度进行参数更新</li>
+<li>根据学习率，历史记录和方法来更新solver的状态</li>
+</ol>
+<p>Solver把weights从初始化一直保持到模型学习结束。它也有CPU/GPU模式。</p>
+<hr>
+<h2 id="Solver的方法"><a href="#Solver的方法" class="headerlink" title="Solver的方法"></a>Solver的方法</h2><p>Solver的method处理通用的损失函数最小化的优化问题。对于数据集$D$,优化目标是整个数据集的$|D|$条数据的平均损失：<br>$$L(W) = \frac{1}{|D|} \sum_i^{|D|} f_W\left(X^{(i)}\right) + \lambda r(W)$$<br>其中$f_W\left(X^{(i)}\right)$是数据对象$X^{(i)}$的损失，而$r(W)$是一个正则化项，$\lambda$是学习率。实际中数据集的数量$|D|$可以很大，所以每个solver迭代过程我们都使用随机逼近目标的方法，抽取小批量数据 $N &lt;&lt;|D|$:</p>
+<p>$$L(W) \approx \frac{1}{N} \sum_i^N f_W\left(X^{(i)}\right) + \lambda r(W)$$</p>
+<p>模型在forward步骤中计算$f_W$然后在backward步骤中把梯度$\nabla f_W$反传。<br>参数更新$\Delta W$是由solver根据误差梯度$\nabla f_W$、正则化的梯度$\nabla r(W)$、和其他和优化方法相关的参数计算的。</p>
+<hr>
+<h3 id="SGD"><a href="#SGD" class="headerlink" title="SGD"></a>SGD</h3><p><strong>Stochastic gradient descent</strong>(type: “SGD”)随机梯度下降法按照负梯度$\nabla L(W)$的线型组合和前面的权重更新$V_t$更新权重$W$。<strong>学习率</strong> $\alpha$是负梯度的权重。<strong>动量</strong>$\mu$是前面一次更新的权重。</p>
+<p>最终，我们用如下公式用当前的权重$W_t$和上一次更新值$V<em>t$来计算第$t+1$次迭代的更新值$V</em>{t+1}$和更新权重$W<em>{t+1}$:<br>$$V</em>{t+1} = \mu V_t - \alpha \nabla L(W<em>t)$$<br>$$W</em>{t+1} = W<em>t + V</em>{t+1}$$</p>
+<p>学习“超参数”($\alpha$和$\mu$）可能需要一点微调技巧以便获取最佳结果。如果你不确定怎么开始的画，可以看看下面的黄金法则，了解更多的信息你可以参看Leon Bottou’s 的<a href="http://research.microsoft.com/pubs/192769/tricks-2012.pdf" target="_blank" rel="external">Stochastic Gradient Descent Tricks </a>.</p>
+<p><strong>设置学习率$\alpha$和动量$\mu$的黄金法则</strong></p>
+<p>在深度学习中使用SGD的一个好策略是把学习率$\alpha$设置为$\alpha \approx 0.01 = 10^{-2}$,然后用一个常量因子（例如１０）来在学习过程中调整它，使得损失达到一个明显的”平台”,重复这个过程几遍，通常，你可能想用一个动量$\mu = 0.9$或者相似的值。为了在迭代过程平滑权重更新，动量可以使SGD稳定且快速。<br>　　<br>　　<br>这个过程是 Krizhevsky[^1]在他们著名的ILSVRC-2012　CNN组冠军论文里采用的策略。Caffe让整个策略易于实现，就像我们在对<a href="http://www.magicbroom.info/Papers/DuchiHaSi10.pdf" target="_blank" rel="external">1</a>进行实现的时候做的那样(./examples/imagenet/alexnet_solver.prototxt)</p>
+<p>为了这样使用学习率策略，你可以把下面这几行放在你的solver的prototxt文件里:<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">base_lr: <span class="number">0.01</span>     <span class="meta"># begin training at a learning rate of 0.01 = 1e-2</span></div><div class="line"></div><div class="line">lr_policy: <span class="string">"step"</span> <span class="meta"># learning rate policy: drop the learning rate in <span class="meta-string">"steps"</span></span></div><div class="line">                  <span class="meta"># by a factor of gamma every stepsize iterations</span></div><div class="line"></div><div class="line">gamma: <span class="number">0.1</span>        <span class="meta"># drop the learning rate by a factor of 10</span></div><div class="line">                  # (i.e., multiply it by a factor of gamma = <span class="number">0.1</span>)</div><div class="line"></div><div class="line">stepsize: <span class="number">100000</span>  <span class="meta"># drop the learning rate every 100K iterations</span></div><div class="line"></div><div class="line">max_iter: <span class="number">350000</span>  <span class="meta"># train for 350K iterations total</span></div><div class="line"></div><div class="line">momentum: <span class="number">0.9</span></div></pre></td></tr></table></figure></p>
+<p>在上面的设定中，我们总是使用<code>momentum</code>$\mu=0.9$。我们以基础学习率<code>base_lr</code>$\alpha = 0.01 = 10^{-2}$开始训练最早的100,000次迭代过程，然后将学习率乘以<code>gamma</code>$(\gamma)$,即用学习率 $\alpha’ = \alpha \gamma = (0.01) (0.1) = 0.001 = 10^{-3}$训练第100K~200K次迭代过程，然后用$\alpha’’ = 10^{-4}$来训练第200K~300K次迭代，最终用$\alpha’’’ = 10^{-5}$训练到第350K次迭代.</p>
+<p>　　<br>注意动量在很多次迭代后，把$\mu$用因子$\frac{1}{1 - \mu}$乘以你更新的次数设置，所以你如果增加了$\mu$,那么最好相应的减少$\alpha$，反之亦然。<br>　　<br>　　<br>例如，设动量$\mu＝0.9$，我们得到一个有效的更新尺寸乘数$\frac{1}{1 - 0.9} = 10$,如果我们增加动量到$\mu=0.99$,那么我们就把更新大小乘数增加到了100,于是我们应该把学习率$\alpha$下调10.</p>
+<p>注意到上面的设定仅仅是一个指导，他们肯定不能够保证是最优的，甚至都不能工作！如果学习过程误入歧途了（例如你看到很大或者NaN、inf等损失值或者输出），尝试着把<code>base_lr</code>减少，例如：减少到0.001，然后重训练，重复这个过程直到你找到一个合适的<code>base_lr</code>.</p>
+<p>[^1]: A. Krizhevsky, I. Sutskever, and G. Hinton. <a href="http://papers.nips.cc/paper/4824-imagenet-classification-with-deep-convolutional-neural-networks.pdf" target="_blank" rel="external"> ImageNet Classification with Deep Convolutional Neural Networks</a>. Advances in Neural Information Processing Systems, 2012.</p>
+<hr>
+<h2 id="AdaDelta"><a href="#AdaDelta" class="headerlink" title="AdaDelta"></a>AdaDelta</h2><p><strong>AdaDelta</strong>方法(type: “AdaDelta”)是一个”robust learning rate method”.[^2].它也是一种基于梯度的优化方法（类似SGD)，它的更新公式是：</p>
+<p>$$ \begin{align}<br>(v_t)<em>i &amp;= \frac{\operatorname{RMS}((v</em>{t-1})_i)}{\operatorname{RMS}\left( \nabla L(W<em>t) \right)</em>{i}} \left( \nabla L(W_{t’}) \right)_i<br>\<br>\operatorname{RMS}\left( \nabla L(W<em>t) \right)</em>{i} &amp;= \sqrt{E[g^2] + \varepsilon}<br>\<br>E[g^2]<em>t &amp;= \delta{E[g^2]</em>{t-1} } + (1-\delta)g<em>{t}^2<br>\end{align} $$<br>$$(W</em>{t+1})_i =<br>(W_t)_i - \alpha<br>(v_t)_i.$$</p>
+<hr>
+<h2 id="AdaGrad"><a href="#AdaGrad" class="headerlink" title="AdaGrad"></a>AdaGrad</h2><p><strong>adaptive gradient</strong>(type: “AdaGrad”)方法（Duchi, E. Hazan, and Y. Singer.<a href="http://www.magicbroom.info/Papers/DuchiHaSi10.pdf" target="_blank" rel="external"> Adaptive Subgradient Methods for Online Learning and Stochastic Optimization</a> The Journal of Machine Learning Research, 2011.）<br>是一个基于梯度的方法，它尝试“在干草堆里找缝衣针”也就是找到预测能力很强但很少见的feature（find needles in haystacks in the form of very predictive but rarely seen features,）,Duchi等人如是说。给出前面迭代的所有更新信息($\left( \nabla L(W) \right)_{t’}$其中($t’ \in {1, 2, …, t}$),论文中提出的更新公式如下，它给每个组件$i$指定一个权重W:</p>
+<p>$$<br>(W_{t+1})_i =<br>(W_t)_i - \alpha<br>\frac{\left( \nabla L(W<em>t) \right)</em>{i}}{<br>    \sqrt{\sum<em>{t’=1}^{t} \left( \nabla L(W</em>{t’}) \right)_i^2}<br>}<br>$$</p>
+<p>注意在实践中，对于权重$W \in \mathcal{R}^d$,AdaGrad实现仅用了$\mathcal{O}(d)$额外的存储来保存历史梯度信息，而传统方法要用$\mathcal{O}(dt)$来保存历史梯度信息。</p>
+<hr>
+<h2 id="Scaffolding"><a href="#Scaffolding" class="headerlink" title="Scaffolding"></a>Scaffolding</h2><p>Solver的scaffolding准备优化方法并且初始化模型，通过调用<code>Solver::Presolve()</code>方法调用来完成。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">&gt; caffe train -solver examples/mnist/lenet_solver.prototxt</div><div class="line">I0902 13:35:56.474978 16020 caffe.cpp:90] Starting Optimization</div><div class="line">I0902 13:35:56.475190 16020 solver.cpp:32] Initializing solver from parameters:</div><div class="line">test_iter: 100</div><div class="line">test_interval: 500</div><div class="line">base_lr: 0.01</div><div class="line">display: 100</div><div class="line">max_iter: 10000</div><div class="line">lr_policy: &quot;inv&quot;</div><div class="line">gamma: 0.0001</div><div class="line">power: 0.75</div><div class="line">momentum: 0.9</div><div class="line">weight_decay: 0.0005</div><div class="line">snapshot: 5000</div><div class="line">snapshot_prefix: &quot;examples/mnist/lenet&quot;</div><div class="line">solver_mode: GPU</div><div class="line">net: &quot;examples/mnist/lenet_train_test.prototxt&quot;</div></pre></td></tr></table></figure>
+<p>网络初始化<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div></pre></td><td class="code"><pre><div class="line">I0902 13:35:56.655681 16020 solver.cpp:72] Creating training net from net file: examples/mnist/lenet_train_test.prototxt</div><div class="line">[...]</div><div class="line">I0902 13:35:56.656740 16020 net.cpp:56] Memory required for data: 0</div><div class="line">I0902 13:35:56.656791 16020 net.cpp:67] Creating Layer mnist</div><div class="line">I0902 13:35:56.656811 16020 net.cpp:356] mnist -&gt; data</div><div class="line">I0902 13:35:56.656846 16020 net.cpp:356] mnist -&gt; label</div><div class="line">I0902 13:35:56.656874 16020 net.cpp:96] Setting up mnist</div><div class="line">I0902 13:35:56.694052 16020 data_layer.cpp:135] Opening lmdb examples/mnist/mnist_train_lmdb</div><div class="line">I0902 13:35:56.701062 16020 data_layer.cpp:195] output data size: 64,1,28,28</div><div class="line">I0902 13:35:56.701146 16020 data_layer.cpp:236] Initializing prefetch</div><div class="line">I0902 13:35:56.701196 16020 data_layer.cpp:238] Prefetch initialized.</div><div class="line">I0902 13:35:56.701212 16020 net.cpp:103] Top shape: 64 1 28 28 (50176)</div><div class="line">I0902 13:35:56.701230 16020 net.cpp:103] Top shape: 64 1 1 1 (64)</div><div class="line">[...]</div><div class="line">I0902 13:35:56.703737 16020 net.cpp:67] Creating Layer ip1</div><div class="line">I0902 13:35:56.703753 16020 net.cpp:394] ip1 &lt;- pool2</div><div class="line">I0902 13:35:56.703778 16020 net.cpp:356] ip1 -&gt; ip1</div><div class="line">I0902 13:35:56.703797 16020 net.cpp:96] Setting up ip1</div><div class="line">I0902 13:35:56.728127 16020 net.cpp:103] Top shape: 64 500 1 1 (32000)</div><div class="line">I0902 13:35:56.728142 16020 net.cpp:113] Memory required for data: 5039360</div><div class="line">I0902 13:35:56.728175 16020 net.cpp:67] Creating Layer relu1</div><div class="line">I0902 13:35:56.728194 16020 net.cpp:394] relu1 &lt;- ip1</div><div class="line">I0902 13:35:56.728219 16020 net.cpp:345] relu1 -&gt; ip1 (in-place)</div><div class="line">I0902 13:35:56.728240 16020 net.cpp:96] Setting up relu1</div><div class="line">I0902 13:35:56.728256 16020 net.cpp:103] Top shape: 64 500 1 1 (32000)</div><div class="line">I0902 13:35:56.728270 16020 net.cpp:113] Memory required for data: 5167360</div><div class="line">I0902 13:35:56.728287 16020 net.cpp:67] Creating Layer ip2</div><div class="line">I0902 13:35:56.728304 16020 net.cpp:394] ip2 &lt;- ip1</div><div class="line">I0902 13:35:56.728333 16020 net.cpp:356] ip2 -&gt; ip2</div><div class="line">I0902 13:35:56.728356 16020 net.cpp:96] Setting up ip2</div><div class="line">I0902 13:35:56.728690 16020 net.cpp:103] Top shape: 64 10 1 1 (640)</div><div class="line">I0902 13:35:56.728705 16020 net.cpp:113] Memory required for data: 5169920</div><div class="line">I0902 13:35:56.728734 16020 net.cpp:67] Creating Layer loss</div><div class="line">I0902 13:35:56.728747 16020 net.cpp:394] loss &lt;- ip2</div><div class="line">I0902 13:35:56.728767 16020 net.cpp:394] loss &lt;- label</div><div class="line">I0902 13:35:56.728786 16020 net.cpp:356] loss -&gt; loss</div><div class="line">I0902 13:35:56.728811 16020 net.cpp:96] Setting up loss</div><div class="line">I0902 13:35:56.728837 16020 net.cpp:103] Top shape: 1 1 1 1 (1)</div><div class="line">I0902 13:35:56.728849 16020 net.cpp:109]     with loss weight 1</div><div class="line">I0902 13:35:56.728878 16020 net.cpp:113] Memory required for data: 5169924</div></pre></td></tr></table></figure></p>
+<p>损失函数<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">I0902 13:35:56.728893 16020 net.cpp:170] loss needs backward computation.</div><div class="line">I0902 13:35:56.728909 16020 net.cpp:170] ip2 needs backward computation.</div><div class="line">I0902 13:35:56.728924 16020 net.cpp:170] relu1 needs backward computation.</div><div class="line">I0902 13:35:56.728938 16020 net.cpp:170] ip1 needs backward computation.</div><div class="line">I0902 13:35:56.728953 16020 net.cpp:170] pool2 needs backward computation.</div><div class="line">I0902 13:35:56.728970 16020 net.cpp:170] conv2 needs backward computation.</div><div class="line">I0902 13:35:56.728984 16020 net.cpp:170] pool1 needs backward computation.</div><div class="line">I0902 13:35:56.728998 16020 net.cpp:170] conv1 needs backward computation.</div><div class="line">I0902 13:35:56.729014 16020 net.cpp:172] mnist does not need backward computation.</div><div class="line">I0902 13:35:56.729027 16020 net.cpp:208] This network produces output loss</div><div class="line">I0902 13:35:56.729053 16020 net.cpp:467] Collecting Learning Rate and Weight Decay.</div><div class="line">I0902 13:35:56.729071 16020 net.cpp:219] Network initialization done.</div><div class="line">I0902 13:35:56.729085 16020 net.cpp:220] Memory required for data: 5169924</div><div class="line">I0902 13:35:56.729277 16020 solver.cpp:156] Creating test net (#0) specified by net file: examples/mnist/lenet_train_test.prototxt</div></pre></td></tr></table></figure></p>
+<p>完成<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">I0902 13:35:56.806970 16020 solver.cpp:46] Solver scaffolding done.</div><div class="line">I0902 13:35:56.806984 16020 solver.cpp:165] Solving LeNet</div></pre></td></tr></table></figure></p>
+<hr>
+<h2 id="参数更新"><a href="#参数更新" class="headerlink" title="参数更新"></a>参数更新</h2><p>实际的权重更新是由solver完成的，它通过把参数传递给<code>Sovler::ComputeUpdateValue()</code>来实现的。这个方法会整合所有权重衰减到权重梯度里（现在只包含误差梯度）来获得每个网络最终的梯度,然后这些gradients被学习率$\alpha$缩放，需要减去的更新值被存在每个参数<code>Blob</code>的<code>diff</code>属性里。最终，调用每个参数blob的<code>Blob::Update</code>方法,完成最终的权重更新（从它的<code>data</code>里减去<code>diff</code>）.</p>
+<hr>
+<h2 id="快照和恢复"><a href="#快照和恢复" class="headerlink" title="快照和恢复"></a>快照和恢复</h2><p>Solvor在训练过程中通过调用<code>Solver::Snapshot()</code>方法和<code>Solver::SnapshotSolverState()</code>方法分别保存权重和它自身的状态。权重快照导出了学习到的模型，solver快照相当一个断点，使得训练可以从该快照恢复。恢复是通过<code>Solver::Restore()</code>和<code>Solver::RestoreSolverState()</code>方法完成的.</p>
+<p>权重保存文件没有后缀，而状态保存文件有<code>.solverstate</code>的后缀。每个文件都会有一个<code>_iter_N</code>的前缀来指明是多少次迭代的快照。</p>
+<p>快照是在Solver定义prototxt里这样配置的:<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">The snapshot interval in iterations.</div><div class="line">snapshot: <span class="number">5000</span></div><div class="line"># File path prefix <span class="keyword">for</span> snapshotting model weights and solver state.</div><div class="line"># Note: <span class="keyword">this</span> is relative to the invocation of the `caffe` utility, not the</div><div class="line"><span class="meta"># solver definition file.</span></div><div class="line">snapshot_prefix: <span class="string">"/path/to/model"</span></div><div class="line"># Snapshot the diff along with the weights. This can help debugging training</div><div class="line"><span class="meta"># but takes more storage.</span></div><div class="line">snapshot_diff: <span class="literal">false</span></div><div class="line"># A final snapshot is saved at the end of training unless</div><div class="line"><span class="meta"># this flag is set to false. The default is true.</span></div><div class="line">snapshot_after_train: <span class="literal">true</span></div></pre></td></tr></table></figure></p>
+<p>[^2]: M. Zeiler ADADELTA: <a href="http://arxiv.org/pdf/1212.5701.pdf" target="_blank" rel="external">AN ADAPTIVE LEARNING RATE METHOD</a>. arXiv preprint, 2012.</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://anboqing.github.io/2016/01/15/Caffe教程４-Solver/" data-id="cisoqi7ap0001rmgg2awtqii9" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Caffe教程/">Caffe教程</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/05/12/由补码引发的关于编码的思考/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          由补码引发的关于编码的思考
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/01/14/损失函数/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">损失函数</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Caffe/">Caffe</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Caffe教程/">Caffe教程</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Learning/">Learning</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/PCA-降维/">PCA 降维</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/RMI/">RMI</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/SOA/">SOA</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/c/">c++</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/caffe/">caffe</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/epoll/">epoll</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/linux/">linux</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/pandas/">pandas</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/tcp-ip/">tcp/ip</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/函数式编程/">函数式编程</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/协程/">协程</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/工具配置/">工具配置</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/推荐系统/">推荐系统</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/数据挖掘/">数据挖掘</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/机器学习/">机器学习</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/算法学习/">算法学习</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/统计/">统计</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/编码/">编码</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/编译原理/">编译原理</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/设计模式/">设计模式</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/贝叶斯分类/">贝叶斯分类</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Caffe教程/">Caffe教程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Composite，组合模式/">Composite，组合模式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Decorator/">Decorator</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/LaTex-数学公式-Pelican-MathJax/">LaTex  数学公式  Pelican  MathJax</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Learning/">Learning</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PCA-降维/">PCA 降维</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RMI/">RMI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SOA/">SOA</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c-c-linkage-incomplete-type/">c c++ linkage incomplete-type</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/caffe-proto/">caffe .proto</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/datamining/">datamining</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/datamining-Apriori-FPGrowth/">datamining Apriori FPGrowth</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/epoll-网络编程/">epoll 网络编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux-source-code/">linux source code</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tcp-ip/">tcp/ip</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/web-service-axis-xfire-lomboz-tomcat/">web-service axis xfire lomboz tomcat</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/函数式编程/">函数式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/动态规划/">动态规划</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/协程/">协程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/可视化-pandas/">可视化 pandas</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/基础知识-编码/">基础知识 编码</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/感知机/">感知机</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/推荐系统/">推荐系统</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/机器学习/">机器学习</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/机器学习-算法/">机器学习 算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/梯度下降/">梯度下降</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编译原理-Compiler-上下文无关文法/">编译原理 Compiler 上下文无关文法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编译编译原理/">编译编译原理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/贝叶斯分类器/">贝叶斯分类器</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Caffe教程/" style="font-size: 20px;">Caffe教程</a> <a href="/tags/Composite，组合模式/" style="font-size: 10px;">Composite，组合模式</a> <a href="/tags/Decorator/" style="font-size: 10px;">Decorator</a> <a href="/tags/LaTex-数学公式-Pelican-MathJax/" style="font-size: 10px;">LaTex  数学公式  Pelican  MathJax</a> <a href="/tags/Learning/" style="font-size: 10px;">Learning</a> <a href="/tags/PCA-降维/" style="font-size: 10px;">PCA 降维</a> <a href="/tags/RMI/" style="font-size: 10px;">RMI</a> <a href="/tags/SOA/" style="font-size: 10px;">SOA</a> <a href="/tags/c-c-linkage-incomplete-type/" style="font-size: 10px;">c c++ linkage incomplete-type</a> <a href="/tags/caffe-proto/" style="font-size: 10px;">caffe .proto</a> <a href="/tags/datamining/" style="font-size: 10px;">datamining</a> <a href="/tags/datamining-Apriori-FPGrowth/" style="font-size: 10px;">datamining Apriori FPGrowth</a> <a href="/tags/epoll-网络编程/" style="font-size: 10px;">epoll 网络编程</a> <a href="/tags/linux-source-code/" style="font-size: 10px;">linux source code</a> <a href="/tags/tcp-ip/" style="font-size: 10px;">tcp/ip</a> <a href="/tags/web-service-axis-xfire-lomboz-tomcat/" style="font-size: 10px;">web-service axis xfire lomboz tomcat</a> <a href="/tags/函数式编程/" style="font-size: 10px;">函数式编程</a> <a href="/tags/动态规划/" style="font-size: 13.33px;">动态规划</a> <a href="/tags/协程/" style="font-size: 13.33px;">协程</a> <a href="/tags/可视化-pandas/" style="font-size: 10px;">可视化 pandas</a> <a href="/tags/基础知识-编码/" style="font-size: 10px;">基础知识 编码</a> <a href="/tags/感知机/" style="font-size: 10px;">感知机</a> <a href="/tags/推荐系统/" style="font-size: 13.33px;">推荐系统</a> <a href="/tags/机器学习/" style="font-size: 16.67px;">机器学习</a> <a href="/tags/机器学习-算法/" style="font-size: 10px;">机器学习 算法</a> <a href="/tags/梯度下降/" style="font-size: 10px;">梯度下降</a> <a href="/tags/编译原理-Compiler-上下文无关文法/" style="font-size: 10px;">编译原理 Compiler 上下文无关文法</a> <a href="/tags/编译编译原理/" style="font-size: 10px;">编译编译原理</a> <a href="/tags/贝叶斯分类器/" style="font-size: 10px;">贝叶斯分类器</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">July 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/06/">June 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">July 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/06/">June 2014</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2016/05/13/epoll/">事件驱动模型epoll</a>
+          </li>
+        
+          <li>
+            <a href="/2016/05/12/由补码引发的关于编码的思考/">由补码引发的关于编码的思考</a>
+          </li>
+        
+          <li>
+            <a href="/2016/01/15/Caffe教程４-Solver/">Caffe教程４：Solver</a>
+          </li>
+        
+          <li>
+            <a href="/2016/01/14/损失函数/">损失函数</a>
+          </li>
+        
+          <li>
+            <a href="/2016/01/13/Forward和Backward/">Forward 和 Backward</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2016 安勃卿<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

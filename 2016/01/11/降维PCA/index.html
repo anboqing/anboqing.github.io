@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>降维PCA | 暗时间</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="##1. 维度灾难
+###1.1 The curse of dimensionalityRichard E.Bellman(发明动态规划的美国应用数学家) 在１９６１年提出了这个术语：
+
+The “Curse of dimensionality”, is a term coined by Bellman to describe the problem caused by the exponenti">
+<meta property="og:type" content="article">
+<meta property="og:title" content="降维PCA">
+<meta property="og:url" content="http://anboqing.github.io/2016/01/11/降维PCA/index.html">
+<meta property="og:site_name" content="暗时间">
+<meta property="og:description" content="##1. 维度灾难
+###1.1 The curse of dimensionalityRichard E.Bellman(发明动态规划的美国应用数学家) 在１９６１年提出了这个术语：
+
+The “Curse of dimensionality”, is a term coined by Bellman to describe the problem caused by the exponenti">
+<meta property="og:image" content="https://upload.wikimedia.org/wikipedia/en/thumb/7/7a/Richard_Ernest_Bellman.jpg/220px-Richard_Ernest_Bellman.jpg">
+<meta property="og:image" content="http://7xia5s.com1.z0.glb.clouddn.com/pca_1.png">
+<meta property="og:image" content="http://7xia5s.com1.z0.glb.clouddn.com/pca_2.png">
+<meta property="og:image" content="http://7xia5s.com1.z0.glb.clouddn.com/pca_3.png">
+<meta property="og:image" content="http://7xia5s.com1.z0.glb.clouddn.com/pca_4.png">
+<meta property="og:image" content="https://upload.wikimedia.org/wikipedia/commons/thumb/2/20/Portrait_of_Milton_Friedman.jpg/220px-Portrait_of_Milton_Friedman.jpg">
+<meta property="og:image" content="http://7xia5s.com1.z0.glb.clouddn.com/pca_6.png">
+<meta property="og:image" content="http://7xia5s.com1.z0.glb.clouddn.com/pca_6.png">
+<meta property="og:image" content="http://7xia5s.com1.z0.glb.clouddn.com/pca_7.png">
+<meta property="og:image" content="http://7xia5s.com1.z0.glb.clouddn.com/pca_8.png">
+<meta property="og:image" content="http://7xia5s.com1.z0.glb.clouddn.com/pca_9.png">
+<meta property="og:image" content="http://7xia5s.com1.z0.glb.clouddn.com/pca_10.png">
+<meta property="og:image" content="http://7xia5s.com1.z0.glb.clouddn.com/pca_11.png">
+<meta property="og:image" content="http://7xia5s.com1.z0.glb.clouddn.com/pca_12.png">
+<meta property="og:image" content="http://7xia5s.com1.z0.glb.clouddn.com/pca_13.png">
+<meta property="og:image" content="http://7xia5s.com1.z0.glb.clouddn.com/pca_14.png">
+<meta property="og:image" content="http://7xia5s.com1.z0.glb.clouddn.com/pca_15.png">
+<meta property="og:image" content="http://7xia5s.com1.z0.glb.clouddn.com/pca_16.png">
+<meta property="og:updated_time" content="2016-09-04T02:22:08.099Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="降维PCA">
+<meta name="twitter:description" content="##1. 维度灾难
+###1.1 The curse of dimensionalityRichard E.Bellman(发明动态规划的美国应用数学家) 在１９６１年提出了这个术语：
+
+The “Curse of dimensionality”, is a term coined by Bellman to describe the problem caused by the exponenti">
+<meta name="twitter:image" content="https://upload.wikimedia.org/wikipedia/en/thumb/7/7a/Richard_Ernest_Bellman.jpg/220px-Richard_Ernest_Bellman.jpg">
+  
+    <link rel="alternate" href="/atom.xml" title="暗时间" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">暗时间</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">书写是最好的思考</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://anboqing.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-降维PCA" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/01/11/降维PCA/" class="article-date">
+  <time datetime="2016-01-11T13:32:00.000Z" itemprop="datePublished">2016-01-11</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/PCA-降维/">PCA 降维</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      降维PCA
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>##1. 维度灾难</p>
+<p>###1.1 The curse of dimensionality<br><img src="https://upload.wikimedia.org/wikipedia/en/thumb/7/7a/Richard_Ernest_Bellman.jpg/220px-Richard_Ernest_Bellman.jpg" alt="bellman"><br><a href="https://en.wikipedia.org/wiki/Richard_E._Bellman" target="_blank" rel="external">Richard E.Bellman</a>(发明动态规划的美国应用数学家) 在１９６１年提出了这个术语：</p>
+<blockquote>
+<p>The “Curse of dimensionality”, is a term coined by Bellman to describe the problem caused by the exponential increase in volume associated with adding extra dimensions to a (mathematical) space. </p>
+</blockquote>
+<p>###1.2 用３类模式识别问题举例</p>
+<ol>
+<li>一个简单的方法是：</li>
+</ol>
+<ul>
+<li>将特征空间划分为小bins</li>
+<li>计算每个bins里边每个样本对于每一类的ratio</li>
+<li>对于一个新的样本，找到它所在的bin然后将它划分到该bin里最主要的类里<br>这个方法类似于k-nn算法，和桶算法类似</li>
+</ul>
+<ol>
+<li>比如我们用单特征来划分三个类的９个实例：<br>　<img src="http://7xia5s.com1.z0.glb.clouddn.com/pca_1.png" alt="pca1"><br>在一维我们会注意到类之间会有太多重叠,于是我们就决定引入第二个特征试图增加可分性．<br><img src="http://7xia5s.com1.z0.glb.clouddn.com/pca_2.png" alt="pca2"><br>这时，在二维空间，如果</li>
+</ol>
+<ul>
+<li>我们选择保留样本密度，那么样本点数量就从９激增至9*3=27</li>
+<li>我们选择保留样本数量，那么２维的散点图就十分稀疏<br>该怎么抉择呢？再增加一个feature？<br><img src="http://7xia5s.com1.z0.glb.clouddn.com/pca_3.png" alt="pca3"><br>在３维空间，事情变得更糟糕：</li>
+</ul>
+<ul>
+<li>bins的数量增加到２７</li>
+<li>维持样本密度不变，样本点的数量就增加到了８１</li>
+<li>维持样本点个数不变，那么3D散点图几乎就是空的</li>
+</ul>
+<p><strong>很明显，我们用相同的bins来划分样本空间的办法是十分低效率的</strong></p>
+<h3 id="1-3-我们如何打败维度灾难？"><a href="#1-3-我们如何打败维度灾难？" class="headerlink" title="1.3 我们如何打败维度灾难？"></a>1.3 我们如何打败维度灾难？</h3><ul>
+<li>引入先验知识？</li>
+<li>提高目标函数的光滑性（例如光滑核方法），可使问题的推论性增强，甚至变为解析问题．然而，这需要大量的训练样本和训练时间．</li>
+<li>减少维度！（是否和前面加入特征矛盾）</li>
+</ul>
+<p>在实践中，维度灾难意味着，给定一个样本大小，存在一个维数的上限，超过了这个上线，分类器的性能就会不升反降．<br><img src="http://7xia5s.com1.z0.glb.clouddn.com/pca_4.png" alt="pca4"><br>很多时候，在低维空间做更准确的映射比在高维空间直接映射有更好的分类性能．</p>
+<h3 id="1-4-维度灾难更加深刻的含义"><a href="#1-4-维度灾难更加深刻的含义" class="headerlink" title="1.4 维度灾难更加深刻的含义"></a>1.4 维度灾难更加深刻的含义</h3><ul>
+<li>保持样本密度需要指数级增长的样本数量<ul>
+<li>给定一个密度为N的样本和D维，需要的总样本数为$N^D$</li>
+</ul>
+</li>
+<li>密度估计的目标函数复杂性也随着维度增长呈指数增长</li>
+</ul>
+<p><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/20/Portrait_of_Milton_Friedman.jpg/220px-Portrait_of_Milton_Friedman.jpg" alt="fredman"></p>
+<blockquote>
+<p>定义在高维空间的函数比定义在低维空间的函数复杂的多，并且那些复杂性是难以辨明的复杂．这意味着，为了更好的学习它，越复杂的函数需要越密集的样本点 –by <a href="https://en.wikipedia.org/wiki/Milton_Friedman" target="_blank" rel="external">Friedman( famous for his friedman test)</a></p>
+</blockquote>
+<ul>
+<li>如果样本的分布不是高斯分布情况会更糟糕<br>  -　因为在教科书里只有大量的１维分布函数，到了高维情况就只剩下了高斯分布，而且在维度很高的情况下，高斯密度函数只能在简化的形势下处理．</li>
+<li>人脑也对４维以上的特征失去了辨识能力（但是人脑为什么可以辨识复杂的模式呢）</li>
+</ul>
+<hr>
+<p>##2. 降维</p>
+<h3 id="2-1-特征选择-vs-特征提取"><a href="#2-1-特征选择-vs-特征提取" class="headerlink" title="2.1 特征选择　vs. 特征提取"></a>2.1 特征选择　vs. 特征提取</h3><ul>
+<li><strong>Feature extraction:</strong>从现有的特征组合中生成一个特征子集</li>
+<li><strong>Feature selection:</strong>选择包含全部特征信息的子集（新的特征由原来的一维或者多维特征映射获得）<br>　　　<img src="http://7xia5s.com1.z0.glb.clouddn.com/pca_6.png" alt="pca5"></li>
+</ul>
+<hr>
+<h4 id="2-1-1-特征抽取的定义"><a href="#2-1-1-特征抽取的定义" class="headerlink" title="2.1.1 特征抽取的定义"></a>2.1.1 特征抽取的定义</h4><ul>
+<li>给定一个特征空间　$x_i \in R^N$ 找出一个映射：　$y=f(x):R^N \rightarrow R^M$ 其中　$M \lt N$，这样，变换后的特征向量　$y_i \in R^M$　保存了（大多数）原来特征空间　$R^N$内的信息（或结构）</li>
+<li>一个最优的映射的引入$y=f(x)$不会增加分类错误（就是对同一个算法说和原来的分类正确率一样）</li>
+</ul>
+<hr>
+<h3 id="2-2-最优映射-y-f-x"><a href="#2-2-最优映射-y-f-x" class="headerlink" title="2.2 最优映射 y=f(x)　"></a>2.2 最优映射 y=f(x)　</h3><p><strong>通常，一个最优映射　y=f(x)是一个非线性函数</strong>，但是，没有一个系统和成熟的方法进行非线性变换，非线性变换的数学理论还很不成熟．（对特定特征子集的选择还要结合具体问题具体分析）．因此，<strong>特征抽取常常被限定为了线性变换　$y=Wx$.</strong></p>
+<ul>
+<li>这就是说，y 是　x　的一个线性投影</li>
+<li>注意：当映射一个非线性函数时，减少后的特征空间叫做manifold(<a href="https://en.wikipedia.org/wiki/Manifold" target="_blank" rel="external">流形</a>)．参见<a href="https://en.wikipedia.org/wiki/Nonlinear_dimensionality_reduction" target="_blank" rel="external">Nonlinear dimensionality reduction</a><br><img src="http://7xia5s.com1.z0.glb.clouddn.com/pca_6.png" alt="pca6"></li>
+</ul>
+<hr>
+<h4 id="2-3-信号表示-vs-分类"><a href="#2-3-信号表示-vs-分类" class="headerlink" title="2.3 信号表示 vs. 分类"></a>2.3 信号表示 vs. 分类</h4><p>选择特征抽取映射$y=f(x)$的办法是找到一个目标函数，对其进行最大化或者最小化．按照目标函数的条件，特征提取技术被分为了两类：</p>
+<ul>
+<li><strong>Signal representation</strong>: 目标是在更低的维度对样本信息精确的表示</li>
+<li><strong>classification:</strong>目标是在低维上增强样本的可分类性．</li>
+</ul>
+<p><img src="http://7xia5s.com1.z0.glb.clouddn.com/pca_7.png" alt="pca7"><br>　　　<br>在线性特征提取的领域内，常用的技术有两个：</p>
+<ul>
+<li><strong>Pricipal Components Analysis</strong>主成分分析：用于信号表示</li>
+<li>Linear Discriminant Analysis线性判别分析(<a href="https://en.wikipedia.org/wiki/Ronald_Fisher" target="_blank" rel="external">fisher 1936</a>)：用于样本分类</li>
+</ul>
+<hr>
+<p>##3. Principal Component Analysis(<a href="https://en.wikipedia.org/wiki/Principal_component_analysis" target="_blank" rel="external">PCA</a>)</p>
+<hr>
+<h3 id="3-1-PCA的目标"><a href="#3-1-PCA的目标" class="headerlink" title="3.1 PCA的目标"></a>3.1 PCA的目标</h3><p><strong>PCA的目标是在降维的同时尽可能多的保留高维空间的随机性（方差）</strong></p>
+<h3 id="3-2-PCA-的推导"><a href="#3-2-PCA-的推导" class="headerlink" title="3.2 PCA 的推导"></a>3.2 PCA 的推导</h3><p>假设　x 是一个　N-维随机向量，表示为一组正交基向量[$\phi_1|\phi_2|….|\phi<em>N$]的线性组合<br>$$<br>x = \sum</em>{i=1}^N y_i \phi_i \quad where \quad \phi_i\cdot \phi_j =<br>\begin{cases}<br>0, &amp;\text{i $\neq$ j}\[2ex]<br>1, &amp;\text{ i = j }<br>\end{cases}<br>$$</p>
+<p>假设我们只选择了基向量中的M(Ｍ＜N)维来表示x,我们可以用预先选择的常量$b<em>j$来替换$[y</em>{M+1},…,y<em>N]^T$<br>$$<br>\hat x (M) = \sum</em>{i=1}^M y_i\phi<em>i + \sum</em>{i=M+1}^N b_i \phi<em>i<br>$$<br>两种表示形式的方差为：<br>$$<br>\Delta x(M) = x- \hat x(M) = \sum</em>{i=1}^N y_i \phi<em>i - \left \lbrace \sum</em>{i=1}^M y_i\phi<em>i + \sum</em>{i=M+1}^N b_i\phi<em>i \right\rbrace = \sum</em>{i=M+1}^N (y_i-b_i)\phi_i<br>$$<br>我们可以用均方差来表示这个误差的大小．　　　<br>　　　<br><strong>我们的目标是找到使均方误差最小的参数：基向量$\phi_i$和常量$b_i$</strong><br>$$<br>\overline \epsilon^2(M) = E [|\Delta x(M)|^2] = E \left [ \sum<em>{i=M+1}^N \sum</em>{j=M+1}^N (y_i-b_i)(y_j-b_j) \phi_i^T\phi<em>j \right] = \sum</em>{i=M+1}^N E \left [ (y_i-b_i)^2 \right]<br>$$<br>这里之所以能抵消是因为，当 $i \neq j $ 时， $ \phi_i \cdot \phi_j = 0 $<br>当 $ i = j$ 时，$ \phi_i \cdot \phi_j = 1 $</p>
+<p>问题现在转化成了求 $b_j$ 和 $\phi_i$,我们可以用对目标函数求偏导数并且令偏导数为0的方法来求$b_i$.<br><img src="http://7xia5s.com1.z0.glb.clouddn.com/pca_8.png" alt="8"></p>
+<p>现在,把$b_i = E [y_i] $ 代入上边的公式,均方误差可以变换成方差的正交化形式:</p>
+<p><img src="http://7xia5s.com1.z0.glb.clouddn.com/pca_9.png" alt="9"><br>其中 $\sum_X$ 是 x 的<strong>协方差矩阵</strong>.</p>
+<p>现在,引入拉格朗日因子:<br><img src="http://7xia5s.com1.z0.glb.clouddn.com/pca_10.png" alt="10"><br>对每个 $\phi_i$ 求偏导:<br><img src="http://7xia5s.com1.z0.glb.clouddn.com/pca_11.png" alt="11"><br>于是,$\phi_i$和$\lambda_i$就是协方差矩阵 $\sum_X$ 的<strong>特征值和特征向量</strong></p>
+<p>这样,我们就能把均方差的和表示为:<br><img src="http://7xia5s.com1.z0.glb.clouddn.com/pca_12.png" alt="12"></p>
+<p>为了最小化这个式子,$\lambda_i$ 必须是最小的特征值</p>
+<ul>
+<li>因此,用最小方差和来表示 x ,我们将会选择 最大的特征值$\lambda_i$对应的特征向量$\phi_i$</li>
+</ul>
+<hr>
+<h3 id="3-3-总结"><a href="#3-3-总结" class="headerlink" title="3.3 总结"></a>3.3 总结</h3><blockquote>
+<p>把随机向量 X 投影到 其协方差矩阵$\Sigma_X$的最大特征值$\lambda_i$对应的特征向量$\phi_i$上,我们就可以得到N维随机向量 $x \in \mathscr R^N$ 的一个最优(有误差的最小方差和)近似: M 个独立向量的线型组合.</p>
+</blockquote>
+<p><strong>注意:</strong></p>
+<ul>
+<li>由于PCA使用了协方差矩阵的特征向量,它能够找到单峰正态分布下数据的独立分布<ul>
+<li>对于非高斯分布或者多峰正态分布数据,PCA只是简单的去相关</li>
+</ul>
+</li>
+<li>PCA的主要限制是它没有考虑类别的可分性,因为它没有考虑类标签<ul>
+<li>PCA只是简单的将坐标转向了有最大方差的方向</li>
+<li>而有最大方差的方向并不保证有良好的可分类特征<br>例如:<br><img src="http://7xia5s.com1.z0.glb.clouddn.com/pca_13.png" alt="13"><br>用PCA的话,会降维到Y轴上,因为Y轴有最大的方差.然而降维到y轴之后,样本几乎不可分,因为都混杂在一起了.</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="3-4-举例"><a href="#3-4-举例" class="headerlink" title="3.4 举例"></a>3.4 举例</h3><ul>
+<li>计算下列2维数据集的 pricipal components:<br>$ X =  (x_1,x_2) = \lbrace (1,2),(3,3),(3,5),(5,4),(5,6),(6,5),(8,7),(9,8) \rbrace$<br><img src="http://7xia5s.com1.z0.glb.clouddn.com/pca_14.png" alt=""></li>
+<li>求解过程<ul>
+<li>协方差矩阵是:<br>$$<br>\Sigma_X = \begin{bmatrix} 6.25&amp; 4.25\ 4.25 &amp; 3.5 \end{bmatrix}<br>$$</li>
+<li>求特征值:<br><img src="http://7xia5s.com1.z0.glb.clouddn.com/pca_15.png" alt="15"></li>
+<li>特征向量:<br><img src="http://7xia5s.com1.z0.glb.clouddn.com/pca_16.png" alt="16"></li>
+</ul>
+</li>
+</ul>
+<hr>
+<h2 id="4-实现PCA算法"><a href="#4-实现PCA算法" class="headerlink" title="4.实现PCA算法"></a>4.实现PCA算法</h2><hr>
+<h3 id="4-1-数据预处理"><a href="#4-1-数据预处理" class="headerlink" title="4.1 数据预处理"></a>4.1 数据预处理</h3><p>在应用PCA算法之前,我们常常要对数据进行预处理,因为PCA算法对原始数据的可靠性,一致性,以及规范性十分敏感,如果不做相应的处理,算法的效果就会大打折扣.<br>通常我们希望所有的特征 $x_1,x_2,…,x_n$都有相似的取值范围(并且<strong>均值接近0</strong>).在部分应用中,我们都有必要对每个特征做预处理,即通过估算每个特征$x_j$的均值和方差,而后将其取值范围规整化为<strong>零均值</strong>和<strong>单位方差</strong>.</p>
+<p>通常,预处理主要有2步:   </p>
+<ul>
+<li>feature scaling/mean normalization 均值规整化为 0 </li>
+<li><strong>白化</strong>,一些文献中也叫 <strong>sphering</strong> ,白化的目的就是降低输入的冗余性,通过白化使得学习算法的输入具有一下性质:<ul>
+<li>(1) 特征之间相关性较低</li>
+<li>(2) 所有特征具有相同的方差(分布的离散程度相同)</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h4 id="4-1-1-均值规整化"><a href="#4-1-1-均值规整化" class="headerlink" title="4.1.1 均值规整化"></a>4.1.1 均值规整化</h4><p>假设我们有训练集: $ x^{(1)},x^{(2)},…x^{(m)}$<br>均值规整化过程:    </p>
+<ol>
+<li>求每个特征的均值 $\mu<em>i = \frac1m \sum</em>{i=1}^m x_j^{(i)}$    </li>
+<li>把每个特征的值$x_j^{(i)}$ 替换为 $x_j-\mu_j$</li>
+<li>如果不同的特征之间的取值范围不一样(例如: $x_1$ = size of house(大多取值 1000多) $x_2$ = number of bedrooms(取值不超过10) )， 就需要把每个特征的刻度转换成和其他特征差不多的取值范围:<br>$$ x_j^{(i)} = \frac{x_j^{(i)}=\mu_j}{S_j} $$<br>这里 $S_j$是某种对特征j的取值范围的度量.(常常是最大值减最小值 或者是标准差)</li>
+</ol>
+<hr>
+<h4 id="4-1-2-白化"><a href="#4-1-2-白化" class="headerlink" title="4.1.2 白化"></a>4.1.2 白化</h4><ul>
+<li>消除输入特征之间的相关性:  </li>
+</ul>
+<p>将原始样本值映射到新基上的过程 $ x<em>{rot}^{(i)} = U^T x^{(i)} $ 实际上已经消除了输入特征 $ x^{(i)}$ 之间的相关性.因为对于映射后的样本 $ x</em>{rot} $ 来说,它的协方差矩阵 $\Sigma_{rot}$是一个对角矩阵,而且对角线上的元素值为特征值,由于<strong>非对角线元素都为0</strong>,所以特征之间是<strong>不相关的</strong>.</p>
+<ul>
+<li>使所有特征具有单位方差:</li>
+</ul>
+<p>为了使所有特征具有单位方差,我们可以直接使用 $ \frac1{ \sqrt{ \lambda<em>i } }$作为缩放因子来缩放每个特征 $ x</em>{rot,i} $.具体的,我们定义白化后的数据 $x_{PCAwhite} \in \mathscr R^N $ 如下: </p>
+<p>$$<br>x<em>{PCAwhite,i} = \frac{x</em>{rot,i}}{ \sqrt{ \lambda<em>i } }<br> $$<br>这样一来,白化后的数据$x</em>{PCAwhite} $ 的协方差矩阵就变成了 <strong>单位矩阵</strong>.我们说, $x<em>{PCAwhite} $ 是数据经过 <strong>PCA白化后</strong>的版本,$x</em>{PCAwhite} $ 中不同的特征之间部相关并且具有单位方差.</p>
+<ul>
+<li>正则化</li>
+</ul>
+<p>在实践中,白化过程中,有些特征值 $ \lambda_i $ 在数值上接近于0,这样在缩放步骤时,我们除以 $ \sqrt{ \lambda<em>i } $将导致除以一个接近0的值;这可能使数据上溢或者造成数值不稳定.因而在实践中,我们使用少量的正则化实现这个缩放过程,即在取平方根的倒数之前给特征值加上一个很小的常数 $ \epsilon $ :<br>$$<br>x</em>{PCAwhite,i} = \frac{x_{rot,i}}{ \sqrt{ \lambda_i } + \epsilon }<br> $$<br>当 $ x $ 在区间 $ [-1, 1] $ 上时,一般取值为 $ \epsilon \approx 10^{-5} $ </p>
+<hr>
+<h3 id="4-2-PCA-算法"><a href="#4-2-PCA-算法" class="headerlink" title="4.2 PCA 算法"></a>4.2 PCA 算法</h3><ol>
+<li>首先,计算 <strong>协方差矩阵</strong><br>$$<br>\Sigma = \frac1m \sum_{i=1}^n (x^{(i)})(x^{(i)})^T<br>$$<br>其中 $\Sigma$ 是 n x n 大小的协方差矩阵 , 因为 $ x^{(i)}$ 是 n x 1 (一个样本), $(x^{(i)})^T$ 是  1 x n .</li>
+<li>计算协方差矩阵 $ \Sigma $ 的<strong>特征向量</strong>:<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">[U,S,V] = svd(Sigma);</div><div class="line">//或者</div><div class="line">[U,S,V] = eig(Sigma);</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<blockquote>
+<p>关于这里为什么要用 svd函数,因为 PCA 根据应用领域的不同,还有很多别名:<br>线性代数中叫 :<strong>SVD</strong>(singular value decomposition of X ) EVD(eigenvlaue decomposition of $X^TX$) ，KLT(信号处理),POD(机械工程).</p>
+</blockquote>
+<p>这样,我们得到了 [U,S,V],其中 U 就是 把特征向量按照对应的特征值大小从大到小排列所得到的一个 n x n 特征向量矩阵,这就是一个变换后的<strong>正交基</strong><br>$$<br>\begin{align}<br>U =<br>\begin{bmatrix}<br>| &amp; | &amp; &amp; |  \<br>u_1 &amp; u_2 &amp; \cdots &amp; u_n  \<br>| &amp; | &amp; &amp; |<br>\end{bmatrix}<br>\end{align}<br>$$<br>我们将要使用这个矩阵来降维,要将原来的数据 $x \in R^n$ 映射到 $z \in R^k (k&lt;n)$,需要使用前 K 个最大的特征值对应的特征向量(因特征值大的更能代表数据特征)组生成一组新的正交基:</p>
+<p>$$<br>\begin{align}<br>U_{reduce} =<br>\begin{bmatrix}<br>| &amp; | &amp; &amp; |  \<br>u_1 &amp; u_2 &amp; \cdots &amp; u_k  \<br>| &amp; | &amp; &amp; |<br>\end{bmatrix}<br>\end{align}<br>$$<br><figure class="highlight matlab"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Ureduce = U(:,<span class="number">1</span>:k);</div></pre></td></tr></table></figure></p>
+<p>这样以来,我们就可以在新基上用投影的方式表示原来的数据了:<br>$$<br>\begin{align}<br>Z =<br>\begin{bmatrix}<br>| &amp; | &amp; &amp; |  \<br>u_1 &amp; u_2 &amp; \cdots &amp; u_k  \<br>| &amp; | &amp; &amp; |<br>\end{bmatrix}^T \cdot X =<br>\begin{bmatrix} </p>
+<ul>
+<li>&amp; (u^1)^T  &amp; -  \</li>
+<li>&amp; (u^2)^T  &amp; - \<br>&amp; \vdots &amp;  \</li>
+<li>&amp; (u^k)^T  &amp; -<br>\end{bmatrix} \cdot X =<br>\begin{bmatrix}<br>z^1    \<br>z^2   \<br>\vdots  \<br>z^k<br>\end{bmatrix}<br>\end{align}<br>$$<br>这样,<br>$$<br>\begin{align}<br>\begin{bmatrix}<br>x^1    \<br>x^2   \<br>\vdots  \<br>x^n<br>\end{bmatrix} \Longrightarrow<br>\begin{bmatrix}<br>z^1    \<br>z^2   \<br>\vdots  \<br>z^k<br>\end{bmatrix}<br>\qquad\color{lime}{(k&lt;n)}\quad\color{red}{高维数据被投影到低维的正交基向量组上,实现了降维}<br>\end{align}<br>$$<figure class="highlight matlab"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">z = Ureduce'*x;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<hr>
+<h3 id="4-3-python-代码实现"><a href="#4-3-python-代码实现" class="headerlink" title="4.3 python 代码实现"></a>4.3 python 代码实现</h3><h2 id="数据下载地址"><a href="#数据下载地址" class="headerlink" title="数据下载地址"></a><a href="http://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/binary/madelon" target="_blank" rel="external">数据下载地址</a></h2><h2 id="代码github地址"><a href="#代码github地址" class="headerlink" title="代码github地址"></a><a href="https://github.com/anboqing/Algorithmlib/blob/master/PCA/python_version/pca.py" target="_blank" rel="external">代码github地址</a></h2><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#coding=utf-8</span></div><div class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</div><div class="line">__author__ = <span class="string">'anboqing'</span></div><div class="line"></div><div class="line"></div><div class="line"><span class="string">"""</span></div><div class="line">feature scaling and mean normalization</div><div class="line">零均值化</div><div class="line">"""</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">zeroMean</span><span class="params">(dataMat)</span>:</span></div><div class="line">    print(<span class="string">"feature scaling ... "</span>)</div><div class="line">    meanVal = np.mean(dataMat,axis=<span class="number">0</span>) <span class="comment"># axis = 0 means that calculate mean value by column(every feature)</span></div><div class="line">    print(<span class="string">"mean normalization ..."</span>)</div><div class="line">    newVal = dataMat - meanVal</div><div class="line">    <span class="keyword">return</span> newVal,meanVal</div><div class="line"></div><div class="line"><span class="string">"""</span></div><div class="line">    求预处理之后的样本矩阵的协方差矩阵</div><div class="line">"""</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">covarianceMat</span><span class="params">(normal_data)</span>:</span></div><div class="line">    <span class="string">'''</span></div><div class="line">    计算协方差矩阵</div><div class="line">    :param normal_data: 零均值规范化过的数据</div><div class="line">    :return: 协方差矩阵</div><div class="line">    '''</div><div class="line">    print(<span class="string">'calculate the covariance matrix ... '</span>)</div><div class="line">    covMat = np.cov(normal_data,rowvar=<span class="number">0</span>)</div><div class="line">    <span class="string">"""</span></div><div class="line">    numpy中的cov函数用于求协方差矩阵,</div><div class="line">    参数rowvar很重要,</div><div class="line">    若rowvar=0,说明传入的数据一行代表一个样本,</div><div class="line">    若rowvar!=0,说明一列代表一个样本</div><div class="line">    """</div><div class="line">    <span class="keyword">return</span> covMat</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">eigenValAndVector</span><span class="params">(covMat)</span>:</span></div><div class="line">    <span class="string">"""</span></div><div class="line">    求协方差矩阵的特征值和特征向</div><div class="line">    :param covMat: 协方差矩阵</div><div class="line">    :return: 协方差矩阵的特征值,特征向量</div><div class="line">    """</div><div class="line">    print(<span class="string">'calculate eigen value and eigen vector of covariance matrix...'</span>)</div><div class="line">    eigVals,eigVects = np.linalg.eig(np.mat(covMat))</div><div class="line">    <span class="keyword">return</span> eigVals,eigVects</div><div class="line"></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">reduceDimensionality</span><span class="params">(eigVals,eigVects,dataMat,k=<span class="number">1</span>)</span>:</span></div><div class="line">    <span class="string">"""</span></div><div class="line">    降维:保留主要成分</div><div class="line">    用前k个特征向量组成新的正交基,把原始数据映射到新的正交基上</div><div class="line">    :param eigVals: 原始数据的协方差矩阵的特征值</div><div class="line">    :param eigVects: 原始数据的协方差矩阵的特诊向量</div><div class="line">    :param dataMat: 原始数据</div><div class="line">    :param k: 要降维到多少维</div><div class="line">    :return: 降维后的数据,投影的正交基</div><div class="line">    """</div><div class="line">    print(<span class="string">'reduce the dimension ... '</span>)</div><div class="line">    eigValIndices = np.argsort(eigVals) <span class="comment"># 对特征值从小到大排序</span></div><div class="line">    n_eigValIndices = eigValIndices[<span class="number">-1</span>:-(k+<span class="number">1</span>):<span class="number">-1</span>] <span class="comment"># 最大的k个特征值的下标</span></div><div class="line">    data_mat_trans = eigVects[:,n_eigValIndices] <span class="comment"># 取出前k个最大的特征向量</span></div><div class="line"></div><div class="line">    low_dimensional_data = dataMat * data_mat_trans <span class="comment"># 将原始数据投影到新的向量空间的正交基上</span></div><div class="line">    <span class="keyword">return</span> low_dimensional_data,data_mat_trans</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">load_libsvm_data</span><span class="params">(file_path)</span>:</span></div><div class="line">    fin = open(file_path)</div><div class="line">    print(<span class="string">'load data : '</span>+file_path)</div><div class="line">    data_mat=[]</div><div class="line">    label_vec = []</div><div class="line">    <span class="keyword">for</span> strline <span class="keyword">in</span> fin.readlines():</div><div class="line">        line_arr = strline.strip().split()</div><div class="line">        label_vec.append(int(line_arr[<span class="number">0</span>]))</div><div class="line">        line_arr = line_arr[<span class="number">1</span>:]</div><div class="line">        row_arr = []</div><div class="line">        idx = <span class="number">1</span></div><div class="line">        <span class="keyword">for</span> pair <span class="keyword">in</span> line_arr:</div><div class="line">            str_indice,str_val=pair.split(<span class="string">":"</span>)</div><div class="line">            indice = int(str_indice)</div><div class="line">            fval = float(str_val)</div><div class="line">            <span class="comment">#print indice,fval</span></div><div class="line">            <span class="keyword">if</span> indice == idx:</div><div class="line">                row_arr.append(fval)</div><div class="line">            <span class="keyword">else</span>:</div><div class="line">                row_arr.append(<span class="number">0.0</span>)</div><div class="line">            idx=idx+<span class="number">1</span></div><div class="line">        data_mat.append(row_arr)</div><div class="line">    <span class="keyword">return</span> data_mat,label_vec</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">choosePCASize</span><span class="params">(eig_vals,percentage=<span class="number">0.99</span>)</span>:</span></div><div class="line">    <span class="string">'''</span></div><div class="line">    计算主成分个数的函数</div><div class="line">    :param eig_vals: 特征值数组</div><div class="line">    :param percentage: 要保留的方差的百分比</div><div class="line">    :return:应该降到的维数</div><div class="line">    '''</div><div class="line">    asc_eigs = np.sort(eig_vals) <span class="comment"># 升序</span></div><div class="line">    desc_eigs = asc_eigs[<span class="number">-1</span>::<span class="number">-1</span>] <span class="comment"># 翻转成从大到小</span></div><div class="line">    eig_sum = sum(desc_eigs)</div><div class="line">    tmpSum =<span class="number">0</span></div><div class="line">    num = <span class="number">0</span></div><div class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> desc_eigs:</div><div class="line">        tmpSum += i</div><div class="line">        num+=<span class="number">1</span></div><div class="line">        <span class="keyword">if</span> tmpSum &gt;= eig_sum * percentage:</div><div class="line">            <span class="keyword">return</span> num</div><div class="line"></div><div class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</div><div class="line">    file_path = <span class="string">'madelon'</span></div><div class="line">    <span class="comment"># 读取livsvm格式的数据</span></div><div class="line">    data_mat,label_vec = load_libsvm_data(file_path)</div><div class="line">    <span class="comment"># 转换成 numpy matrix 结构</span></div><div class="line">    dataMat = np.mat(data_mat)</div><div class="line">    <span class="comment"># 数据零均值化</span></div><div class="line">    new_dat,mean_dat = zeroMean(dataMat)</div><div class="line">    <span class="comment"># 计算协方差矩阵</span></div><div class="line">    cov_mat = covarianceMat(new_dat)</div><div class="line">    <span class="comment">#print np.shape(cov_mat)</span></div><div class="line">    <span class="comment"># 计算协方差矩阵的特征值和特征向量</span></div><div class="line">    eigen_values,eigen_vectors = eigenValAndVector(cov_mat)</div><div class="line">    <span class="comment"># 选择要降到的维数(保存99的方差)</span></div><div class="line">    num_ = choosePCASize(eigen_values)</div><div class="line">    <span class="comment"># 试着把这个数据集降维为num_2维</span></div><div class="line">    low_dim_mat,orth_base = reduceDimensionality(eigen_values,eigen_vectors,new_dat,num_2)</div><div class="line">    <span class="keyword">print</span> np.shape(low_dim_mat)</div><div class="line">    <span class="keyword">print</span> np.shape(orth_base)</div></pre></td></tr></table></figure>
+<h3 id="4-4-选择主成分的个数"><a href="#4-4-选择主成分的个数" class="headerlink" title="4.4 选择主成分的个数"></a>4.4 选择主成分的个数</h3><p>在应用PCA的时候,对于一个1000维的数据,我们怎么知道要降维到多少维才是合理的?也就是要在保留最多信息的同时取出最多的噪声.Andrew Ng的机器学习课讲的方法是: </p>
+<ol>
+<li>算出 Average squared projection error: $$\frac1m \sum<em>{i=1}^m \left\lVert x^{(i)} - x</em>{approx}^{(i)} \right\rVert^2$$</li>
+<li>算出 Total variation in the data: $$\frac1m \sum_{i=1}^m \left\lVert x^{(i)} \right\rVert^2$$</li>
+<li>然后,选择满足下列条件的 k :<br>$$ \frac{\frac1m \sum<em>{i=1}^m \left\lVert x^{(i)} - x</em>{approx}^{(i)} \right\rVert^2}{\frac1m \sum<em>{i=1}^m \left\lVert x^{(i)} \right\rVert^2} \le 0.01 \qquad(1\%)$$<br>也就是说: <strong>保留了 99 % 的方差</strong>,其中 0.01可以根据应用的不同来自己设定<br>上式也可以改成:<br>$$<br>1 - \frac{\sum</em>{i=1}^k \lambda<em>i}{\sum</em>{i=1}^n \lambda_i} \le 0.01<br>$$<br>其中$\lambda_i$ 是协方差矩阵的特征值</li>
+</ol>
+<h2 id="自动选择维数的算法"><a href="#自动选择维数的算法" class="headerlink" title="自动选择维数的算法:"></a>自动选择维数的算法:</h2><p><a href="http://research.microsoft.com/en-us/um/people/minka/papers/pca/minka-pca.pdf" target="_blank" rel="external">Automatic choice of dimensionality for PCA<br>Thomas P. Minka</a></p>
+<hr>
+<p><a href="http://anboqing.gitcafe.io" target="_blank" rel="external">欢迎访问我的博客</a></p>
+<hr>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://anboqing.github.io/2016/01/11/降维PCA/" data-id="cisoqi7e70046rmggpeodmg60" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PCA-降维/">PCA 降维</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/01/12/Caffe官方教程-Blobs,Layers,Nets-caffe模型解剖/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Caffe官方教程-Blobs,Layers,Nets-caffe模型解剖
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/01/10/函数式编程/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">函数式编程-1.1编程范式</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Caffe/">Caffe</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Caffe教程/">Caffe教程</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Learning/">Learning</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/PCA-降维/">PCA 降维</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/RMI/">RMI</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/SOA/">SOA</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/c/">c++</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/caffe/">caffe</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/epoll/">epoll</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/linux/">linux</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/pandas/">pandas</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/tcp-ip/">tcp/ip</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/函数式编程/">函数式编程</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/协程/">协程</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/工具配置/">工具配置</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/推荐系统/">推荐系统</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/数据挖掘/">数据挖掘</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/机器学习/">机器学习</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/算法学习/">算法学习</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/统计/">统计</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/编码/">编码</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/编译原理/">编译原理</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/设计模式/">设计模式</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/贝叶斯分类/">贝叶斯分类</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Caffe教程/">Caffe教程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Composite，组合模式/">Composite，组合模式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Decorator/">Decorator</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/LaTex-数学公式-Pelican-MathJax/">LaTex  数学公式  Pelican  MathJax</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Learning/">Learning</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PCA-降维/">PCA 降维</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RMI/">RMI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SOA/">SOA</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c-c-linkage-incomplete-type/">c c++ linkage incomplete-type</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/caffe-proto/">caffe .proto</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/datamining/">datamining</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/datamining-Apriori-FPGrowth/">datamining Apriori FPGrowth</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/epoll-网络编程/">epoll 网络编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux-source-code/">linux source code</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tcp-ip/">tcp/ip</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/web-service-axis-xfire-lomboz-tomcat/">web-service axis xfire lomboz tomcat</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/函数式编程/">函数式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/动态规划/">动态规划</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/协程/">协程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/可视化-pandas/">可视化 pandas</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/基础知识-编码/">基础知识 编码</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/感知机/">感知机</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/推荐系统/">推荐系统</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/机器学习/">机器学习</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/机器学习-算法/">机器学习 算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/梯度下降/">梯度下降</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编译原理-Compiler-上下文无关文法/">编译原理 Compiler 上下文无关文法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编译编译原理/">编译编译原理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/贝叶斯分类器/">贝叶斯分类器</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Caffe教程/" style="font-size: 20px;">Caffe教程</a> <a href="/tags/Composite，组合模式/" style="font-size: 10px;">Composite，组合模式</a> <a href="/tags/Decorator/" style="font-size: 10px;">Decorator</a> <a href="/tags/LaTex-数学公式-Pelican-MathJax/" style="font-size: 10px;">LaTex  数学公式  Pelican  MathJax</a> <a href="/tags/Learning/" style="font-size: 10px;">Learning</a> <a href="/tags/PCA-降维/" style="font-size: 10px;">PCA 降维</a> <a href="/tags/RMI/" style="font-size: 10px;">RMI</a> <a href="/tags/SOA/" style="font-size: 10px;">SOA</a> <a href="/tags/c-c-linkage-incomplete-type/" style="font-size: 10px;">c c++ linkage incomplete-type</a> <a href="/tags/caffe-proto/" style="font-size: 10px;">caffe .proto</a> <a href="/tags/datamining/" style="font-size: 10px;">datamining</a> <a href="/tags/datamining-Apriori-FPGrowth/" style="font-size: 10px;">datamining Apriori FPGrowth</a> <a href="/tags/epoll-网络编程/" style="font-size: 10px;">epoll 网络编程</a> <a href="/tags/linux-source-code/" style="font-size: 10px;">linux source code</a> <a href="/tags/tcp-ip/" style="font-size: 10px;">tcp/ip</a> <a href="/tags/web-service-axis-xfire-lomboz-tomcat/" style="font-size: 10px;">web-service axis xfire lomboz tomcat</a> <a href="/tags/函数式编程/" style="font-size: 10px;">函数式编程</a> <a href="/tags/动态规划/" style="font-size: 13.33px;">动态规划</a> <a href="/tags/协程/" style="font-size: 13.33px;">协程</a> <a href="/tags/可视化-pandas/" style="font-size: 10px;">可视化 pandas</a> <a href="/tags/基础知识-编码/" style="font-size: 10px;">基础知识 编码</a> <a href="/tags/感知机/" style="font-size: 10px;">感知机</a> <a href="/tags/推荐系统/" style="font-size: 13.33px;">推荐系统</a> <a href="/tags/机器学习/" style="font-size: 16.67px;">机器学习</a> <a href="/tags/机器学习-算法/" style="font-size: 10px;">机器学习 算法</a> <a href="/tags/梯度下降/" style="font-size: 10px;">梯度下降</a> <a href="/tags/编译原理-Compiler-上下文无关文法/" style="font-size: 10px;">编译原理 Compiler 上下文无关文法</a> <a href="/tags/编译编译原理/" style="font-size: 10px;">编译编译原理</a> <a href="/tags/贝叶斯分类器/" style="font-size: 10px;">贝叶斯分类器</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">July 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/06/">June 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">July 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/06/">June 2014</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2016/05/13/epoll/">事件驱动模型epoll</a>
+          </li>
+        
+          <li>
+            <a href="/2016/05/12/由补码引发的关于编码的思考/">由补码引发的关于编码的思考</a>
+          </li>
+        
+          <li>
+            <a href="/2016/01/15/Caffe教程４-Solver/">Caffe教程４：Solver</a>
+          </li>
+        
+          <li>
+            <a href="/2016/01/14/损失函数/">损失函数</a>
+          </li>
+        
+          <li>
+            <a href="/2016/01/13/Forward和Backward/">Forward 和 Backward</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2016 安勃卿<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

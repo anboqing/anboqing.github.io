@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>java远程方法调用　Remote Method Invocation | 暗时间</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="#定义
+Java RMI 指的是远程方法调用 (Remote Method Invocation)。它是一种机制，能够让在某个 Java 虚拟机上的对象调用另一个 Java 虚拟机中的对象上的方法。可以用此方法调用的任何对象必须实现该远程接口。
+如何调用另一个JVM中的对象的方法？由于不能取得另一个堆的对象的引用，换句话说，不可以这样写：1Duck d = &amp;lt;另一个堆的对象&amp;gt;
+变量d只">
+<meta property="og:type" content="article">
+<meta property="og:title" content="java远程方法调用　Remote Method Invocation">
+<meta property="og:url" content="http://anboqing.github.io/2015/03/29/java_remote_method_invocation/index.html">
+<meta property="og:site_name" content="暗时间">
+<meta property="og:description" content="#定义
+Java RMI 指的是远程方法调用 (Remote Method Invocation)。它是一种机制，能够让在某个 Java 虚拟机上的对象调用另一个 Java 虚拟机中的对象上的方法。可以用此方法调用的任何对象必须实现该远程接口。
+如何调用另一个JVM中的对象的方法？由于不能取得另一个堆的对象的引用，换句话说，不可以这样写：1Duck d = &amp;lt;另一个堆的对象&amp;gt;
+变量d只">
+<meta property="og:image" content="http://7xia5s.com1.z0.glb.clouddn.com/07211453-ca7892e2a15747e8a34d9c946fd3d55d.png">
+<meta property="og:image" content="http://7xia5s.com1.z0.glb.clouddn.com/选区_001.png">
+<meta property="og:image" content="http://7xia5s.com1.z0.glb.clouddn.com/选区_003.png">
+<meta property="og:image" content="http://7xia5s.com1.z0.glb.clouddn.com/选区_004.png">
+<meta property="og:image" content="http://7xia5s.com1.z0.glb.clouddn.com/选区_005.png">
+<meta property="og:image" content="http://7xia5s.com1.z0.glb.clouddn.com/选区_006.png">
+<meta property="og:image" content="http://7xia5s.com1.z0.glb.clouddn.com/选区_007.png">
+<meta property="og:image" content="http://7xia5s.com1.z0.glb.clouddn.com/rmic.png">
+<meta property="og:updated_time" content="2016-09-04T02:57:40.957Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="java远程方法调用　Remote Method Invocation">
+<meta name="twitter:description" content="#定义
+Java RMI 指的是远程方法调用 (Remote Method Invocation)。它是一种机制，能够让在某个 Java 虚拟机上的对象调用另一个 Java 虚拟机中的对象上的方法。可以用此方法调用的任何对象必须实现该远程接口。
+如何调用另一个JVM中的对象的方法？由于不能取得另一个堆的对象的引用，换句话说，不可以这样写：1Duck d = &amp;lt;另一个堆的对象&amp;gt;
+变量d只">
+<meta name="twitter:image" content="http://7xia5s.com1.z0.glb.clouddn.com/07211453-ca7892e2a15747e8a34d9c946fd3d55d.png">
+  
+    <link rel="alternate" href="/atom.xml" title="暗时间" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">暗时间</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">书写是最好的思考</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://anboqing.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-java_remote_method_invocation" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/03/29/java_remote_method_invocation/" class="article-date">
+  <time datetime="2015-03-29T10:15:00.000Z" itemprop="datePublished">2015-03-29</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/RMI/">RMI</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      java远程方法调用　Remote Method Invocation
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>#定义</p>
+<p>Java RMI 指的是远程方法调用 (Remote Method Invocation)。它是一种机制，能够让在某个 Java 虚拟机上的对象调用另一个 Java 虚拟机中的对象上的方法。可以用此方法调用的任何对象必须实现该远程接口。</p>
+<p><strong>如何调用另一个JVM中的对象的方法？</strong><br>由于不能取得另一个堆的对象的引用，换句话说，不可以这样写：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Duck d = &lt;另一个堆的对象&gt;</div></pre></td></tr></table></figure></p>
+<p>变量d只能引用当前代码语句的同一堆空间的对象．那怎么办？该是Java远程方法调用出现的时刻了…..RMI可以让我们找到远程JVM内的对象，并允许我们调用它们的方法．</p>
+<p>假如我们要设计一个系统，能够调用本地对象，然后将每个请求转发到远程对象上进行．要如何设计？我们需要一些辅助对象，帮我们真正进行沟通．这些辅助对象使客户就像在调用本地对象的方法（事实也如此）一样．客户调用客户辅助对象上的方法，仿佛客户辅助对象就是真正的服务．客户辅助对象再负责为我们转发这些请求．</p>
+<p>换句话说，客户对象以为它调用的是远程服务上的方法，因为客户辅助对象乔装成服务对象，假装自己有客户所要调用的方法．</p>
+<p>但是客户辅助对象并不是真正的远程服务.虽然操作看起来很像（因为具有服务所宣称的相同的方法），但是并不真正拥有客户所期望的方法罗辑．客户辅助对象会联系服务器，传送方法调用信息（例如，方法名称，变量），然后等待服务器的返回．</p>
+<p>在服务器端，服务辅助对象从客户辅助对象中接受请求（透过Socket连接),将调用的信息解包,然后调用真正服务对象上的真正方法.所以,对于服务对象来说,调用是本地的,来自服务辅助对象,而不是远程客户.</p>
+<p>服务辅助对象从服务中得到返回值,将他打包,然后运回到客户辅助对象(通过网络Socket的输出流),客户辅助对象对信息解包,最后将返回值交给客户对象.</p>
+<p><img src="http://7xia5s.com1.z0.glb.clouddn.com/07211453-ca7892e2a15747e8a34d9c946fd3d55d.png" alt="198843"></p>
+<p>#方法调用是如何发生的</p>
+<p><img src="http://7xia5s.com1.z0.glb.clouddn.com/选区_001.png" alt="2"><br><img src="http://7xia5s.com1.z0.glb.clouddn.com/选区_003.png" alt="3432"><br><img src="http://7xia5s.com1.z0.glb.clouddn.com/选区_004.png" alt="44532"><br><img src="http://7xia5s.com1.z0.glb.clouddn.com/选区_005.png" alt="521"><br><img src="http://7xia5s.com1.z0.glb.clouddn.com/选区_006.png" alt="00988"><br><img src="http://7xia5s.com1.z0.glb.clouddn.com/选区_007.png" alt="1932"></p>
+<p><strong>RMI提供了 客户辅助对象和服务辅助对象,为客户辅助对象创建和服务对象相同的方法.RMI的好处在于你不必亲自写任何网络或IO代码.客户程序调用远程方法就和运行在客户自己的本地JVM上对对象进行正常方法调用一样.</strong></p>
+<p>#制作远程服务</p>
+<ul>
+<li>步骤1:<strong>制作远程接口</strong><br>  远程接口定义出可以让客户远程调用的方法.客户将用它作为服务的类类型.<br>  Stub和实际的服务都实现自此接口.</li>
+<li>步骤2:<strong>制作远程实现</strong><br>  这是做实际工作的类,为远程接口中定义的远程方法提供了真正的实现.这就是客户真正想要调用方法的对象.</li>
+<li>步骤3:<strong>利用rmic产生的stub和skeleton</strong><br>  这就是客户和服务的辅助类.你不许自己创建这些类,甚至连生成他们的代码都不用看,因为当你在运行rmic工具时,这都会自动处理.你可以在jdk中找到rmic<br>  <img src="http://7xia5s.com1.z0.glb.clouddn.com/rmic.png" alt="1"></li>
+<li>步骤4:<strong>启动RMI registry(rmiregistry)</strong><br>  rmiregistry就像是电话本,客户可以从中查到代理的位置</li>
+<li>步骤5:<strong>开始远程服务</strong><br>  你必须让服务对象开始运行.你的服务实现类会去实例化一个服务的实例,并将这个服务注册到RMI registry.注册之后,这个服务就可以提供客户调用了.</li>
+</ul>
+<p>###1.制作远程接口</p>
+<ul>
+<li><p>扩展java.rmi.Remote:Remote是一个记号接口,所以Remote不具有方法.对于RMI来说,Remote接口具有特别的意义,所以我们必须遵守规则.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">MyRemote</span> <span class="keyword">extends</span> <span class="title">Remote</span></span>&#123;&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>声明所有的方法都会抛出RemoteException</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> java.rmi.*;</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">MyRemote</span> <span class="keyword">extends</span> <span class="title">Remote</span></span>&#123;</div><div class="line">	<span class="function"><span class="keyword">public</span> String <span class="title">method</span><span class="params">()</span> <span class="keyword">throws</span> RemoteException</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>确定变量和返回值是属于原语(primitive)类型或者可以序列化(Serializable)类型<br>远程方法的变量和返回值,必须属于原语类型或Serializable类型.这不难理解.远程方法的变量必须被打包并通过网络运送,这要靠序列化来完成.如果你使用原语类型,字符串和许多API中内定的类型(包括数组和集合),都不会有问题.如果你传送自己定义的类,就必须保证你的类实现了Serializable.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> String<span class="comment">//这个返回值将从服务器通过网络运回给客户,所以必须是Serializable的.这样才可以将变量和返回值打包并传送.</span></div><div class="line">	method() <span class="keyword">throws</span> RemoteException;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>###2.制作远程实现</p>
+<ul>
+<li><p>实现远程接口,扩展UnicastRemoteObject<br>  为了要成为远程服务对象,你的对象需要某些”远程的”功能.最简单的方式是扩展java.rmi.server.UnicastRemoteObject,让超类帮你做这些工作.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyRemoteImpl</span> <span class="keyword">extends</span> <span class="title">UnicastRemoteObject</span> <span class="keyword">implements</span> <span class="title">MyRemote</span></span>&#123;&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>设计一个无参数的构造器,并声明RemoteException;<br>你的新超类UnicastRemoteObject带来一个小问题:它的构造器抛出一个RemoteExceoption;解决办法就是子类的构造器也抛出异常;</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="title">MyremoteImpl</span><span class="params">()</span> <span class="keyword">throws</span> RemoteException</span>&#123;&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>用RMI Registry注册此服务 :<br>现在已经有了一个远程服务了,必须让它可以被远程客户调用.你要做的是将此服务实例化,然后放进RMI registry中.当注册这个实现对象时,RMI系统其实注册的是Stub,因为这是客户真正需要的.注册服务使用了java.rmi.Naming类的静态rebind()方法;</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">try</span>&#123;</div><div class="line">	MyRemote service = <span class="keyword">new</span> MyRemoteImpl();</div><div class="line">	Naming.rebind(<span class="string">"RemoteMethod"</span>,service);</div><div class="line">&#125; <span class="keyword">catch</span>(Exception ex)&#123;...&#125;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>###3.产生Stub和Skeleton<br>rmic 是jdk内置的一个工具,用来为一个服务类产生stub和skeleton.命名习惯是在远程实现的名字后面加上_stub或者＿Skel．</p>
+<p>###4．执行remiregistry<br><strong>开启一个终端，启动rmiregistry</strong><br>先确定启动目录必须可以访问你的类.最简单的做法是从你的’．class’所在目录启动</p>
+<p>###5.启动服务<br><strong>开启另一个终端，启动服务</strong><br>从哪里启动？可能是从你的远程实现类中的main()方法中，也可能是从一个独立的启动类；</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://anboqing.github.io/2015/03/29/java_remote_method_invocation/" data-id="cisoqi7c8001frmggw3xnaxzo" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/RMI/">RMI</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2015/04/14/贝叶斯分类器/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          贝叶斯分类器的技巧
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2015/03/28/DesignPattern_Proxy/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">设计模式之代理模式Proxy</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Caffe/">Caffe</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Caffe教程/">Caffe教程</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Learning/">Learning</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/PCA-降维/">PCA 降维</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/RMI/">RMI</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/SOA/">SOA</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/c/">c++</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/caffe/">caffe</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/epoll/">epoll</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/linux/">linux</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/pandas/">pandas</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/tcp-ip/">tcp/ip</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/函数式编程/">函数式编程</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/协程/">协程</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/工具配置/">工具配置</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/推荐系统/">推荐系统</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/数据挖掘/">数据挖掘</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/机器学习/">机器学习</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/算法学习/">算法学习</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/统计/">统计</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/编码/">编码</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/编译原理/">编译原理</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/设计模式/">设计模式</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/贝叶斯分类/">贝叶斯分类</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Caffe教程/">Caffe教程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Composite，组合模式/">Composite，组合模式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Decorator/">Decorator</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/LaTex-数学公式-Pelican-MathJax/">LaTex  数学公式  Pelican  MathJax</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Learning/">Learning</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PCA-降维/">PCA 降维</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RMI/">RMI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SOA/">SOA</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c-c-linkage-incomplete-type/">c c++ linkage incomplete-type</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/caffe-proto/">caffe .proto</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/datamining/">datamining</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/datamining-Apriori-FPGrowth/">datamining Apriori FPGrowth</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/epoll-网络编程/">epoll 网络编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux-source-code/">linux source code</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tcp-ip/">tcp/ip</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/web-service-axis-xfire-lomboz-tomcat/">web-service axis xfire lomboz tomcat</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/函数式编程/">函数式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/动态规划/">动态规划</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/协程/">协程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/可视化-pandas/">可视化 pandas</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/基础知识-编码/">基础知识 编码</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/感知机/">感知机</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/推荐系统/">推荐系统</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/机器学习/">机器学习</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/机器学习-算法/">机器学习 算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/梯度下降/">梯度下降</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编译原理-Compiler-上下文无关文法/">编译原理 Compiler 上下文无关文法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编译编译原理/">编译编译原理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/贝叶斯分类器/">贝叶斯分类器</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Caffe教程/" style="font-size: 20px;">Caffe教程</a> <a href="/tags/Composite，组合模式/" style="font-size: 10px;">Composite，组合模式</a> <a href="/tags/Decorator/" style="font-size: 10px;">Decorator</a> <a href="/tags/LaTex-数学公式-Pelican-MathJax/" style="font-size: 10px;">LaTex  数学公式  Pelican  MathJax</a> <a href="/tags/Learning/" style="font-size: 10px;">Learning</a> <a href="/tags/PCA-降维/" style="font-size: 10px;">PCA 降维</a> <a href="/tags/RMI/" style="font-size: 10px;">RMI</a> <a href="/tags/SOA/" style="font-size: 10px;">SOA</a> <a href="/tags/c-c-linkage-incomplete-type/" style="font-size: 10px;">c c++ linkage incomplete-type</a> <a href="/tags/caffe-proto/" style="font-size: 10px;">caffe .proto</a> <a href="/tags/datamining/" style="font-size: 10px;">datamining</a> <a href="/tags/datamining-Apriori-FPGrowth/" style="font-size: 10px;">datamining Apriori FPGrowth</a> <a href="/tags/epoll-网络编程/" style="font-size: 10px;">epoll 网络编程</a> <a href="/tags/linux-source-code/" style="font-size: 10px;">linux source code</a> <a href="/tags/tcp-ip/" style="font-size: 10px;">tcp/ip</a> <a href="/tags/web-service-axis-xfire-lomboz-tomcat/" style="font-size: 10px;">web-service axis xfire lomboz tomcat</a> <a href="/tags/函数式编程/" style="font-size: 10px;">函数式编程</a> <a href="/tags/动态规划/" style="font-size: 13.33px;">动态规划</a> <a href="/tags/协程/" style="font-size: 13.33px;">协程</a> <a href="/tags/可视化-pandas/" style="font-size: 10px;">可视化 pandas</a> <a href="/tags/基础知识-编码/" style="font-size: 10px;">基础知识 编码</a> <a href="/tags/感知机/" style="font-size: 10px;">感知机</a> <a href="/tags/推荐系统/" style="font-size: 13.33px;">推荐系统</a> <a href="/tags/机器学习/" style="font-size: 16.67px;">机器学习</a> <a href="/tags/机器学习-算法/" style="font-size: 10px;">机器学习 算法</a> <a href="/tags/梯度下降/" style="font-size: 10px;">梯度下降</a> <a href="/tags/编译原理-Compiler-上下文无关文法/" style="font-size: 10px;">编译原理 Compiler 上下文无关文法</a> <a href="/tags/编译编译原理/" style="font-size: 10px;">编译编译原理</a> <a href="/tags/贝叶斯分类器/" style="font-size: 10px;">贝叶斯分类器</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">July 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/06/">June 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">July 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/06/">June 2014</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2016/05/13/epoll/">事件驱动模型epoll</a>
+          </li>
+        
+          <li>
+            <a href="/2016/05/12/由补码引发的关于编码的思考/">由补码引发的关于编码的思考</a>
+          </li>
+        
+          <li>
+            <a href="/2016/01/15/Caffe教程４-Solver/">Caffe教程４：Solver</a>
+          </li>
+        
+          <li>
+            <a href="/2016/01/14/损失函数/">损失函数</a>
+          </li>
+        
+          <li>
+            <a href="/2016/01/13/Forward和Backward/">Forward 和 Backward</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2016 安勃卿<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

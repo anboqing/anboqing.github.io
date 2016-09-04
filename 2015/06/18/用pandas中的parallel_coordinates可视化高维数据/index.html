@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>用pandas中的parallel_coordinates可视化高维数据 | 暗时间</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="##1.引言
+在处理数据时常常需要对数据进行可视化以便观察,但是,在笛卡尔坐标系下,超过3维的数据我们就无法可视化了,所以,我们就需要一种有效的方法来可视化高维数据.
+常用的方法有Parallel Coordinates,关于这个方法的介绍可以看wikipedia页面,这里就不再重复了.
+##2.python解决方案
+用python实现高维数据可视化需要用到几个库函数 :
+
+Pandas : pa">
+<meta property="og:type" content="article">
+<meta property="og:title" content="用pandas中的parallel_coordinates可视化高维数据">
+<meta property="og:url" content="http://anboqing.github.io/2015/06/18/用pandas中的parallel_coordinates可视化高维数据/index.html">
+<meta property="og:site_name" content="暗时间">
+<meta property="og:description" content="##1.引言
+在处理数据时常常需要对数据进行可视化以便观察,但是,在笛卡尔坐标系下,超过3维的数据我们就无法可视化了,所以,我们就需要一种有效的方法来可视化高维数据.
+常用的方法有Parallel Coordinates,关于这个方法的介绍可以看wikipedia页面,这里就不再重复了.
+##2.python解决方案
+用python实现高维数据可视化需要用到几个库函数 :
+
+Pandas : pa">
+<meta property="og:image" content="http://7xia5s.com1.z0.glb.clouddn.com/Pandas_plot_parallel_coordinates_iris.png">
+<meta property="og:image" content="http://7xia5s.com1.z0.glb.clouddn.com/Pandas_plot_parallel_coordinates_madelon.jpeg">
+<meta property="og:image" content="http://7xia5s.com1.z0.glb.clouddn.com/Pandas_plot_parallel_coordinates_madelon.png">
+<meta property="og:updated_time" content="2016-09-04T02:34:27.760Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="用pandas中的parallel_coordinates可视化高维数据">
+<meta name="twitter:description" content="##1.引言
+在处理数据时常常需要对数据进行可视化以便观察,但是,在笛卡尔坐标系下,超过3维的数据我们就无法可视化了,所以,我们就需要一种有效的方法来可视化高维数据.
+常用的方法有Parallel Coordinates,关于这个方法的介绍可以看wikipedia页面,这里就不再重复了.
+##2.python解决方案
+用python实现高维数据可视化需要用到几个库函数 :
+
+Pandas : pa">
+<meta name="twitter:image" content="http://7xia5s.com1.z0.glb.clouddn.com/Pandas_plot_parallel_coordinates_iris.png">
+  
+    <link rel="alternate" href="/atom.xml" title="暗时间" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">暗时间</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">书写是最好的思考</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://anboqing.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-用pandas中的parallel_coordinates可视化高维数据" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/06/18/用pandas中的parallel_coordinates可视化高维数据/" class="article-date">
+  <time datetime="2015-06-18T14:18:00.000Z" itemprop="datePublished">2015-06-18</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/pandas/">pandas</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      用pandas中的parallel_coordinates可视化高维数据
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>##1.引言</p>
+<p>在处理数据时常常需要对数据进行可视化以便观察,但是,在笛卡尔坐标系下,超过3维的数据我们就无法可视化了,所以,我们就需要一种有效的方法来可视化高维数据.</p>
+<p>常用的方法有Parallel Coordinates,关于这个方法的介绍可以看<a href="https://en.wikipedia.org/wiki/Parallel_coordinates" target="_blank" rel="external">wikipedia页面</a>,这里就不再重复了.</p>
+<p>##2.python解决方案</p>
+<p>用python实现高维数据可视化需要用到几个库函数 :</p>
+<ol>
+<li><strong><a href="http://pandas.pydata.org/pandas-docs/version/0.16.1/visualization.html#visualization-parallel-coordinates" target="_blank" rel="external">Pandas : parallel_coordinates</a></strong></li>
+<li><strong><a href="http://pandas.pydata.org/pandas-docs/dev/generated/pands.DataFrame.html" target="_blank" rel="external">Pandas : DataFrame</a></strong></li>
+<li><strong><a href="http://scikit-learn.org/stable/modules/classes.html#module-sklearn.datasets" target="_blank" rel="external">scikit-learn : datasets.load_iris()</a></strong></li>
+<li><strong><a href="http://www.numpy.org/" target="_blank" rel="external">Numpy</a></strong></li>
+</ol>
+<p>这里有一个简单的教程来熟悉pands语法:<br><a href="http://pandas.pydata.org/pandas-docs/stable/10min.html" target="_blank" rel="external">10分钟熟悉pandas</a></p>
+<p>如果对pandas的数据结构不了解,还要熟悉一下它的数据结构<br><a href="http://pandas.pydata.org/pandas-docs/stable/dsintro.html" target="_blank" rel="external">Pandas 数据结构简介</a></p>
+<p><a href="http://pandas.pydata.org/pandas-docs/dev/generated/pandas.DataFrame.html" target="_blank" rel="external">DataFrame 的API文档</a></p>
+<p>材料准备齐全,就可以开始进行可视化操作了.</p>
+<hr>
+<p>##3. 实现过程</p>
+<h3 id="3-1-准备数据"><a href="#3-1-准备数据" class="headerlink" title="3.1 准备数据"></a>3.1 准备数据</h3><p>首先找一个经典的4维数据集: 鸢尾花 iris数据集 <a href="https://en.wikipedia.org/wiki/Iris_flower_data_set" target="_blank" rel="external">wiki</a>     ,<a href="http://archive.ics.uci.edu/ml/datasets/Iris" target="_blank" rel="external">uci下载地址</a></p>
+<p>数据集简要描述:</p>
+<p>只有四个属性: </p>
+<ol>
+<li>sepal length in cm </li>
+<li>sepal width in cm </li>
+<li>petal length in cm </li>
+<li>petal width in cm </li>
+</ol>
+<p>共三类: </p>
+<ul>
+<li>Iris Setosa </li>
+<li>Iris Versicolour </li>
+<li>Iris Virginica</li>
+</ul>
+<hr>
+<h4 id="3-1-1-导入数据"><a href="#3-1-1-导入数据" class="headerlink" title="3.1.1 导入数据"></a>3.1.1 导入数据</h4><p>由于scikit-learn已经内建了这个数据集,可以直接导入使用</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">from</span> sklearn <span class="keyword">import</span> datasets</div><div class="line"></div><div class="line">data_origin = datasets.load_iris()</div></pre></td></tr></table></figure>
+<p>data_origin是一个 python 字典, 包含了</p>
+<ul>
+<li>‘target_names’: 标签名,’setosa’ ‘versicolor’ ‘virginica’</li>
+<li>‘data’: 数据 ,150 * 4的 ndarray 对象</li>
+<li>‘target’: 标签值, 0 1 2, 分别对应一个标签名</li>
+<li>‘feature_names’: 特征名, ‘sepal length (cm)’, ‘sepal width (cm)’, ‘petal length (cm)’, ‘petal width (cm)’</li>
+<li>‘DESC’ : 数据集描述字符串</li>
+</ul>
+<hr>
+<h4 id="3-1-2-处理数据"><a href="#3-1-2-处理数据" class="headerlink" title="3.1.2 处理数据"></a>3.1.2 处理数据</h4><p>由于我们要调用 pandas 的 parallel_coordinates 函数,它需要一个 Pandas.DataFrame 对象格式的数据,所以我们要把上面的数据包装到一个 DataFrame对象里. </p>
+<p><strong>DataFrame对象其实就和Sql数据库中的表一样,它和矩阵的不同之处在于它包含了每一列的名称和每一行的名称.</strong></p>
+<p>由于Pandas可以由多种数据类型构造:</p>
+<ul>
+<li><strong>Dict</strong> of 1D ndarrays,lists,or Series (由 1维的 ndarray,list,Serie 构成的 <strong>字典Dict</strong>)</li>
+<li>2-D numpy.ndarray 2维的numpy 多维数组</li>
+<li>numpy中的 Structured or record ndarry</li>
+<li>Pandas中的 一个 Series</li>
+<li>另一个DataFrame</li>
+</ul>
+<p>这里,我选用第一种方式,用python中的字典对象构造.把iris数据包装成一个DataFrame对象,前四列是每个特征对应的值,最后一列是该行数据的数据类型(用target_name构造).每一行是一个数据.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># 先把数据提取出来</span></div><div class="line">data = data_origin[<span class="string">'data'</span>]</div><div class="line"><span class="comment"># 处理类标签数据</span></div><div class="line">target= data_origin[<span class="string">'target'</span>]</div><div class="line">target_names = data_origin[<span class="string">'target_names'</span>]</div><div class="line">target_labels=[]</div><div class="line"><span class="keyword">for</span> class_num <span class="keyword">in</span> target:</div><div class="line">    target_labels.append(target_names[class_num])</div><div class="line"></div><div class="line">feature_names = data_origin[<span class="string">'feature_names'</span>]</div><div class="line"><span class="comment"># 合成字典</span></div><div class="line">data_dict = &#123;&#125;</div><div class="line">column = <span class="number">0</span></div><div class="line"><span class="keyword">for</span> feature_name <span class="keyword">in</span> feature_names:</div><div class="line">    data_dict[feature_name] = data[:,column]</div><div class="line">    column+=<span class="number">1</span></div><div class="line">data_dict[<span class="string">'target_labels'</span>] = target_labels</div></pre></td></tr></table></figure>
+<p>有了字典后就可以合成pandas DataFrame了<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># 包装成 DataFrame</span></div><div class="line"></div><div class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</div><div class="line"></div><div class="line">pd_data = pd.DataFrame(data_dict)</div></pre></td></tr></table></figure></p>
+<hr>
+<p>###3.1.3 画图</p>
+<p>有了数据后,画图就十分方便,只需要调用 pandas 的内置函数 parallel_coordinates() 就好了:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="keyword">from</span> pandas.tool.plotting <span class="keyword">import</span> parallel_coordinates</div><div class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</div><div class="line"></div><div class="line">plt.figure()</div><div class="line"></div><div class="line">parallel_coordinates(pd_data,<span class="string">'target-labels'</span>)</div><div class="line"></div><div class="line">plt.show()</div></pre></td></tr></table></figure>
+<p>这样,图就画好了 :<br><img src="http://7xia5s.com1.z0.glb.clouddn.com/Pandas_plot_parallel_coordinates_iris.png" alt="plot"></p>
+<p>##画一个 500维的数据集 madelon</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#coding=utf-8</span></div><div class="line">__author__ = <span class="string">'anboqing'</span></div><div class="line"></div><div class="line"><span class="keyword">from</span> pandas.tools.plotting <span class="keyword">import</span> parallel_coordinates</div><div class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</div><div class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</div><div class="line"><span class="keyword">import</span> LoadLibSvm <span class="keyword">as</span> ld</div><div class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</div><div class="line"></div><div class="line">origin_data,origin_label = ld.load_libsvm_data(<span class="string">'madelon'</span>)</div><div class="line"></div><div class="line"></div><div class="line"><span class="comment">#print type(origin_data)</span></div><div class="line"></div><div class="line"><span class="comment"># 读取到原始数据和数据的标签后,要包装成一个DataFrame对象</span></div><div class="line"><span class="comment">#print np.shape(origin_label)</span></div><div class="line">mat_data = np.mat(origin_data)</div><div class="line">mat_data = mat_data.transpose()</div><div class="line"><span class="string">"""</span></div><div class="line">#print type(mat_data)</div><div class="line">arr_data = np.array(origin_data)</div><div class="line">#print arr_data.shape</div><div class="line">print type(arr_data)</div><div class="line">print type(mat_data[1,:])</div><div class="line">arr = np.array(mat_data[1,:])</div><div class="line">lst = list(arr)</div><div class="line">print type(lst)</div><div class="line">print np.shape(lst)</div><div class="line">print lst[0]</div><div class="line">lst = list(lst[0])</div><div class="line">print lst[0]</div><div class="line">print type(lst[0])</div><div class="line">"""</div><div class="line"></div><div class="line"><span class="comment"># 先包装成一个dict</span></div><div class="line">data_dict = &#123;&#125;</div><div class="line"><span class="keyword">for</span> idx <span class="keyword">in</span> range(mat_data.shape[<span class="number">0</span>]):</div><div class="line">    arr = np.array(mat_data[idx,:])</div><div class="line">    lst = list(arr)</div><div class="line">    lst = list(lst[<span class="number">0</span>])</div><div class="line">    data_dict[str(idx)] = lst</div><div class="line">data_dict[<span class="string">'label'</span>]=origin_label</div><div class="line"></div><div class="line">pd_df = pd.DataFrame(data_dict)</div><div class="line"></div><div class="line"><span class="string">"""</span></div><div class="line">选了4列来画,能画出来,说明方法是对的,然而画所有列全都是黑的,说明图片尺寸太小了</div><div class="line">small_data = pd.DataFrame(pd_df,columns=['1','2','3','label'])</div><div class="line">plt.figure()</div><div class="line">parallel_coordinates(small_data,'label')</div><div class="line">plt.show()</div><div class="line">"""</div><div class="line"></div><div class="line">plt.figure(figsize=(<span class="number">100</span>,<span class="number">50</span>),dpi=<span class="number">20</span>)</div><div class="line">parallel_coordinates(pd_df,<span class="string">'label'</span>)</div><div class="line">plt.show()</div></pre></td></tr></table></figure>
+<p>画出来效果是这样:<br><img src="http://7xia5s.com1.z0.glb.clouddn.com/Pandas_plot_parallel_coordinates_madelon.jpeg" alt="小图"><br>下面是大图,可以在新页面打开放大看细节:<br><img src="http://7xia5s.com1.z0.glb.clouddn.com/Pandas_plot_parallel_coordinates_madelon.png" alt="4M大图"></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://anboqing.github.io/2015/06/18/用pandas中的parallel_coordinates可视化高维数据/" data-id="cisoqi7e1003urmgg6haixfkx" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/可视化-pandas/">可视化 pandas</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2015/07/20/协程Coroutines/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          协程 Coroutines
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2015/06/16/关于协程/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">关于协程</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Caffe/">Caffe</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Caffe教程/">Caffe教程</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Learning/">Learning</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/PCA-降维/">PCA 降维</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/RMI/">RMI</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/SOA/">SOA</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/c/">c++</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/caffe/">caffe</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/epoll/">epoll</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/linux/">linux</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/pandas/">pandas</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/tcp-ip/">tcp/ip</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/函数式编程/">函数式编程</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/协程/">协程</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/工具配置/">工具配置</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/推荐系统/">推荐系统</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/数据挖掘/">数据挖掘</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/机器学习/">机器学习</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/算法学习/">算法学习</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/统计/">统计</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/编码/">编码</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/编译原理/">编译原理</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/设计模式/">设计模式</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/贝叶斯分类/">贝叶斯分类</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Caffe教程/">Caffe教程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Composite，组合模式/">Composite，组合模式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Decorator/">Decorator</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/LaTex-数学公式-Pelican-MathJax/">LaTex  数学公式  Pelican  MathJax</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Learning/">Learning</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PCA-降维/">PCA 降维</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RMI/">RMI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SOA/">SOA</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c-c-linkage-incomplete-type/">c c++ linkage incomplete-type</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/caffe-proto/">caffe .proto</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/datamining/">datamining</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/datamining-Apriori-FPGrowth/">datamining Apriori FPGrowth</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/epoll-网络编程/">epoll 网络编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux-source-code/">linux source code</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tcp-ip/">tcp/ip</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/web-service-axis-xfire-lomboz-tomcat/">web-service axis xfire lomboz tomcat</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/函数式编程/">函数式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/动态规划/">动态规划</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/协程/">协程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/可视化-pandas/">可视化 pandas</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/基础知识-编码/">基础知识 编码</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/感知机/">感知机</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/推荐系统/">推荐系统</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/机器学习/">机器学习</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/机器学习-算法/">机器学习 算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/梯度下降/">梯度下降</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编译原理-Compiler-上下文无关文法/">编译原理 Compiler 上下文无关文法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编译编译原理/">编译编译原理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/贝叶斯分类器/">贝叶斯分类器</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Caffe教程/" style="font-size: 20px;">Caffe教程</a> <a href="/tags/Composite，组合模式/" style="font-size: 10px;">Composite，组合模式</a> <a href="/tags/Decorator/" style="font-size: 10px;">Decorator</a> <a href="/tags/LaTex-数学公式-Pelican-MathJax/" style="font-size: 10px;">LaTex  数学公式  Pelican  MathJax</a> <a href="/tags/Learning/" style="font-size: 10px;">Learning</a> <a href="/tags/PCA-降维/" style="font-size: 10px;">PCA 降维</a> <a href="/tags/RMI/" style="font-size: 10px;">RMI</a> <a href="/tags/SOA/" style="font-size: 10px;">SOA</a> <a href="/tags/c-c-linkage-incomplete-type/" style="font-size: 10px;">c c++ linkage incomplete-type</a> <a href="/tags/caffe-proto/" style="font-size: 10px;">caffe .proto</a> <a href="/tags/datamining/" style="font-size: 10px;">datamining</a> <a href="/tags/datamining-Apriori-FPGrowth/" style="font-size: 10px;">datamining Apriori FPGrowth</a> <a href="/tags/epoll-网络编程/" style="font-size: 10px;">epoll 网络编程</a> <a href="/tags/linux-source-code/" style="font-size: 10px;">linux source code</a> <a href="/tags/tcp-ip/" style="font-size: 10px;">tcp/ip</a> <a href="/tags/web-service-axis-xfire-lomboz-tomcat/" style="font-size: 10px;">web-service axis xfire lomboz tomcat</a> <a href="/tags/函数式编程/" style="font-size: 10px;">函数式编程</a> <a href="/tags/动态规划/" style="font-size: 13.33px;">动态规划</a> <a href="/tags/协程/" style="font-size: 13.33px;">协程</a> <a href="/tags/可视化-pandas/" style="font-size: 10px;">可视化 pandas</a> <a href="/tags/基础知识-编码/" style="font-size: 10px;">基础知识 编码</a> <a href="/tags/感知机/" style="font-size: 10px;">感知机</a> <a href="/tags/推荐系统/" style="font-size: 13.33px;">推荐系统</a> <a href="/tags/机器学习/" style="font-size: 16.67px;">机器学习</a> <a href="/tags/机器学习-算法/" style="font-size: 10px;">机器学习 算法</a> <a href="/tags/梯度下降/" style="font-size: 10px;">梯度下降</a> <a href="/tags/编译原理-Compiler-上下文无关文法/" style="font-size: 10px;">编译原理 Compiler 上下文无关文法</a> <a href="/tags/编译编译原理/" style="font-size: 10px;">编译编译原理</a> <a href="/tags/贝叶斯分类器/" style="font-size: 10px;">贝叶斯分类器</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">July 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/06/">June 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">July 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/06/">June 2014</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2016/05/13/epoll/">事件驱动模型epoll</a>
+          </li>
+        
+          <li>
+            <a href="/2016/05/12/由补码引发的关于编码的思考/">由补码引发的关于编码的思考</a>
+          </li>
+        
+          <li>
+            <a href="/2016/01/15/Caffe教程４-Solver/">Caffe教程４：Solver</a>
+          </li>
+        
+          <li>
+            <a href="/2016/01/14/损失函数/">损失函数</a>
+          </li>
+        
+          <li>
+            <a href="/2016/01/13/Forward和Backward/">Forward 和 Backward</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2016 安勃卿<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Caffe官方教程-Blobs,Layers,Nets-caffe模型解剖 | 暗时间</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="本文译自官方文档，权当练英语了，请各位英文好看官移步官网自行阅读
+
+引言深度神经网络是一种聚合模型，可以自然的表示为作用于数据块上的内部相连的网络. Caffe用自己的建模方法将网络一层一层定义出来。网络由输入数据到损失层把整个模型自底向上的定义出来。数据和偏导数在网络中前向、后向流动。Caffe使用blob存储、交换、操纵这些信息。blob是整个框架的标准的数组结构和统一存储接口。layer作">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Caffe官方教程-Blobs,Layers,Nets-caffe模型解剖">
+<meta property="og:url" content="http://anboqing.github.io/2016/01/12/Caffe官方教程-Blobs,Layers,Nets-caffe模型解剖/index.html">
+<meta property="og:site_name" content="暗时间">
+<meta property="og:description" content="本文译自官方文档，权当练英语了，请各位英文好看官移步官网自行阅读
+
+引言深度神经网络是一种聚合模型，可以自然的表示为作用于数据块上的内部相连的网络. Caffe用自己的建模方法将网络一层一层定义出来。网络由输入数据到损失层把整个模型自底向上的定义出来。数据和偏导数在网络中前向、后向流动。Caffe使用blob存储、交换、操纵这些信息。blob是整个框架的标准的数组结构和统一存储接口。layer作">
+<meta property="og:image" content="http://caffe.berkeleyvision.org/tutorial/fig/layer.jpg">
+<meta property="og:image" content="http://caffe.berkeleyvision.org/tutorial/fig/logreg.jpg">
+<meta property="og:updated_time" content="2016-09-04T02:21:04.660Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Caffe官方教程-Blobs,Layers,Nets-caffe模型解剖">
+<meta name="twitter:description" content="本文译自官方文档，权当练英语了，请各位英文好看官移步官网自行阅读
+
+引言深度神经网络是一种聚合模型，可以自然的表示为作用于数据块上的内部相连的网络. Caffe用自己的建模方法将网络一层一层定义出来。网络由输入数据到损失层把整个模型自底向上的定义出来。数据和偏导数在网络中前向、后向流动。Caffe使用blob存储、交换、操纵这些信息。blob是整个框架的标准的数组结构和统一存储接口。layer作">
+<meta name="twitter:image" content="http://caffe.berkeleyvision.org/tutorial/fig/layer.jpg">
+  
+    <link rel="alternate" href="/atom.xml" title="暗时间" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">暗时间</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">书写是最好的思考</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://anboqing.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-Caffe官方教程-Blobs,Layers,Nets-caffe模型解剖" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/01/12/Caffe官方教程-Blobs,Layers,Nets-caffe模型解剖/" class="article-date">
+  <time datetime="2016-01-12T15:25:00.000Z" itemprop="datePublished">2016-01-12</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Caffe教程/">Caffe教程</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Caffe官方教程-Blobs,Layers,Nets-caffe模型解剖
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <blockquote>
+<p>本文译自<a href="http://caffe.berkeleyvision.org/tutorial/net_layer_blob.html" target="_blank" rel="external">官方文档</a>，权当练英语了，请各位英文好看官移步官网自行阅读</p>
+</blockquote>
+<h2 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h2><p>深度神经网络是一种聚合模型，可以自然的表示为作用于数据块上的内部相连的网络. Caffe用自己的建模方法将网络一层一层定义出来。网络由输入数据到损失层把整个模型自底向上的定义出来。数据和偏导数在网络中前向、后向流动。Caffe使用<code>blob</code>存储、交换、操纵这些信息。<code>blob</code>是整个框架的标准的数组结构和统一存储接口。<code>layer</code>作为建模和计算的基础，<code>net</code>作为<code>layer</code>的集合和链接。<code>blob</code>的细节描述了信息是怎样在<code>layers</code>和<code>nets</code>间存储和交换的.</p>
+<hr>
+<h2 id="Blob-存储和通信"><a href="#Blob-存储和通信" class="headerlink" title="Blob 存储和通信"></a>Blob 存储和通信</h2><p><code>Blob</code> 是Caffe处理和传输的真实数据的包装类，同时它还隐含提供了在CPU和GPU之间同步数据的能力。在数学上，一个<code>blob</code>就是一个N维的数组，它是按照<code>c语言风格</code>存储的。（其实就是行优先还是列优先的风格，参照<a href="https://en.wikipedia.org/wiki/Row-major_order" target="_blank" rel="external">wiki:row-major order</a>). </p>
+<p>caffe使用<code>blob</code>存储和交换数据。<code>blob</code>对不同数据提供了统一的内存接口；例如：一批图片，模型参数，优化过程的偏导数等。</p>
+<p><code>Blob</code>通过在需要时将数据从CPU同步到GPU来隐藏在GPU/CPU之间进行混合操作的计算开销和精力开销.host 和device上的内存都是惰性分配的，从而能够高效使用存储空间。</p>
+<p>传统的图片数据维数为<code>图片数量N x 通道数K x 高度H x 宽度W</code>。由于<code>Blob</code>的内存布局是<code>行优先</code>,所以最右边／后边的维度变化的最快。例如，在一个4D的blob里，下标(n,k,h,w)在物理内存中位于下标((n<em>K+k)</em>H+h)*W+w).</p>
+<ul>
+<li>Number / N 是数据的 batch size.批处理能获得更大的在GPU设备上的吞吐量。例如，对于ImageNet数据训练一批２５６个图片,N=256.</li>
+<li>通道数 / K 是 feature dimension, 例如RGB图片就是３通道的　K = 3.灰度　K=1</li>
+</ul>
+<p>注意，尽管Caffe样例中的大多数blob都是4D的带坐标的图片应用，在非图片应用使用Blob也是完全可以的。例如，你仅仅需要一个全连接网络（比如传统多层感知机），使用一个2D的blob(shape(N,D))，调用<code>InnerProductLayer</code>就可以了。</p>
+<p>参数blob的维度随着<code>layer</code>的配置和类型变化。例如，对一个有９６个filters，每个filter有１１X１１的空域维度和３个输入的卷积层,它的blob维数为: <code>96 x 3 x 11 x 11</code>.<br>对于一个有着<code>1000</code>个输出和<code>1024</code>个输入的内积 / 全连接<code>layer</code>,它的参数<code>blob</code>是<code>1000 x 1024</code>。</p>
+<p>对于定制的数据，可能需要自己手工编写输入数据预处理工具或者数据层。但是一旦你的数据准备好了，剩下的工作就交给Caffe了。</p>
+<hr>
+<h2 id="实现细节"><a href="#实现细节" class="headerlink" title="实现细节"></a>实现细节</h2><p>由于我们经常对<code>blob</code>的值和梯度感兴趣，所以<code>blob</code>存储了２块<code>data</code>和<code>diff</code>.前者是正常的传输数据，后者是网络计算的梯度。</p>
+<p>更进一步，由于真实数据可能存储在CPU或者GPU上，有２种方式来访问它们：<code>const</code>方式，不能修改值；<code>mutable</code>方式，可以修改值:</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">const</span> Dtype* <span class="title">cpu_data</span><span class="params">()</span> <span class="keyword">const</span></span>;</div><div class="line"><span class="function">Dtype* <span class="title">mutable_cpu_data</span><span class="params">()</span></span>;</div></pre></td></tr></table></figure>
+<p>(gpu 和 diff接口类似)。</p>
+<p>这样设计的原因是：<code>Blob</code>使用了<code>SyncedMem</code>类来同步CPU和GPU之间的数据以便隐藏同步细节，同时最小化<code>host</code>和<code>device</code>之间的数据交换。第一原则是：当你不需要修改值的时候总是使用<code>const</code>方式，并且绝对不要在你自己的对象里存储指针。没当你使用一个blob的时候，调用上面的函数来获取数据指针，这时<code>SyncedMem</code>就会需要根据这个指针来判断什么时候去复制数据。（这个功能怎么实现的，很有意思，等看完代码再分析）。</p>
+<p>在实践中如果使用了GPU,你从磁盘上吧数据读取到CPU模式的内存中的blob里，然后调用GPU的kernel来进行计算，然后把blob数据传给下一层，这一切过程都隐藏了底层的实现细节，并且获得很高的性能。只要所有层都有GPU实现，所有的中间数据和梯度都会保存在GPU中。</p>
+<p>如果你像检查什么时候Blob会复制数据，这里有一个演示：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// 假设数据初始在CPU模式下，我们有一个blob.</span></div><div class="line"><span class="keyword">const</span> Dtype* foo;</div><div class="line">Dtype* bar;</div><div class="line">foo = blob.gpu_data(); <span class="comment">// 数据从　cpu 复制到 gpu</span></div><div class="line">foo = blob.cpu_data(); <span class="comment">// 没有数据拷贝，因为cpu 和gpu都有最新的数据内容</span></div><div class="line">bar = blob.mutable_gpu_data(); <span class="comment">// 没有数据拷贝</span></div><div class="line"><span class="comment">// .. 一些操作 .. </span></div><div class="line">bar = blob.mutable_gpu_data(); <span class="comment">//  没有数据拷贝，因为仍然处在　GPU上</span></div><div class="line">foo = blob.cpu_data(); <span class="comment">// 数据从gpu－&gt;cpu，因为gpu上修改了数据</span></div><div class="line">foo = blob.gpu_data(); <span class="comment">// 没有数据拷贝，因为都有最新内容</span></div><div class="line">bar = blob.mutable_cpu_data(); <span class="comment">// still no data copied </span></div><div class="line">bar = blob.mutable_gpu_data(); <span class="comment">// data copied cpu-&gt;gpu</span></div><div class="line">bar = blob.mutable_cpu_data(); <span class="comment">// 数据从gpu-&gt;cpu</span></div></pre></td></tr></table></figure>
+<hr>
+<h2 id="层的连接和计算"><a href="#层的连接和计算" class="headerlink" title="层的连接和计算"></a>层的连接和计算</h2><p><code>layer</code>是一个模型的精华所在，它也是计算的基本单元。<code>layer</code>包括了<code>filter</code>过滤,<code>pool</code>池化,进行<code>inner product</code>计算，应用诸如<code>rectified-linear</code>和<code>sigmoid</code>等元素级的非线性变换,正则化，读取数据,计算诸如<code>softmax</code>或<code>hinge</code>等代价损失。查看<a href="http://caffe.berkeleyvision.org/tutorial/layers.html" target="_blank" rel="external">Layer catalogue</a>获取全部操作。大部分最新的深度学习任务都在那里。</p>
+<p><img src="http://caffe.berkeleyvision.org/tutorial/fig/layer.jpg" alt="一个从底层连接获取数据并从顶层连接输出的layer"></p>
+<p>每个<code>layer</code>都定义了３个关键的计算操作：<code>setup</code>,<code>forward</code>和<code>backward</code>.</p>
+<ul>
+<li>Setup: 在模型初始化的时候初始化<code>layer</code>和它的<code>connections</code></li>
+<li>Forward: 从底层给出输入并计算输出，然后发送给顶层</li>
+<li>Backward: 给出顶层输出的梯度，计算输入的梯度，然后发送给底层。一个有参数的层会计算关于参数的梯度然后在内部存储这些梯度。</li>
+</ul>
+<p>更详细的说，caffe将会实现２个Forward和Backward函数，一个给CPU，另一个给GPU.如果你没有实现GPU版本，那么<code>layer</code>就会退化成CPU函数作为一个后备选项。<br>如果你要做快速实验，这个会用起来很顺手，尽管它会造成附加的数据传输开销（它的输入会从GPU复制到CPU,并且它的输出会从CPU拷贝到GPU);</p>
+<p><code>layer</code>在把网络当做整体进行操作的时候有两个关键责任：<em>前向传播</em>从输入计算输出，<em>反向传播</em>获取输出的梯度，然后根据参数向前计算输入的梯度，这些梯度再依次向前传播。这些过程都是简单的前向传播和后向传播的组合。</p>
+<p>开发自己定义的层需要一点很小的努力，需要学习网络的组织和代码的模块画。定义每层的setup,forward,backward，然后你定义的这个层就可以包含进一个网络了。</p>
+<hr>
+<h2 id="网络定义和操作"><a href="#网络定义和操作" class="headerlink" title="网络定义和操作"></a>网络定义和操作</h2><p><code>net</code>通过组合和<a href="https://en.wikipedia.org/wiki/Automatic_differentiation#Operator_overloading_.28OO.29" target="_blank" rel="external">自动求导</a>联合定义了一个函数和它的导数.把每一层output组合起来计算一个特定任务的函数，把每一层的backward组合起来从loss计算梯度来学习该任务。Caffe模型是端对端的机器学习引擎。（这个和Theano类似的）</p>
+<p><code>net</code>可以看做一个由layers组成的计算图(computation graph)，确切的说是一个有向无环图。Caffe为所有层做了所有bookkeeping的工作来保证前向传播和后向传播的正确性。典型的<code>net</code>由一个从磁盘读取数据的数据层开始，以一个loss层结束，是计算诸如分类或者重构之类的目标任务的。</p>
+<p><code>net</code>用普通文本建模语言protocol buffer被定义为一组<code>layer</code>和它们之间的连接，一个简单的 logistic regression 分类器如下:</p>
+<p><img src="http://caffe.berkeleyvision.org/tutorial/fig/logreg.jpg" alt="logistic regression"></p>
+<p>定义为:</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line">name: <span class="string">"LogReg"</span></div><div class="line">layer &#123;</div><div class="line">  name: <span class="string">"mnist"</span></div><div class="line">  type: <span class="string">"Data"</span></div><div class="line">  top: <span class="string">"data"</span></div><div class="line">  top: <span class="string">"label"</span></div><div class="line">  data_param &#123;</div><div class="line">    source: <span class="string">"input_leveldb"</span></div><div class="line">    batch_size: <span class="number">64</span></div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line">layer &#123;</div><div class="line">  name: <span class="string">"ip"</span></div><div class="line">  type: <span class="string">"InnerProduct"</span></div><div class="line">  bottom: <span class="string">"data"</span></div><div class="line">  top: <span class="string">"ip"</span></div><div class="line">  inner_product_param &#123;</div><div class="line">    num_output: <span class="number">2</span></div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line">layer &#123;</div><div class="line">  name: <span class="string">"loss"</span></div><div class="line">  type: <span class="string">"SoftmaxWithLoss"</span></div><div class="line">  bottom: <span class="string">"ip"</span></div><div class="line">  bottom: <span class="string">"label"</span></div><div class="line">  top: <span class="string">"loss"</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>模型初始化由函数<code>Net::Init()</code>处理。初始化主要做了２件事：创建blobs和layers架起整个DAG(对c++使用者：在整个生命周期里network会持有blobs和layers的所有权),并且调用layer的<code>Setup()</code>函数。它同样做了一系列其他的准备工作，例如验证整个网络结构的正确性。同样，在初始化的过程中，<code>Net</code>会通过日志解释它的初始化工作，像这样:</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div></pre></td><td class="code"><pre><div class="line">I0902 22:52:17.931977 2079114000 net.cpp:39] Initializing net from parameters:</div><div class="line">name: "LogReg"</div><div class="line">[...model prototxt printout...]</div><div class="line"># construct the network layer-by-layer</div><div class="line">I0902 22:52:17.932152 2079114000 net.cpp:67] Creating Layer mnist</div><div class="line">I0902 22:52:17.932165 2079114000 net.cpp:356] mnist -&gt; data</div><div class="line">I0902 22:52:17.932188 2079114000 net.cpp:356] mnist -&gt; label</div><div class="line">I0902 22:52:17.932200 2079114000 net.cpp:96] Setting up mnist</div><div class="line">I0902 22:52:17.935807 2079114000 data_layer.cpp:135] Opening leveldb input_leveldb</div><div class="line">I0902 22:52:17.937155 2079114000 data_layer.cpp:195] output data size: 64,1,28,28</div><div class="line">I0902 22:52:17.938570 2079114000 net.cpp:103] Top shape: 64 1 28 28 (50176)</div><div class="line">I0902 22:52:17.938593 2079114000 net.cpp:103] Top shape: 64 (64)</div><div class="line">I0902 22:52:17.938611 2079114000 net.cpp:67] Creating Layer ip</div><div class="line">I0902 22:52:17.938617 2079114000 net.cpp:394] ip &lt;- data</div><div class="line">I0902 22:52:17.939177 2079114000 net.cpp:356] ip -&gt; ip</div><div class="line">I0902 22:52:17.939196 2079114000 net.cpp:96] Setting up ip</div><div class="line">I0902 22:52:17.940289 2079114000 net.cpp:103] Top shape: 64 2 (128)</div><div class="line">I0902 22:52:17.941270 2079114000 net.cpp:67] Creating Layer loss</div><div class="line">I0902 22:52:17.941305 2079114000 net.cpp:394] loss &lt;- ip</div><div class="line">I0902 22:52:17.941314 2079114000 net.cpp:394] loss &lt;- label</div><div class="line">I0902 22:52:17.941323 2079114000 net.cpp:356] loss -&gt; loss</div><div class="line"># set up the loss and configure the backward pass</div><div class="line">I0902 22:52:17.941328 2079114000 net.cpp:96] Setting up loss</div><div class="line">I0902 22:52:17.941328 2079114000 net.cpp:103] Top shape: (1)</div><div class="line">I0902 22:52:17.941329 2079114000 net.cpp:109]     with loss weight 1</div><div class="line">I0902 22:52:17.941779 2079114000 net.cpp:170] loss needs backward computation.</div><div class="line">I0902 22:52:17.941787 2079114000 net.cpp:170] ip needs backward computation.</div><div class="line">I0902 22:52:17.941794 2079114000 net.cpp:172] mnist does not need backward computation.</div><div class="line"># determine outputs</div><div class="line">I0902 22:52:17.941800 2079114000 net.cpp:208] This network produces output loss</div><div class="line"># finish initialization and report memory usage</div><div class="line">I0902 22:52:17.941810 2079114000 net.cpp:467] Collecting Learning Rate and Weight Decay.</div><div class="line">I0902 22:52:17.941818 2079114000 net.cpp:219] Network initialization done.</div><div class="line">I0902 22:52:17.941824 2079114000 net.cpp:220] Memory required for data: 201476</div></pre></td></tr></table></figure>
+<p>注意构建网络是和设备无关的，回忆前面解释blob和layer的时候他们也在构建的时候隐藏了实现细节。构建完成之后，网络就可以在CPU或者GPU上运行，只需要调用<code>Caffe::mode()</code>就能切换，<code>Caffe::set_mode()</code>是用来设置mode的函数。在GPU或者CPU上运行的过程会产生相同的结果。CPU和GPU可以无缝切换并且和模型定义无关。对研究和部署来说，把模型和实现分离是最好的方案。</p>
+<hr>
+<h2 id="模型格式"><a href="#模型格式" class="headerlink" title="模型格式"></a>模型格式</h2><p>模型是用普通文本文件存储的protocol buffer schema(存在<code>prototxt</code>文件里),学习到的模型是被序列化为二进制格式的protocol buffer(binaryproto),存在<code>caffemodel</code>文件里。</p>
+<p>模型格式是定义在<code>caffe.proto</code>文件里的。这个文件基本上是自解释的，推荐初学者仔细阅读它。</p>
+<blockquote>
+<p>Most important tip…<br>Don’t be afraid to read the code!</p>
+</blockquote>
+<hr>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://anboqing.github.io/2016/01/12/Caffe官方教程-Blobs,Layers,Nets-caffe模型解剖/" data-id="cisoqi7aj0000rmggasa9io3n" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Caffe教程/">Caffe教程</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/01/13/Forward和Backward/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Forward 和 Backward
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/01/11/降维PCA/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">降维PCA</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Caffe/">Caffe</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Caffe教程/">Caffe教程</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Learning/">Learning</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/PCA-降维/">PCA 降维</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/RMI/">RMI</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/SOA/">SOA</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/c/">c++</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/caffe/">caffe</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/epoll/">epoll</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/linux/">linux</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/pandas/">pandas</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/tcp-ip/">tcp/ip</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/函数式编程/">函数式编程</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/协程/">协程</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/工具配置/">工具配置</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/推荐系统/">推荐系统</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/数据挖掘/">数据挖掘</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/机器学习/">机器学习</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/算法学习/">算法学习</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/统计/">统计</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/编码/">编码</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/编译原理/">编译原理</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/设计模式/">设计模式</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/贝叶斯分类/">贝叶斯分类</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Caffe教程/">Caffe教程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Composite，组合模式/">Composite，组合模式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Decorator/">Decorator</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/LaTex-数学公式-Pelican-MathJax/">LaTex  数学公式  Pelican  MathJax</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Learning/">Learning</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PCA-降维/">PCA 降维</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RMI/">RMI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SOA/">SOA</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c-c-linkage-incomplete-type/">c c++ linkage incomplete-type</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/caffe-proto/">caffe .proto</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/datamining/">datamining</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/datamining-Apriori-FPGrowth/">datamining Apriori FPGrowth</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/epoll-网络编程/">epoll 网络编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux-source-code/">linux source code</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tcp-ip/">tcp/ip</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/web-service-axis-xfire-lomboz-tomcat/">web-service axis xfire lomboz tomcat</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/函数式编程/">函数式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/动态规划/">动态规划</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/协程/">协程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/可视化-pandas/">可视化 pandas</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/基础知识-编码/">基础知识 编码</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/感知机/">感知机</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/推荐系统/">推荐系统</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/机器学习/">机器学习</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/机器学习-算法/">机器学习 算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/梯度下降/">梯度下降</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编译原理-Compiler-上下文无关文法/">编译原理 Compiler 上下文无关文法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编译编译原理/">编译编译原理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/贝叶斯分类器/">贝叶斯分类器</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Caffe教程/" style="font-size: 20px;">Caffe教程</a> <a href="/tags/Composite，组合模式/" style="font-size: 10px;">Composite，组合模式</a> <a href="/tags/Decorator/" style="font-size: 10px;">Decorator</a> <a href="/tags/LaTex-数学公式-Pelican-MathJax/" style="font-size: 10px;">LaTex  数学公式  Pelican  MathJax</a> <a href="/tags/Learning/" style="font-size: 10px;">Learning</a> <a href="/tags/PCA-降维/" style="font-size: 10px;">PCA 降维</a> <a href="/tags/RMI/" style="font-size: 10px;">RMI</a> <a href="/tags/SOA/" style="font-size: 10px;">SOA</a> <a href="/tags/c-c-linkage-incomplete-type/" style="font-size: 10px;">c c++ linkage incomplete-type</a> <a href="/tags/caffe-proto/" style="font-size: 10px;">caffe .proto</a> <a href="/tags/datamining/" style="font-size: 10px;">datamining</a> <a href="/tags/datamining-Apriori-FPGrowth/" style="font-size: 10px;">datamining Apriori FPGrowth</a> <a href="/tags/epoll-网络编程/" style="font-size: 10px;">epoll 网络编程</a> <a href="/tags/linux-source-code/" style="font-size: 10px;">linux source code</a> <a href="/tags/tcp-ip/" style="font-size: 10px;">tcp/ip</a> <a href="/tags/web-service-axis-xfire-lomboz-tomcat/" style="font-size: 10px;">web-service axis xfire lomboz tomcat</a> <a href="/tags/函数式编程/" style="font-size: 10px;">函数式编程</a> <a href="/tags/动态规划/" style="font-size: 13.33px;">动态规划</a> <a href="/tags/协程/" style="font-size: 13.33px;">协程</a> <a href="/tags/可视化-pandas/" style="font-size: 10px;">可视化 pandas</a> <a href="/tags/基础知识-编码/" style="font-size: 10px;">基础知识 编码</a> <a href="/tags/感知机/" style="font-size: 10px;">感知机</a> <a href="/tags/推荐系统/" style="font-size: 13.33px;">推荐系统</a> <a href="/tags/机器学习/" style="font-size: 16.67px;">机器学习</a> <a href="/tags/机器学习-算法/" style="font-size: 10px;">机器学习 算法</a> <a href="/tags/梯度下降/" style="font-size: 10px;">梯度下降</a> <a href="/tags/编译原理-Compiler-上下文无关文法/" style="font-size: 10px;">编译原理 Compiler 上下文无关文法</a> <a href="/tags/编译编译原理/" style="font-size: 10px;">编译编译原理</a> <a href="/tags/贝叶斯分类器/" style="font-size: 10px;">贝叶斯分类器</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">July 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/06/">June 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">July 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/06/">June 2014</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2016/05/13/epoll/">事件驱动模型epoll</a>
+          </li>
+        
+          <li>
+            <a href="/2016/05/12/由补码引发的关于编码的思考/">由补码引发的关于编码的思考</a>
+          </li>
+        
+          <li>
+            <a href="/2016/01/15/Caffe教程４-Solver/">Caffe教程４：Solver</a>
+          </li>
+        
+          <li>
+            <a href="/2016/01/14/损失函数/">损失函数</a>
+          </li>
+        
+          <li>
+            <a href="/2016/01/13/Forward和Backward/">Forward 和 Backward</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2016 安勃卿<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

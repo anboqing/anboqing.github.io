@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Bison的基本概念 | 暗时间</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="#一、语言和上下文无关文法
+Bison只能解析上下文无关文法描述的语言。这说明你要指定一个或多个句法群Semantic Groups并且给出构造他们的相关规则。比如说，在c语言中，有一种Semantic Groups叫做“expression”。构件表达式的一个规则可能是：”一个表达式可以由一个减号和其他表达式构成“。另一个规则可能是”一个表达式可以是一个整数“。你可以看出，规则常常是递归的，但是">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Bison的基本概念">
+<meta property="og:url" content="http://anboqing.github.io/2015/05/04/TheConceptsOfBison/index.html">
+<meta property="og:site_name" content="暗时间">
+<meta property="og:description" content="#一、语言和上下文无关文法
+Bison只能解析上下文无关文法描述的语言。这说明你要指定一个或多个句法群Semantic Groups并且给出构造他们的相关规则。比如说，在c语言中，有一种Semantic Groups叫做“expression”。构件表达式的一个规则可能是：”一个表达式可以由一个减号和其他表达式构成“。另一个规则可能是”一个表达式可以是一个整数“。你可以看出，规则常常是递归的，但是">
+<meta property="og:updated_time" content="2016-09-04T02:31:28.791Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Bison的基本概念">
+<meta name="twitter:description" content="#一、语言和上下文无关文法
+Bison只能解析上下文无关文法描述的语言。这说明你要指定一个或多个句法群Semantic Groups并且给出构造他们的相关规则。比如说，在c语言中，有一种Semantic Groups叫做“expression”。构件表达式的一个规则可能是：”一个表达式可以由一个减号和其他表达式构成“。另一个规则可能是”一个表达式可以是一个整数“。你可以看出，规则常常是递归的，但是">
+  
+    <link rel="alternate" href="/atom.xml" title="暗时间" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">暗时间</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">书写是最好的思考</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://anboqing.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-TheConceptsOfBison" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/05/04/TheConceptsOfBison/" class="article-date">
+  <time datetime="2015-05-04T12:16:00.000Z" itemprop="datePublished">2015-05-04</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Bison的基本概念
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>#一、语言和上下文无关文法</p>
+<p>Bison只能解析<strong>上下文无关文法描述</strong>的语言。这说明你要指定一个或多个<strong>句法群Semantic Groups</strong>并且给出构造他们的相关规则。比如说，在c语言中，有一种Semantic Groups叫做“expression”。构件表达式的一个规则可能是：”一个表达式可以由一个减号和其他表达式构成“。另一个规则可能是”一个表达式可以是一个整数“。你可以看出，规则常常是递归的，但是至少要有一个规则可以终止递归。</p>
+<p>最常见的用人类可读的方式表达这种规则的描述范式叫 <strong>Backus-Naur Form</strong> or “BNF” (巴科斯-范式)，它是为了描述 Algol 60 语言而开发出来的。任何用BNF表达的语法都是上下文无关的语法。输入到Bison的代码本质上是机器可读的BNF。</p>
+<p>当然，并不是所有的上下文无关语言都可以被Bison处理，只有<strong>LALR（1）</strong>/*Look Ahead 1 and left-to-right Rightmost derivation 左递归最右推导前窥1 */语法才可以被Bison接受。简单的说，它必须能够在只多读取一个字符的前提下知道如何去解析输入字符串的任何一个部分。严格的说，它是一个LR(1)语法的描述，LALR(1)文法有许多额外的宪制很难简单的解释清楚;但是在实践中很少能找到一个不是LALR(1)文法的LR(1)语法。</p>
+<p>在正式的文法规则中，每种syntactic unit或者grouping 是用一个 <strong>symbol</strong>标示的。那些用来根据语法规则构建更小的语法结构的符号被称为<strong><em>nonterminal symbols</em></strong> <strong>非终结符</strong>；那些不能再切分的符号被叫做 <strong>terminal symbols</strong> <strong>终结符</strong> 或者 <strong>token types</strong>。我们把输入串中的一个终结符叫做<strong>token</strong>，把一个非终结符叫做<strong>grouping</strong>。We call a piece of input corresponding to a single terminal symbol a <strong>token</strong>,and a piece corresbonding to a single nonterminal symbol a <strong>grouping</strong>.</p>
+<p>我们可以用c语言为例子来说明 符号，终结符和非终结符的意义。 c语言的记号token分为 identifiers,constants(numeric and string),和一系列关键词，算数运算符和标点符号；C语言的终结符包括了 ‘identifier’,’number’,’string’,加上每一个关键词的符号，还有运算符和标点符号：’if’,’return’,’const’,’static’,’int’,’char’,’plus-sign’,’open-brace’,’close-brace’,’comma’ 等等。（这些记号可以被分成单个字符，但是这是一个词法学问题，不是语法问题。）</p>
+<p>这里有一个简单的C函数切分成记号的例子：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">int</span> 			<span class="comment">/* keyword 'int'*/</span></div><div class="line">square(x) 		<span class="comment">/* identifier,open-paren, */</span></div><div class="line">				<span class="comment">/* identifier,close-paren*/</span></div><div class="line"><span class="keyword">int</span> x;			<span class="comment">/* keyword 'int',identifier,semicolon*/</span></div><div class="line">&#123; 				<span class="comment">/* open-brace */</span></div><div class="line">	<span class="keyword">return</span> x*x; <span class="comment">/* keyword 'return',identifier,*/</span></div><div class="line">				<span class="comment">/* asterisk,identifier,semicolon */</span></div><div class="line">&#125;				<span class="comment">/* close-brace */</span></div></pre></td></tr></table></figure></p>
+<p>C语言的语法分组(syntactic groupings)包含了：expression,statement,delcaration,function definition.这在c语言的语法中被表示成非终结符 ‘expression’,’statement’,’declaration’,’function definition’。完整的语法使用了几十种其他的语言规则（每一个都有自己的非终结符）用来表示上面四个的意义。在上面的例子中，是一个函数定义，它包含了一个声明和一个定义。在定义中，每一个x是一个表达式，’x*x’也是一个表达式。</p>
+<p>没一个非终结符必须有相应的语法规则来说明它是如何用其他简单的语法构件来组合的。例如，一种c语言语句return,这可能用（非正式的）语法规则描述成下面这种形式：</p>
+<blockquote>
+<p>A ‘statement’ can be made of a ‘return’ keyword, an ‘expression’ and a ‘semicolon’.</p>
+</blockquote>
+<p>还有其它许多种表示语句的规则，每个规则对应了一种c语言语句.</p>
+<p>一个非终结符必须区别于一个特殊的完全的语言中的话语定义。one nonterminal symbol must be distinguished as the special one whick defines a complete utterance in the language. 它被称作 <strong>start symbol</strong>。在一个编译器里，这表示一个完整的输入程序。在c语言中，非终结符 ‘sequcence of definitions and declarations’扮演了这个角色；</p>
+<p>例如，’1+2’是一个合法的c语言expression–c语言的一个合法部分—但是它在整个c程序里面不合法。在上下文无关文法中，这遵从了一个事实：’expression’不是一个起始符<strong>start symbol</strong>.</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://anboqing.github.io/2015/05/04/TheConceptsOfBison/" data-id="cisoqi7bw000zrmggn4p5hg6h" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/编译原理-Compiler-上下文无关文法/">编译原理 Compiler 上下文无关文法</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2015/05/11/soaLearning_one/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          hello SOA
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2015/04/21/incompletetype/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">c/c++中的incomplete type(不完全类型）</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Caffe/">Caffe</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Caffe教程/">Caffe教程</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Learning/">Learning</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/PCA-降维/">PCA 降维</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/RMI/">RMI</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/SOA/">SOA</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/c/">c++</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/caffe/">caffe</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/epoll/">epoll</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/linux/">linux</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/pandas/">pandas</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/tcp-ip/">tcp/ip</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/函数式编程/">函数式编程</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/协程/">协程</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/工具配置/">工具配置</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/推荐系统/">推荐系统</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/数据挖掘/">数据挖掘</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/机器学习/">机器学习</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/算法学习/">算法学习</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/统计/">统计</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/编码/">编码</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/编译原理/">编译原理</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/设计模式/">设计模式</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/贝叶斯分类/">贝叶斯分类</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Caffe教程/">Caffe教程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Composite，组合模式/">Composite，组合模式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Decorator/">Decorator</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/LaTex-数学公式-Pelican-MathJax/">LaTex  数学公式  Pelican  MathJax</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Learning/">Learning</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PCA-降维/">PCA 降维</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RMI/">RMI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SOA/">SOA</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c-c-linkage-incomplete-type/">c c++ linkage incomplete-type</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/caffe-proto/">caffe .proto</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/datamining/">datamining</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/datamining-Apriori-FPGrowth/">datamining Apriori FPGrowth</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/epoll-网络编程/">epoll 网络编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux-source-code/">linux source code</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tcp-ip/">tcp/ip</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/web-service-axis-xfire-lomboz-tomcat/">web-service axis xfire lomboz tomcat</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/函数式编程/">函数式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/动态规划/">动态规划</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/协程/">协程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/可视化-pandas/">可视化 pandas</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/基础知识-编码/">基础知识 编码</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/感知机/">感知机</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/推荐系统/">推荐系统</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/机器学习/">机器学习</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/机器学习-算法/">机器学习 算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/梯度下降/">梯度下降</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编译原理-Compiler-上下文无关文法/">编译原理 Compiler 上下文无关文法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编译编译原理/">编译编译原理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/贝叶斯分类器/">贝叶斯分类器</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Caffe教程/" style="font-size: 20px;">Caffe教程</a> <a href="/tags/Composite，组合模式/" style="font-size: 10px;">Composite，组合模式</a> <a href="/tags/Decorator/" style="font-size: 10px;">Decorator</a> <a href="/tags/LaTex-数学公式-Pelican-MathJax/" style="font-size: 10px;">LaTex  数学公式  Pelican  MathJax</a> <a href="/tags/Learning/" style="font-size: 10px;">Learning</a> <a href="/tags/PCA-降维/" style="font-size: 10px;">PCA 降维</a> <a href="/tags/RMI/" style="font-size: 10px;">RMI</a> <a href="/tags/SOA/" style="font-size: 10px;">SOA</a> <a href="/tags/c-c-linkage-incomplete-type/" style="font-size: 10px;">c c++ linkage incomplete-type</a> <a href="/tags/caffe-proto/" style="font-size: 10px;">caffe .proto</a> <a href="/tags/datamining/" style="font-size: 10px;">datamining</a> <a href="/tags/datamining-Apriori-FPGrowth/" style="font-size: 10px;">datamining Apriori FPGrowth</a> <a href="/tags/epoll-网络编程/" style="font-size: 10px;">epoll 网络编程</a> <a href="/tags/linux-source-code/" style="font-size: 10px;">linux source code</a> <a href="/tags/tcp-ip/" style="font-size: 10px;">tcp/ip</a> <a href="/tags/web-service-axis-xfire-lomboz-tomcat/" style="font-size: 10px;">web-service axis xfire lomboz tomcat</a> <a href="/tags/函数式编程/" style="font-size: 10px;">函数式编程</a> <a href="/tags/动态规划/" style="font-size: 13.33px;">动态规划</a> <a href="/tags/协程/" style="font-size: 13.33px;">协程</a> <a href="/tags/可视化-pandas/" style="font-size: 10px;">可视化 pandas</a> <a href="/tags/基础知识-编码/" style="font-size: 10px;">基础知识 编码</a> <a href="/tags/感知机/" style="font-size: 10px;">感知机</a> <a href="/tags/推荐系统/" style="font-size: 13.33px;">推荐系统</a> <a href="/tags/机器学习/" style="font-size: 16.67px;">机器学习</a> <a href="/tags/机器学习-算法/" style="font-size: 10px;">机器学习 算法</a> <a href="/tags/梯度下降/" style="font-size: 10px;">梯度下降</a> <a href="/tags/编译原理-Compiler-上下文无关文法/" style="font-size: 10px;">编译原理 Compiler 上下文无关文法</a> <a href="/tags/编译编译原理/" style="font-size: 10px;">编译编译原理</a> <a href="/tags/贝叶斯分类器/" style="font-size: 10px;">贝叶斯分类器</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">July 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/06/">June 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">July 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/06/">June 2014</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2016/05/13/epoll/">事件驱动模型epoll</a>
+          </li>
+        
+          <li>
+            <a href="/2016/05/12/由补码引发的关于编码的思考/">由补码引发的关于编码的思考</a>
+          </li>
+        
+          <li>
+            <a href="/2016/01/15/Caffe教程４-Solver/">Caffe教程４：Solver</a>
+          </li>
+        
+          <li>
+            <a href="/2016/01/14/损失函数/">损失函数</a>
+          </li>
+        
+          <li>
+            <a href="/2016/01/13/Forward和Backward/">Forward 和 Backward</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2016 安勃卿<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

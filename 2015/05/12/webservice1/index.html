@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>web service 编程初步 | 暗时间</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="web service 的原理以及概念summary: SOA架构本身是一个虚拟的架构，它不依赖任何的服务组件，包括web service 组件，因为soa可以随意绑定各种服务组件。但是，从另外一个方面来说，web service的逐渐成熟为实施打下了良好的基础。因为web service的soap/http毕竟是一个标准的服务传输协议，从本质上来说，应用集成是离不开标准化的传输协议的。如果说企业">
+<meta property="og:type" content="article">
+<meta property="og:title" content="web service 编程初步">
+<meta property="og:url" content="http://anboqing.github.io/2015/05/12/webservice1/index.html">
+<meta property="og:site_name" content="暗时间">
+<meta property="og:description" content="web service 的原理以及概念summary: SOA架构本身是一个虚拟的架构，它不依赖任何的服务组件，包括web service 组件，因为soa可以随意绑定各种服务组件。但是，从另外一个方面来说，web service的逐渐成熟为实施打下了良好的基础。因为web service的soap/http毕竟是一个标准的服务传输协议，从本质上来说，应用集成是离不开标准化的传输协议的。如果说企业">
+<meta property="og:image" content="http://7xia5s.com1.z0.glb.clouddn.com/soasoa2-1.png">
+<meta property="og:updated_time" content="2016-09-04T04:22:48.251Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="web service 编程初步">
+<meta name="twitter:description" content="web service 的原理以及概念summary: SOA架构本身是一个虚拟的架构，它不依赖任何的服务组件，包括web service 组件，因为soa可以随意绑定各种服务组件。但是，从另外一个方面来说，web service的逐渐成熟为实施打下了良好的基础。因为web service的soap/http毕竟是一个标准的服务传输协议，从本质上来说，应用集成是离不开标准化的传输协议的。如果说企业">
+<meta name="twitter:image" content="http://7xia5s.com1.z0.glb.clouddn.com/soasoa2-1.png">
+  
+    <link rel="alternate" href="/atom.xml" title="暗时间" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">暗时间</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">书写是最好的思考</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://anboqing.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-webservice1" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/05/12/webservice1/" class="article-date">
+  <time datetime="2015-05-12T03:37:00.000Z" itemprop="datePublished">2015-05-12</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/SOA/">SOA</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      web service 编程初步
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="web-service-的原理以及概念"><a href="#web-service-的原理以及概念" class="headerlink" title="web service 的原理以及概念"></a>web service 的原理以及概念</h2><p>summary: SOA架构本身是一个虚拟的架构，它不依赖任何的服务组件，包括web service 组件，因为soa可以随意绑定各种服务组件。但是，从另外一个方面来说，web service的逐渐成熟为实施打下了良好的基础。因为web service的soap/http毕竟是一个标准的服务传输协议，从本质上来说，应用集成是离不开标准化的传输协议的。如果说企业内部的软件服务集成可以采用某种非标准化的传输协议的话，那么企业内外服务的集成则需要借助于标准化的服务组件了。<br>web service 组件不同于其他组件的根本之处在于web service 采用了一种标准传输协议soap。开发服务组件的目的就是要让客户端能够调用其服务。所谓web service就是定义了一套标准的调用过程：</p>
+<ul>
+<li>服务器端首先用一套标准的方法向外界描述它所提供的服务的内容，这属于wsdl;</li>
+<li>客户端需要以一种标准的协议来调用此服务，这属于soap;</li>
+<li>服务提供者将服务内容方在一个公共的网址让大家来查询，这属于uddi;</li>
+</ul>
+<hr>
+<h3 id="1-1-命名空间-name-space"><a href="#1-1-命名空间-name-space" class="headerlink" title="1.1 命名空间(name space)"></a>1.1 命名空间(name space)</h3><p>web service 是一种基于xml的标准化的服务组件，它会大量地使用命名空间(name space)，所以在介绍web service之前，有必要介绍命名空间。</p>
+<p>命名空间（name space)是指逻辑上相关的唯一一组名称，其实也不用用这么学术的解释，命名空间不就是和java里面的packege机制还有c++里面的 namespace机制是一样的嘛，就是为了防止不同的人定义了相同的变量名称，整合到一个程序中编译器解析时会遇到命名冲突的问题，所以要在每个人的变量名外面包一层命名空间，相当于给每个符号名字前面隐形的加了一个前缀，这样就能区分开来了。</p>
+<p>wsdl有大量地使用命名空间的地方，有必要先简单地介绍一下wsdl中的命名空间。     </p>
+<p>本质上wsdl是一个xml文件，作为一个xml文件，为了区别同名的元素，就需要采用命名空间的概念。下面用一个示例来说明这个问题。<br><img src="http://7xia5s.com1.z0.glb.clouddn.com/soasoa2-1.png" alt="命名空间示例"></p>
+<p>假设服务器有两个雷，两个类都有同样的方法名 ： method A1 , method A2 为了区分他们，就可以定义两个命名空间 class A 和 Class B 如下：<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">class:class</span> <span class="attr">xmlns:classA</span>=<span class="string">http://class/classA</span> <span class="attr">xmlns:classB</span>=<span class="string">http://class/classB</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">classA:method</span> <span class="attr">A1</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">classA:method</span> <span class="attr">A2</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">classB:method</span> <span class="attr">A1</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">classB:method</span> <span class="attr">A2</span>&gt;</span></div></pre></td></tr></table></figure></p>
+<p>   通过上面这个定义，就可以知道每个方法是属于哪个类的了。这样，客户端如果想要调用class A的A1方法和class B的A2方法，就可以这样写：<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">method</span> <span class="attr">A1</span> <span class="attr">xmlns</span>=<span class="string">"http://class/classA"</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">method</span> <span class="attr">A2</span> <span class="attr">xmlns</span>=<span class="string">"http://class/classB"</span>&gt;</span></div></pre></td></tr></table></figure></p>
+<p>一旦服务器收到这样一条消息，它就知道调用class A的 A1方法而不是class B中的同名方法，调用class B中的A2方法而不是class A中的同名方法。</p>
+<blockquote>
+<p>XML Namespace (xmlns) 属性<br>XML 命名空间属性被放置于元素的开始标签之中，并使用以下的语法：</p>
+<blockquote>
+<p>xmlns:namespace-prefix=”namespaceURI”</p>
+</blockquote>
+</blockquote>
+<p>   请访问 <a href="http://www.w3.org/TR/html4/" target="_blank" rel="external">http://www.w3.org/TR/html4/</a></p>
+<blockquote>
+<p>当命名空间被定义在元素的开始标签中时，所有带有相同前缀的子元素都会与同一个命名空间相关联。<br>注释：<strong>用于标示命名空间的地址不会被解析器用于查找信息</strong>。其惟一的作用是赋予命名空间一个惟一的名称。不过，很多公司常常会作为指针来使用命名空间指向实际存在的网页，这个网页包含关于命名空间的信息。</p>
+</blockquote>
+<p><strong>默认的命名空间（Default Namespaces）</strong><br>为元素定义默认的命名空间可以让我们省去在所有的子元素中使用前缀的工作。<br>请使用下面的语法：</p>
+<blockquote>
+<p>xmlns=”namespaceURI”</p>
+</blockquote>
+<p>这个 XML 文档携带着某个表格中的信息：<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">table</span> <span class="attr">xmlns</span>=<span class="string">"http://www.w3.org/TR/html4/"</span>&gt;</span></div><div class="line">   <span class="tag">&lt;<span class="name">tr</span>&gt;</span></div><div class="line">   <span class="tag">&lt;<span class="name">td</span>&gt;</span>Apples<span class="tag">&lt;/<span class="name">td</span>&gt;</span></div><div class="line">   <span class="tag">&lt;<span class="name">td</span>&gt;</span>Bananas<span class="tag">&lt;/<span class="name">td</span>&gt;</span></div><div class="line">   <span class="tag">&lt;/<span class="name">tr</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">table</span>&gt;</span></div></pre></td></tr></table></figure></p>
+<hr>
+<h3 id="1-2-WSDL的本质：服务内容的标准化描述"><a href="#1-2-WSDL的本质：服务内容的标准化描述" class="headerlink" title="1.2 WSDL的本质：服务内容的标准化描述"></a>1.2 WSDL的本质：服务内容的标准化描述</h3><p>WSDL的全称是web service description language,是一种基于xml格式的关于web服务的描述语言，其主要目的在于web service的提供者将自己的web服务的所有相关内容，如所提供服务的传输方式、服务方法接口、接口参数、服务路径等，生成相应的完全的文档，发布给使用者。使用者可以通过这个wsdl文档，创建相应的soap请求（request）消息，通过http传递给web sercive提供者；web 服务在完成服务请求之后，将soap消息返回（response）消息传回请求者，服务请求者再根据wsdl文档将soap返回的消息解析成自己能够理解的内容。 </p>
+<p>WSDL的目的就是要告诉外界自己能够提供什么样的服务，类似于java的interface。它就是用来<strong>描述服务接口的标记语言</strong>。</p>
+<p><a href="http://www.w3school.com.cn/wsdl/index.asp" target="_blank" rel="external">学习WSDL请猛戳这里：w3cschool上的WSDL教程</a> </p>
+<hr>
+<h4 id="WSDL写法简要介绍"><a href="#WSDL写法简要介绍" class="headerlink" title="WSDL写法简要介绍"></a>WSDL写法简要介绍</h4><p><strong>WSDL文档结构</strong><br>WSDL主要是用来描述某个web service 的：</p>
+<ul>
+<li><porttype> web service执行的操作</porttype></li>
+<li><message> web service 使用的消息</message></li>
+<li><types>   web service 使用的数据类型</types></li>
+<li><binding>   web service 使用的通信协议</binding></li>
+</ul>
+<p>一个WSDL文档的主要结构是类似这样的：<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">definitions</span>&gt;</span></div><div class="line"></div><div class="line"><span class="tag">&lt;<span class="name">types</span>&gt;</span></div><div class="line">    definition of types ...</div><div class="line"><span class="tag">&lt;/<span class="name">types</span>&gt;</span></div><div class="line"></div><div class="line"><span class="tag">&lt;<span class="name">message</span>&gt;</span></div><div class="line">     definition of a message...</div><div class="line"><span class="tag">&lt;/<span class="name">message</span>&gt;</span></div><div class="line"></div><div class="line"><span class="tag">&lt;<span class="name">portType</span>&gt;</span></div><div class="line">    definition of a port....</div><div class="line"><span class="tag">&lt;/<span class="name">portType</span>&gt;</span></div><div class="line"></div><div class="line"><span class="tag">&lt;<span class="name">binding</span>&gt;</span></div><div class="line">    definition of a binding...</div><div class="line"><span class="tag">&lt;/<span class="name">binding</span>&gt;</span></div><div class="line"></div><div class="line"><span class="tag">&lt;/<span class="name">definitions</span>&gt;</span></div></pre></td></tr></table></figure></p>
+<p>WSDL文档可包含其他的元素，比如extension 元素，以及一个service元素，此元素可以把若干个web sercives的定义组合在一个单一的WSDL文档中。</p>
+<p><strong>WSDL 端口</strong><br><code>&lt;portType&gt;</code> 元素是最重要的 WSDL 元素。<br>它可描述一个 web service、可被执行的操作，以及相关的消息。<br>可以把 <code>&lt;portType&gt;</code> 元素比作传统编程语言中的一个函数库（或一个模块、或一个类）。</p>
+<p><strong>WSDL 消息</strong><br><code>&lt;message&gt;</code> 元素定义一个操作的数据元素。<br>每个消息均由一个或多个部件组成。可以把这些部件比作传统编程语言中一个函数调用的参数。</p>
+<p><strong>WSDL types</strong><br><code>&lt;types&gt;</code> 元素定义 web service 使用的数据类型。<br>为了最大程度的平台中立性，WSDL 使用 XML Schema 语法来定义数据类型。</p>
+<p><strong>WSDL Bindings</strong><br><code>&lt;binding&gt;</code> 元素为每个端口定义消息格式和协议细节。</p>
+<p><strong>WSDL 实例</strong><br>这是某个 WSDL 文档的简化的片段：<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">message</span> <span class="attr">name</span>=<span class="string">"getTermRequest"</span>&gt;</span></div><div class="line">   <span class="tag">&lt;<span class="name">part</span> <span class="attr">name</span>=<span class="string">"term"</span> <span class="attr">type</span>=<span class="string">"xs:string"</span>/&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">message</span>&gt;</span></div><div class="line"></div><div class="line"><span class="tag">&lt;<span class="name">message</span> <span class="attr">name</span>=<span class="string">"getTermResponse"</span>&gt;</span></div><div class="line">   <span class="tag">&lt;<span class="name">part</span> <span class="attr">name</span>=<span class="string">"value"</span> <span class="attr">type</span>=<span class="string">"xs:string"</span>/&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">message</span>&gt;</span></div><div class="line"></div><div class="line"><span class="tag">&lt;<span class="name">portType</span> <span class="attr">name</span>=<span class="string">"glossaryTerms"</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">operation</span> <span class="attr">name</span>=<span class="string">"getTerm"</span>&gt;</span></div><div class="line">        <span class="tag">&lt;<span class="name">input</span> <span class="attr">message</span>=<span class="string">"getTermRequest"</span>/&gt;</span></div><div class="line">        <span class="tag">&lt;<span class="name">output</span> <span class="attr">message</span>=<span class="string">"getTermResponse"</span>/&gt;</span></div><div class="line">  <span class="tag">&lt;/<span class="name">operation</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">portType</span>&gt;</span></div></pre></td></tr></table></figure></p>
+<p>在这个例子中，<code>&lt;portType&gt;</code>元素把 “glossaryTerms” 定义为某个端口的名称，把 “getTerm” 定义为某个操作的名称。<br>操作 “getTerm” 拥有一个名为 “getTermRequest” 的输入消息，以及一个名为 “getTermResponse” 的输出消息。</p>
+<p><message> 元素可定义每个消息的部件，以及相关联的数据类型。<br>对比传统的编程，glossaryTerms 是一个函数库，而 “getTerm” 是带有输入参数 “getTermRequest” 和返回参数 getTermResponse 的一个函数。</message></p>
+<h4 id="WSDL-和-UDDI"><a href="#WSDL-和-UDDI" class="headerlink" title="WSDL 和 UDDI"></a>WSDL 和 UDDI</h4><p>UDDI 是一种目录服务，企业可以使用它对 Web services 进行注册和搜索。<br>UDDI，英文为 “Universal Description, Discovery and Integration”，可译为“通用描述、发现与集成服务”。<br>UDDI 是一个独立于平台的框架，用于通过使用 Internet 来描述服务，发现企业，并对企业服务进行集成。<br>UDDI 指的是通用描述、发现与集成服务<br>UDDI 是一种用于存储有关 web services 的信息的目录。<br>UDDI 是一种由 WSDL 描述的 web services 界面的目录。<br>UDDI 经由 SOAP 进行通信<br>UDDI 被构建入了微软的 .NET 平台</p>
+<h4 id="WSDL语法"><a href="#WSDL语法" class="headerlink" title="WSDL语法"></a><strong>WSDL语法</strong></h4><figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">wsdl:definitions</span> <span class="attr">name</span>=<span class="string">"nmtoken"</span>? <span class="attr">targetNamespace</span>=<span class="string">"uri"</span>&gt;</span></div><div class="line"></div><div class="line">    <span class="tag">&lt;<span class="name">import</span> <span class="attr">namespace</span>=<span class="string">"uri"</span> <span class="attr">location</span>=<span class="string">"uri"</span>/&gt;</span> *</div><div class="line">	</div><div class="line">    <span class="tag">&lt;<span class="name">wsdl:documentation</span> <span class="attr">....</span> /&gt;</span> ?</div><div class="line"></div><div class="line">    <span class="tag">&lt;<span class="name">wsdl:types</span>&gt;</span> ?</div><div class="line">        <span class="tag">&lt;<span class="name">wsdl:documentation</span> <span class="attr">....</span> /&gt;</span> ?</div><div class="line">        <span class="tag">&lt;<span class="name">xsd:schema</span> <span class="attr">....</span> /&gt;</span> *</div><div class="line">    <span class="tag">&lt;/<span class="name">wsdl:types</span>&gt;</span></div><div class="line"></div><div class="line">    <span class="tag">&lt;<span class="name">wsdl:message</span> <span class="attr">name</span>=<span class="string">"ncname"</span>&gt;</span> *</div><div class="line">        <span class="tag">&lt;<span class="name">wsdl:documentation</span> <span class="attr">....</span> /&gt;</span> ?</div><div class="line">        <span class="tag">&lt;<span class="name">part</span> <span class="attr">name</span>=<span class="string">"ncname"</span> <span class="attr">element</span>=<span class="string">"qname"</span>? <span class="attr">type</span>=<span class="string">"qname"</span>?/&gt;</span> *</div><div class="line">    <span class="tag">&lt;/<span class="name">wsdl:message</span>&gt;</span></div><div class="line"></div><div class="line">    <span class="tag">&lt;<span class="name">wsdl:portType</span> <span class="attr">name</span>=<span class="string">"ncname"</span>&gt;</span> *</div><div class="line">        <span class="tag">&lt;<span class="name">wsdl:documentation</span> <span class="attr">....</span> /&gt;</span> ?</div><div class="line">        <span class="tag">&lt;<span class="name">wsdl:operation</span> <span class="attr">name</span>=<span class="string">"ncname"</span>&gt;</span> *</div><div class="line">            <span class="tag">&lt;<span class="name">wsdl:documentation</span> <span class="attr">....</span> /&gt;</span> ?</div><div class="line">            <span class="tag">&lt;<span class="name">wsdl:input</span> <span class="attr">message</span>=<span class="string">"qname"</span>&gt;</span> ?</div><div class="line">                <span class="tag">&lt;<span class="name">wsdl:documentation</span> <span class="attr">....</span> /&gt;</span> ?</div><div class="line">            <span class="tag">&lt;/<span class="name">wsdl:input</span>&gt;</span></div><div class="line">            <span class="tag">&lt;<span class="name">wsdl:output</span> <span class="attr">message</span>=<span class="string">"qname"</span>&gt;</span> ?</div><div class="line">                <span class="tag">&lt;<span class="name">wsdl:documentation</span> <span class="attr">....</span> /&gt;</span> ?</div><div class="line">            <span class="tag">&lt;/<span class="name">wsdl:output</span>&gt;</span></div><div class="line">            <span class="tag">&lt;<span class="name">wsdl:fault</span> <span class="attr">name</span>=<span class="string">"ncname"</span> <span class="attr">message</span>=<span class="string">"qname"</span>&gt;</span> *</div><div class="line">                <span class="tag">&lt;<span class="name">wsdl:documentation</span> <span class="attr">....</span> /&gt;</span> ?</div><div class="line">            <span class="tag">&lt;/<span class="name">wsdl:fault</span>&gt;</span></div><div class="line">        <span class="tag">&lt;/<span class="name">wsdl:operation</span>&gt;</span></div><div class="line">    <span class="tag">&lt;/<span class="name">wsdl:portType</span>&gt;</span></div><div class="line"></div><div class="line">    <span class="tag">&lt;<span class="name">wsdl:serviceType</span> <span class="attr">name</span>=<span class="string">"ncname"</span>&gt;</span> *</div><div class="line">        <span class="tag">&lt;<span class="name">wsdl:portType</span> <span class="attr">name</span>=<span class="string">"qname"</span>/&gt;</span> +</div><div class="line">    <span class="tag">&lt;/<span class="name">wsdl:serviceType</span>&gt;</span></div><div class="line"></div><div class="line">    <span class="tag">&lt;<span class="name">wsdl:binding</span> <span class="attr">name</span>=<span class="string">"ncname"</span> <span class="attr">type</span>=<span class="string">"qname"</span>&gt;</span> *</div><div class="line">        <span class="tag">&lt;<span class="name">wsdl:documentation</span> <span class="attr">....</span> /&gt;</span> ?</div><div class="line">        <span class="tag">&lt;<span class="name">--</span> <span class="attr">binding</span> <span class="attr">details</span> <span class="attr">--</span>&gt;</span> *</div><div class="line">        <span class="tag">&lt;<span class="name">wsdl:operation</span> <span class="attr">name</span>=<span class="string">"ncname"</span>&gt;</span> *</div><div class="line">            <span class="tag">&lt;<span class="name">wsdl:documentation</span> <span class="attr">....</span> /&gt;</span> ?</div><div class="line">            <span class="tag">&lt;<span class="name">--</span> <span class="attr">binding</span> <span class="attr">details</span> <span class="attr">--</span>&gt;</span> *</div><div class="line">            <span class="tag">&lt;<span class="name">wsdl:input</span>&gt;</span> ?</div><div class="line">                <span class="tag">&lt;<span class="name">wsdl:documentation</span> <span class="attr">....</span> /&gt;</span> ?</div><div class="line">                <span class="tag">&lt;<span class="name">--</span> <span class="attr">binding</span> <span class="attr">details</span> <span class="attr">--</span>&gt;</span></div><div class="line">            <span class="tag">&lt;/<span class="name">wsdl:input</span>&gt;</span></div><div class="line">            <span class="tag">&lt;<span class="name">wsdl:output</span>&gt;</span> ?</div><div class="line">                <span class="tag">&lt;<span class="name">wsdl:documentation</span> <span class="attr">....</span> /&gt;</span> ?</div><div class="line">                <span class="tag">&lt;<span class="name">--</span> <span class="attr">binding</span> <span class="attr">details</span> <span class="attr">--</span>&gt;</span> *</div><div class="line">            <span class="tag">&lt;/<span class="name">wsdl:output</span>&gt;</span></div><div class="line">            <span class="tag">&lt;<span class="name">wsdl:fault</span> <span class="attr">name</span>=<span class="string">"ncname"</span>&gt;</span> *</div><div class="line">                <span class="tag">&lt;<span class="name">wsdl:documentation</span> <span class="attr">....</span> /&gt;</span> ?</div><div class="line">                <span class="tag">&lt;<span class="name">--</span> <span class="attr">binding</span> <span class="attr">details</span> <span class="attr">--</span>&gt;</span> *</div><div class="line">            <span class="tag">&lt;/<span class="name">wsdl:fault</span>&gt;</span></div><div class="line">        <span class="tag">&lt;/<span class="name">wsdl:operation</span>&gt;</span></div><div class="line">    <span class="tag">&lt;/<span class="name">wsdl:binding</span>&gt;</span></div><div class="line"></div><div class="line">    <span class="tag">&lt;<span class="name">wsdl:service</span> <span class="attr">name</span>=<span class="string">"ncname"</span> <span class="attr">serviceType</span>=<span class="string">"qname"</span>&gt;</span> *</div><div class="line">        <span class="tag">&lt;<span class="name">wsdl:documentation</span> <span class="attr">....</span> /&gt;</span> ?</div><div class="line">        <span class="tag">&lt;<span class="name">wsdl:port</span> <span class="attr">name</span>=<span class="string">"ncname"</span> <span class="attr">binding</span>=<span class="string">"qname"</span>&gt;</span> *</div><div class="line">            <span class="tag">&lt;<span class="name">wsdl:documentation</span> <span class="attr">....</span> /&gt;</span> ?</div><div class="line">            <span class="tag">&lt;<span class="name">--</span> <span class="attr">address</span> <span class="attr">details</span> <span class="attr">--</span>&gt;</span></div><div class="line">        <span class="tag">&lt;/<span class="name">wsdl:port</span>&gt;</span></div><div class="line">    <span class="tag">&lt;/<span class="name">wsdl:service</span>&gt;</span></div><div class="line"></div><div class="line"><span class="tag">&lt;/<span class="name">wsdl:definitions</span>&gt;</span></div></pre></td></tr></table></figure>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://anboqing.github.io/2015/05/12/webservice1/" data-id="cisoqi7dn003drmggfrvi3qh5" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/web-service-axis-xfire-lomboz-tomcat/">web-service axis xfire lomboz tomcat</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2015/05/12/pattern_discovery_1/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          数据挖掘基本概念
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2015/05/11/SOA读书报告/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">SOA读书报告</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Caffe/">Caffe</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Caffe教程/">Caffe教程</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Learning/">Learning</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/PCA-降维/">PCA 降维</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/RMI/">RMI</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/SOA/">SOA</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/c/">c++</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/caffe/">caffe</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/epoll/">epoll</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/linux/">linux</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/pandas/">pandas</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/tcp-ip/">tcp/ip</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/函数式编程/">函数式编程</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/协程/">协程</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/工具配置/">工具配置</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/推荐系统/">推荐系统</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/数据挖掘/">数据挖掘</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/机器学习/">机器学习</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/算法学习/">算法学习</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/统计/">统计</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/编码/">编码</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/编译原理/">编译原理</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/设计模式/">设计模式</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/贝叶斯分类/">贝叶斯分类</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Caffe教程/">Caffe教程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Composite，组合模式/">Composite，组合模式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Decorator/">Decorator</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/LaTex-数学公式-Pelican-MathJax/">LaTex  数学公式  Pelican  MathJax</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Learning/">Learning</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PCA-降维/">PCA 降维</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RMI/">RMI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SOA/">SOA</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c-c-linkage-incomplete-type/">c c++ linkage incomplete-type</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/caffe-proto/">caffe .proto</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/datamining/">datamining</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/datamining-Apriori-FPGrowth/">datamining Apriori FPGrowth</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/epoll-网络编程/">epoll 网络编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux-source-code/">linux source code</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tcp-ip/">tcp/ip</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/web-service-axis-xfire-lomboz-tomcat/">web-service axis xfire lomboz tomcat</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/函数式编程/">函数式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/动态规划/">动态规划</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/协程/">协程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/可视化-pandas/">可视化 pandas</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/基础知识-编码/">基础知识 编码</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/感知机/">感知机</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/推荐系统/">推荐系统</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/机器学习/">机器学习</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/机器学习-算法/">机器学习 算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/梯度下降/">梯度下降</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编译原理-Compiler-上下文无关文法/">编译原理 Compiler 上下文无关文法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编译编译原理/">编译编译原理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/贝叶斯分类器/">贝叶斯分类器</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Caffe教程/" style="font-size: 20px;">Caffe教程</a> <a href="/tags/Composite，组合模式/" style="font-size: 10px;">Composite，组合模式</a> <a href="/tags/Decorator/" style="font-size: 10px;">Decorator</a> <a href="/tags/LaTex-数学公式-Pelican-MathJax/" style="font-size: 10px;">LaTex  数学公式  Pelican  MathJax</a> <a href="/tags/Learning/" style="font-size: 10px;">Learning</a> <a href="/tags/PCA-降维/" style="font-size: 10px;">PCA 降维</a> <a href="/tags/RMI/" style="font-size: 10px;">RMI</a> <a href="/tags/SOA/" style="font-size: 10px;">SOA</a> <a href="/tags/c-c-linkage-incomplete-type/" style="font-size: 10px;">c c++ linkage incomplete-type</a> <a href="/tags/caffe-proto/" style="font-size: 10px;">caffe .proto</a> <a href="/tags/datamining/" style="font-size: 10px;">datamining</a> <a href="/tags/datamining-Apriori-FPGrowth/" style="font-size: 10px;">datamining Apriori FPGrowth</a> <a href="/tags/epoll-网络编程/" style="font-size: 10px;">epoll 网络编程</a> <a href="/tags/linux-source-code/" style="font-size: 10px;">linux source code</a> <a href="/tags/tcp-ip/" style="font-size: 10px;">tcp/ip</a> <a href="/tags/web-service-axis-xfire-lomboz-tomcat/" style="font-size: 10px;">web-service axis xfire lomboz tomcat</a> <a href="/tags/函数式编程/" style="font-size: 10px;">函数式编程</a> <a href="/tags/动态规划/" style="font-size: 13.33px;">动态规划</a> <a href="/tags/协程/" style="font-size: 13.33px;">协程</a> <a href="/tags/可视化-pandas/" style="font-size: 10px;">可视化 pandas</a> <a href="/tags/基础知识-编码/" style="font-size: 10px;">基础知识 编码</a> <a href="/tags/感知机/" style="font-size: 10px;">感知机</a> <a href="/tags/推荐系统/" style="font-size: 13.33px;">推荐系统</a> <a href="/tags/机器学习/" style="font-size: 16.67px;">机器学习</a> <a href="/tags/机器学习-算法/" style="font-size: 10px;">机器学习 算法</a> <a href="/tags/梯度下降/" style="font-size: 10px;">梯度下降</a> <a href="/tags/编译原理-Compiler-上下文无关文法/" style="font-size: 10px;">编译原理 Compiler 上下文无关文法</a> <a href="/tags/编译编译原理/" style="font-size: 10px;">编译编译原理</a> <a href="/tags/贝叶斯分类器/" style="font-size: 10px;">贝叶斯分类器</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">July 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/06/">June 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">July 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/06/">June 2014</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2016/05/13/epoll/">事件驱动模型epoll</a>
+          </li>
+        
+          <li>
+            <a href="/2016/05/12/由补码引发的关于编码的思考/">由补码引发的关于编码的思考</a>
+          </li>
+        
+          <li>
+            <a href="/2016/01/15/Caffe教程４-Solver/">Caffe教程４：Solver</a>
+          </li>
+        
+          <li>
+            <a href="/2016/01/14/损失函数/">损失函数</a>
+          </li>
+        
+          <li>
+            <a href="/2016/01/13/Forward和Backward/">Forward 和 Backward</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2016 安勃卿<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

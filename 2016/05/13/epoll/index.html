@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>事件驱动模型epoll | 暗时间</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Introduction事件驱动为广大的程序员所熟悉，其最为人津津乐道的是在图形化界面编程中的应用；事实上，在网络编程中事件驱动也被广泛使用，并大规模部署在高连接数高吞吐量的服务器程序中，如 http 服务器程序、ftp 服务器程序等。相比于传统的网络编程方式，事件驱动能够极大的降低资源占用，增大服务接待能力，并提高网络传输效率。
+本文探究了在linux系统下常用的epoll的原理及其使用方法，总">
+<meta property="og:type" content="article">
+<meta property="og:title" content="事件驱动模型epoll">
+<meta property="og:url" content="http://anboqing.github.io/2016/05/13/epoll/index.html">
+<meta property="og:site_name" content="暗时间">
+<meta property="og:description" content="Introduction事件驱动为广大的程序员所熟悉，其最为人津津乐道的是在图形化界面编程中的应用；事实上，在网络编程中事件驱动也被广泛使用，并大规模部署在高连接数高吞吐量的服务器程序中，如 http 服务器程序、ftp 服务器程序等。相比于传统的网络编程方式，事件驱动能够极大的降低资源占用，增大服务接待能力，并提高网络传输效率。
+本文探究了在linux系统下常用的epoll的原理及其使用方法，总">
+<meta property="og:image" content="http://7xkwrm.com1.z0.glb.clouddn.com/epoll_image001.jpg">
+<meta property="og:image" content="http://7xkwrm.com1.z0.glb.clouddn.com/epoll_image002.jpg">
+<meta property="og:image" content="http://7xkwrm.com1.z0.glb.clouddn.com/epoll_image003.jpg">
+<meta property="og:image" content="http://7xkwrm.com1.z0.glb.clouddn.com/epoll_image004.jpg">
+<meta property="og:image" content="http://7xkwrm.com1.z0.glb.clouddn.com/epoll_image005.jpg">
+<meta property="og:image" content="http://7xkwrm.com1.z0.glb.clouddn.com/epoll_image006.jpg">
+<meta property="og:image" content="http://7xkwrm.com1.z0.glb.clouddn.com/epoll_image007.jpg">
+<meta property="og:updated_time" content="2016-09-04T02:33:11.627Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="事件驱动模型epoll">
+<meta name="twitter:description" content="Introduction事件驱动为广大的程序员所熟悉，其最为人津津乐道的是在图形化界面编程中的应用；事实上，在网络编程中事件驱动也被广泛使用，并大规模部署在高连接数高吞吐量的服务器程序中，如 http 服务器程序、ftp 服务器程序等。相比于传统的网络编程方式，事件驱动能够极大的降低资源占用，增大服务接待能力，并提高网络传输效率。
+本文探究了在linux系统下常用的epoll的原理及其使用方法，总">
+<meta name="twitter:image" content="http://7xkwrm.com1.z0.glb.clouddn.com/epoll_image001.jpg">
+  
+    <link rel="alternate" href="/atom.xml" title="暗时间" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">暗时间</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">书写是最好的思考</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://anboqing.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-epoll" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/05/13/epoll/" class="article-date">
+  <time datetime="2016-05-13T08:22:00.000Z" itemprop="datePublished">2016-05-13</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/epoll/">epoll</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      事件驱动模型epoll
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><p>事件驱动为广大的程序员所熟悉，其最为人津津乐道的是在图形化界面编程中的应用；<br>事实上，在网络编程中事件驱动也被广泛使用，并大规模部署在高连接数高吞吐量的服务器程序中，<br>如 http 服务器程序、ftp 服务器程序等。相比于传统的网络编程方式，事件驱动能够极大的降低资源占用，<br>增大服务接待能力，并提高网络传输效率。</p>
+<p>本文探究了在linux系统下常用的epoll的原理及其使用方法，总结了自己学习并发服务器编程过程中遇到的问题。</p>
+<hr>
+<h2 id="阻塞式io"><a href="#阻塞式io" class="headerlink" title="阻塞式io"></a>阻塞式io</h2><p>我们来看一个最简单的客户端／服务器交互场景：<br><img src="http://7xkwrm.com1.z0.glb.clouddn.com/epoll_image001.jpg" alt="c/s 1"><br>除非使用fcntl显示指定，几乎所有IO接口都是阻塞型的。这给网络编程带来了很大问题，比如服务器调用send()/recv()的时候，线程会被阻塞，在此期间无法执行任何运算或响应网络请求，如果在服务器阻塞时有新的客户connect，那么新的客户将得不到响应。这时候我们会想到使用<strong>多线程／多进程</strong>模型来实现服务器。</p>
+<h2 id="多进程／线程服务器"><a href="#多进程／线程服务器" class="headerlink" title="多进程／线程服务器"></a>多进程／线程服务器</h2><p>应对多客户机的网络应用，最简单的解决方式是在服务器端使用多线程（或多进程）。多线程（或多进程）的目的是让每个连接都拥有独立的线程（或进程），这样任何一个连接的阻塞都不会影响其他的连接。</p>
+<p>具体使用多进程还是多线程，并没有一个特定的模式。传统意义上，进程的开销要远远大于线程，所以，如果需要同时为较多的客户机提供服务，则不推荐使用多进程；如果单个服务执行体需要消耗较多的 CPU 资源，譬如需要进行大规模或长时间的数据运算或文件访问，则进程较为安全。通常，使用 pthread_create () 创建新线程，fork() 创建新进程。</p>
+<p>我们假设对上述的服务器 / 客户机模型，提出更高的要求，即让服务器同时为多个客户机提供一问一答的服务。于是有了如下的模型。<br><img src="http://7xkwrm.com1.z0.glb.clouddn.com/epoll_image002.jpg" alt="2"><br>在上述的线程 / 时间图例中，主线程持续等待客户端的连接请求，如果有连接，则创建新线程，并在新线程中提供为前例同样的问答服务。<br>述多线程的服务器模型似乎完美的解决了为多个客户机提供问答服务的要求，但其实并不尽然。如果要同时响应成百上千路的连接请求，由于调度的关系，无论多线程还是多进程都会严重占据系统资源，降低系统对外界响应效率，而线程与进程本身也更容易进入假死状态。</p>
+<p>接下来我们可能会考虑使用“线程池”或“连接池”。“线程池”旨在减少创建和销毁线程的频率，其维持一定合理数量的线程，并让空闲的线程重新承担新的执行任务。“连接池”维持连接的缓存池，尽量重用已有的连接、减少创建和关闭连接的频率。这两种技术都可以很好的降低系统开销，都被广泛应用很多大型系统，如 websphere、tomcat 和各种数据库等。</p>
+<p>但是，“线程池”和“连接池”技术也只是在一定程度上缓解了频繁调用 IO 接口带来的资源占用。而且，所谓“池”始终有其上限，当请求大大超过上限时，“池”构成的系统对外界的响应并不比没有池的时候效果好多少。所以使用“池”必须考虑其面临的响应规模，并根据响应规模调整“池”的大小。</p>
+<p>对应上例中的所面临的可能同时出现的上千甚至上万次的客户端请求，“线程池”或“连接池”或许可以缓解部分压力，但是不能解决所有问题。</p>
+<p>总之，多线程模型可以方便高效的解决小规模的服务请求，但面对大规模的服务请求，多线程模型并不是最佳方案。下来我将讨论用非阻塞接口来尝试解决这个问题。</p>
+<h2 id="非阻塞服务器程序"><a href="#非阻塞服务器程序" class="headerlink" title="非阻塞服务器程序"></a>非阻塞服务器程序</h2><p>以上面临的很多问题，一定程度是 IO 接口的阻塞特性导致的。多线程是一个解决方案，还一个方案就是使用非阻塞的接口。</p>
+<p>非阻塞的接口相比于阻塞型接口的显著差异在于，在被调用之后立即返回。也就是说</p>
+<blockquote>
+<p>当进程把一个套接字设置成非阻塞是在通知内核：当所请求的I/O操作非得把本进程投入睡眠才能完成时，不要把本进程投入睡眠，而是返回一个错误 eg. EWOULDBLOCK (UNP)</p>
+</blockquote>
+<p>使用如下的函数可以将某句柄 fd 设为非阻塞状态。<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">fcntl( fd, F_SETFL, O_NONBLOCK );</div></pre></td></tr></table></figure></p>
+<p>下面将给出只用一个线程，但能够同时从多个连接中检测数据是否送达，并且接受数据。<br><img src="http://7xkwrm.com1.z0.glb.clouddn.com/epoll_image003.jpg" alt="3"></p>
+<p>在非阻塞状态下，recv() 接口在被调用后立即返回，返回值代表了不同的含义。如在本例中，</p>
+<ul>
+<li>recv() 返回值大于 0，表示接受数据完毕，返回值即是接受到的字节数；</li>
+<li>recv() 返回 0，表示连接已经正常断开；</li>
+<li>recv() 返回 -1，且 errno 等于 EAGAIN,或者EWOULDBLOCK，表示 recv 操作还没执行完成；</li>
+<li>recv() 返回 -1，且 errno 不等于 EAGAIN，表示 recv 操作遇到错误 比如 SIGPIPE 导致errno==EPIPE,SIGINT导致errno==SIGINTR。</li>
+</ul>
+<p>可以看到服务器线程可以通过循环调用 recv() 接口，可以在单个线程内实现对所有连接的数据接收工作。</p>
+<p>但是上述模型绝不被推荐。因为，循环调用 recv() 将大幅度推高 CPU 占用率；此外，在这个方案中，recv() 更多的是起到检测“操作是否完成”的作用，由于服务器并不知道什么时候fd1,fd2,fd3的缓冲区上会有数据，所以就忙轮询，这样很耗费cpu的。所以需要一种<em>预先告知内核的能力，当内核一旦发现进程指定的一个或多个IO条件就绪，他就通知进程，这个能力叫做</em>　<strong>多路IO复用</strong>.</p>
+<p>操作系统提供了更为高效的检测“操作是否完成”作用的接口，例如select()/poll()/epoll()/dev/poll / kqueue / libv等。</p>
+<p>未完待续…</p>
+<hr>
+<h2 id="使用select-接口的基于事件驱动的服务器模型"><a href="#使用select-接口的基于事件驱动的服务器模型" class="headerlink" title="使用select()接口的基于事件驱动的服务器模型"></a>使用select()接口的基于事件驱动的服务器模型</h2><p>大部分Linux都支持Select函数，该函数用于探测多个文件句柄的状态变化。Manural上是这么描述的:</p>
+<blockquote>
+<p>select() and  pselect()  allow  a  program  to  monitor  multiple  file<br>       descriptors,  waiting  until one or more of the file descriptors become<br>       “ready” for some class of I/O operation (e.g., input possible).  A file<br>       descriptor  is considered ready if it is possible to perform the corre‐<br>       sponding I/O operation (e.g., read(2)) without blocking.</p>
+</blockquote>
+<p>Select接口的原型:<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">FD_ZERO(<span class="keyword">int</span> fd, fd_set* fds) </div><div class="line"> FD_SET(<span class="keyword">int</span> fd, fd_set* fds) </div><div class="line"> FD_ISSET(<span class="keyword">int</span> fd, fd_set* fds) </div><div class="line"> FD_CLR(<span class="keyword">int</span> fd, fd_set* fds) </div><div class="line"> <span class="function"><span class="keyword">int</span> <span class="title">select</span><span class="params">(<span class="keyword">int</span> nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds, <span class="keyword">struct</span> timeval *timeout)</span></span></div></pre></td></tr></table></figure></p>
+<p>这里，fd_set 类型可以简单的理解为按 bit 位标记句柄的队列，例如要在某 fd_set 中标记一个值为 16 的句柄，则该 fd_set 的第 16 个 bit 位被标记为 1。具体的置位、验证可使用 FD_SET、FD_ISSET 等宏实现。在 select() 函数中，readfds、writefds 和 exceptfds 同时作为输入参数和输出参数。如果输入的 readfds 标记了 16 号句柄，则 select() 将检测 16 号句柄是否可读。在 select() 返回后，可以通过检查 readfds 有否标记 16 号句柄，来判断该“可读”事件是否发生。另外，用户可以设置 timeout 时间。</p>
+<p>下面将重新模拟上例中从多个客户端接收数据的模型。<br><img src="http://7xkwrm.com1.z0.glb.clouddn.com/epoll_image004.jpg" alt="4"><br>上述模型只是描述了使用 select() 接口同时从多个客户端接收数据的过程；由于 select() 接口可以同时对多个句柄进行读状态、写状态和错误状态的探测，所以可以很容易构建为多个客户端提供独立问答服务的服务器系统。<br><img src="http://7xkwrm.com1.z0.glb.clouddn.com/epoll_image005.jpg" alt="5"><br>这里需要指出的是，客户端的一个 connect() 操作，将在服务器端激发一个“可读事件”，所以 select() 也能探测来自客户端的 connect() 行为。</p>
+<p>上述模型中，最关键的地方是如何动态维护 select() 的三个参数 readfds、writefds 和 exceptfds。作为输入参数，readfds 应该标记所有的需要探测的“可读事件”的句柄，其中永远包括那个探测 connect() 的那个“母”句柄；同时，writefds 和 exceptfds 应该标记所有需要探测的“可写事件”和“错误事件”的句柄 ( 使用 FD_SET() 标记 )。</p>
+<p>作为输出参数，readfds、writefds 和 exceptfds 中的保存了 select() 捕捉到的所有事件的句柄值。程序员需要检查的所有的标记位 ( 使用 FD_ISSET() 检查 )，以确定到底哪些句柄发生了事件。</p>
+<p>上述模型主要模拟的是“一问一答”的服务流程，所以，如果 select() 发现某句柄捕捉到了“可读事件”，服务器程序应及时做 recv() 操作，并根据接收到的数据准备好待发送数据，并将对应的句柄值加入 writefds，准备下一次的“可写事件”的 select() 探测。同样，如果 select() 发现某句柄捕捉到“可写事件”，则程序应及时做 send() 操作，并准备好下一次的“可读事件”探测准备。下图描述的是上述模型中的一个执行周期。<br><img src="http://7xkwrm.com1.z0.glb.clouddn.com/epoll_image006.jpg" alt="6"></p>
+<p>这种模型的特征在于每一个执行周期都会探测一次或一组事件，一个特定的事件会触发某个特定的响应。我们可以将这种模型归类为“<strong>事件驱动模型</strong>”。</p>
+<p>相比其他模型，使用 select() 的事件驱动模型只用单线程（进程）执行，占用资源少，不消耗太多 CPU，同时能够为多客户端提供服务。如果试图建立一个简单的事件驱动的服务器程序，这个模型有一定的参考价值。</p>
+<p>但这个模型依旧有着很多问题。</p>
+<p>首先，select() 接口并不是实现“事件驱动”的最好选择。<strong>因为当需要探测的句柄值较大时，select() 接口本身需要消耗大量时间去轮询各个句柄</strong>。很多操作系统提供了更为高效的接口，如 linux 提供了 epoll，BSD 提供了 kqueue，Solaris 提供了 /dev/poll …。如果需要实现更高效的服务器程序，类似 epoll 这样的接口更被推荐。遗憾的是不同的操作系统特供的 epoll 接口有很大差异，所以使用类似于 epoll 的接口实现具有较好跨平台能力的服务器会比较困难。</p>
+<p>其次，<strong>该模型将事件探测和事件响应夹杂在一起，一旦事件响应的执行体庞大，则对整个模型是灾难性的</strong>。如下例，庞大的执行体 1 的将直接导致响应事件 2 的执行体迟迟得不到执行，并在很大程度上降低了事件探测的及时性.<br><img src="http://7xkwrm.com1.z0.glb.clouddn.com/epoll_image007.jpg" alt="7"></p>
+<p>接下来就该更先进的epoll出场了。</p>
+<hr>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://anboqing.github.io/2016/05/13/epoll/" data-id="cisoqi7c3001armggwuv8n39j" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/epoll-网络编程/">epoll 网络编程</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2016/05/12/由补码引发的关于编码的思考/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">由补码引发的关于编码的思考</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Caffe/">Caffe</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Caffe教程/">Caffe教程</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Learning/">Learning</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/PCA-降维/">PCA 降维</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/RMI/">RMI</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/SOA/">SOA</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/c/">c++</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/caffe/">caffe</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/epoll/">epoll</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/linux/">linux</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/pandas/">pandas</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/tcp-ip/">tcp/ip</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/函数式编程/">函数式编程</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/协程/">协程</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/工具配置/">工具配置</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/推荐系统/">推荐系统</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/数据挖掘/">数据挖掘</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/机器学习/">机器学习</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/算法学习/">算法学习</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/统计/">统计</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/编码/">编码</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/编译原理/">编译原理</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/设计模式/">设计模式</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/贝叶斯分类/">贝叶斯分类</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Caffe教程/">Caffe教程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Composite，组合模式/">Composite，组合模式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Decorator/">Decorator</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/LaTex-数学公式-Pelican-MathJax/">LaTex  数学公式  Pelican  MathJax</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Learning/">Learning</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PCA-降维/">PCA 降维</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RMI/">RMI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SOA/">SOA</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c-c-linkage-incomplete-type/">c c++ linkage incomplete-type</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/caffe-proto/">caffe .proto</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/datamining/">datamining</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/datamining-Apriori-FPGrowth/">datamining Apriori FPGrowth</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/epoll-网络编程/">epoll 网络编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux-source-code/">linux source code</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tcp-ip/">tcp/ip</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/web-service-axis-xfire-lomboz-tomcat/">web-service axis xfire lomboz tomcat</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/函数式编程/">函数式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/动态规划/">动态规划</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/协程/">协程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/可视化-pandas/">可视化 pandas</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/基础知识-编码/">基础知识 编码</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/感知机/">感知机</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/推荐系统/">推荐系统</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/机器学习/">机器学习</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/机器学习-算法/">机器学习 算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/梯度下降/">梯度下降</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编译原理-Compiler-上下文无关文法/">编译原理 Compiler 上下文无关文法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编译编译原理/">编译编译原理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/贝叶斯分类器/">贝叶斯分类器</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Caffe教程/" style="font-size: 20px;">Caffe教程</a> <a href="/tags/Composite，组合模式/" style="font-size: 10px;">Composite，组合模式</a> <a href="/tags/Decorator/" style="font-size: 10px;">Decorator</a> <a href="/tags/LaTex-数学公式-Pelican-MathJax/" style="font-size: 10px;">LaTex  数学公式  Pelican  MathJax</a> <a href="/tags/Learning/" style="font-size: 10px;">Learning</a> <a href="/tags/PCA-降维/" style="font-size: 10px;">PCA 降维</a> <a href="/tags/RMI/" style="font-size: 10px;">RMI</a> <a href="/tags/SOA/" style="font-size: 10px;">SOA</a> <a href="/tags/c-c-linkage-incomplete-type/" style="font-size: 10px;">c c++ linkage incomplete-type</a> <a href="/tags/caffe-proto/" style="font-size: 10px;">caffe .proto</a> <a href="/tags/datamining/" style="font-size: 10px;">datamining</a> <a href="/tags/datamining-Apriori-FPGrowth/" style="font-size: 10px;">datamining Apriori FPGrowth</a> <a href="/tags/epoll-网络编程/" style="font-size: 10px;">epoll 网络编程</a> <a href="/tags/linux-source-code/" style="font-size: 10px;">linux source code</a> <a href="/tags/tcp-ip/" style="font-size: 10px;">tcp/ip</a> <a href="/tags/web-service-axis-xfire-lomboz-tomcat/" style="font-size: 10px;">web-service axis xfire lomboz tomcat</a> <a href="/tags/函数式编程/" style="font-size: 10px;">函数式编程</a> <a href="/tags/动态规划/" style="font-size: 13.33px;">动态规划</a> <a href="/tags/协程/" style="font-size: 13.33px;">协程</a> <a href="/tags/可视化-pandas/" style="font-size: 10px;">可视化 pandas</a> <a href="/tags/基础知识-编码/" style="font-size: 10px;">基础知识 编码</a> <a href="/tags/感知机/" style="font-size: 10px;">感知机</a> <a href="/tags/推荐系统/" style="font-size: 13.33px;">推荐系统</a> <a href="/tags/机器学习/" style="font-size: 16.67px;">机器学习</a> <a href="/tags/机器学习-算法/" style="font-size: 10px;">机器学习 算法</a> <a href="/tags/梯度下降/" style="font-size: 10px;">梯度下降</a> <a href="/tags/编译原理-Compiler-上下文无关文法/" style="font-size: 10px;">编译原理 Compiler 上下文无关文法</a> <a href="/tags/编译编译原理/" style="font-size: 10px;">编译编译原理</a> <a href="/tags/贝叶斯分类器/" style="font-size: 10px;">贝叶斯分类器</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">July 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/06/">June 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">July 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/06/">June 2014</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2016/05/13/epoll/">事件驱动模型epoll</a>
+          </li>
+        
+          <li>
+            <a href="/2016/05/12/由补码引发的关于编码的思考/">由补码引发的关于编码的思考</a>
+          </li>
+        
+          <li>
+            <a href="/2016/01/15/Caffe教程４-Solver/">Caffe教程４：Solver</a>
+          </li>
+        
+          <li>
+            <a href="/2016/01/14/损失函数/">损失函数</a>
+          </li>
+        
+          <li>
+            <a href="/2016/01/13/Forward和Backward/">Forward 和 Backward</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2016 安勃卿<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

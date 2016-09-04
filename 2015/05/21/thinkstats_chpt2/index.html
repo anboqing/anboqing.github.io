@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>《程序员的统计思维》学习笔记：描述性统计量 | 暗时间</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="##概念
+
+均值$$ \mu = \frac1n\sum_i^nx_i $$描述样本的典型值或者集中趋势
+
+
+
+方差$$ \sigma^2=\frac1n \sum_i^n(x_i-\mu)^2 $$描述样本的分散情况
+
+
+
+统计显著性(statistically significant)若一个直观效应不太可能是由随机因素引起的，就是统计显著的
+
+
+分布汇总统计量简单明了，但是风险也大，因为他们很">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《程序员的统计思维》学习笔记：描述性统计量">
+<meta property="og:url" content="http://anboqing.github.io/2015/05/21/thinkstats_chpt2/index.html">
+<meta property="og:site_name" content="暗时间">
+<meta property="og:description" content="##概念
+
+均值$$ \mu = \frac1n\sum_i^nx_i $$描述样本的典型值或者集中趋势
+
+
+
+方差$$ \sigma^2=\frac1n \sum_i^n(x_i-\mu)^2 $$描述样本的分散情况
+
+
+
+统计显著性(statistically significant)若一个直观效应不太可能是由随机因素引起的，就是统计显著的
+
+
+分布汇总统计量简单明了，但是风险也大，因为他们很">
+<meta property="og:image" content="http://7xia5s.com1.z0.glb.clouddn.com/thinkstats_matplotlib.png">
+<meta property="og:image" content="http://7xia5s.com1.z0.glb.clouddn.com/thinkstats_figure_1.png">
+<meta property="og:updated_time" content="2016-09-04T03:01:37.328Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="《程序员的统计思维》学习笔记：描述性统计量">
+<meta name="twitter:description" content="##概念
+
+均值$$ \mu = \frac1n\sum_i^nx_i $$描述样本的典型值或者集中趋势
+
+
+
+方差$$ \sigma^2=\frac1n \sum_i^n(x_i-\mu)^2 $$描述样本的分散情况
+
+
+
+统计显著性(statistically significant)若一个直观效应不太可能是由随机因素引起的，就是统计显著的
+
+
+分布汇总统计量简单明了，但是风险也大，因为他们很">
+<meta name="twitter:image" content="http://7xia5s.com1.z0.glb.clouddn.com/thinkstats_matplotlib.png">
+  
+    <link rel="alternate" href="/atom.xml" title="暗时间" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">暗时间</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">书写是最好的思考</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://anboqing.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-thinkstats_chpt2" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/05/21/thinkstats_chpt2/" class="article-date">
+  <time datetime="2015-05-21T14:21:00.000Z" itemprop="datePublished">2015-05-21</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/统计/">统计</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      《程序员的统计思维》学习笔记：描述性统计量
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>##概念</p>
+<ul>
+<li>均值<br>$$ \mu = \frac1n\sum_i^nx_i $$<br>描述样本的典型值或者<strong>集中趋势</strong></li>
+</ul>
+<hr>
+<ul>
+<li>方差<br>$$ \sigma^2=\frac1n \sum_i^n(x_i-\mu)^2 $$<br>描述样本的<strong>分散</strong>情况</li>
+</ul>
+<hr>
+<ul>
+<li>统计显著性(statistically significant)<br>若一个直观效应不太可能是由随机因素引起的，就是统计显著的</li>
+</ul>
+<hr>
+<h2 id="分布"><a href="#分布" class="headerlink" title="分布"></a>分布</h2><p>汇总统计量简单明了，但是风险也大，因为他们很有可能会掩盖数据的真想。另一种方法就是看数据的<em>分布（distribution）</em>，它描述了各个值出现的频繁程度。</p>
+<p>   表示分布最常用的方法是<em>直方图（histogram）</em>，这种图用于展示各个值出现的频数或者概率。    </p>
+<pre><code>在这里，*频数*指的是数据集中一个值出现的次数，*概率*就是频数除以样本数量。    
+
+在python中，计算频数最简单的办法就是用字典。给一个序列t:
+</code></pre><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">hist = &#123;&#125;</div><div class="line"><span class="keyword">for</span> x <span class="keyword">in</span> t:</div><div class="line">    hist[x] = hist.get(x, <span class="number">0</span>) + <span class="number">1</span></div></pre></td></tr></table></figure>
+<p>得到的结果是一个将值映射到其频数的字典。将其除以 $n$ 即可把频数转换成概率，这称为<strong>归一化</strong>：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">n = float(len(t))</div><div class="line">pmf = &#123;&#125;</div><div class="line"><span class="keyword">for</span> x, freq <span class="keyword">in</span> hist.items():</div><div class="line">    pmf[x] = freq/n</div></pre></td></tr></table></figure></p>
+<p>归一化后的直方图成为PMF(probability Mass Function),概率质量函数，这个函数是值到其概率的映射。   </p>
+<hr>
+<h2 id="直方图的表示"><a href="#直方图的表示" class="headerlink" title="直方图的表示"></a>直方图的表示</h2><p>编写一个Pmf的模块，定义了表示直方图的Hist对象，以及表示PMF的Pmf对象。<a href="http://thinkstats.com/Pmf.py" target="_blank" rel="external">Pmf.py</a></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> Pmf</div><div class="line">hist = Pmf.MakeHistFromList([<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">2</span>])</div><div class="line"><span class="keyword">print</span> hist</div></pre></td></tr></table></figure>
+<hr>
+<h2 id="绘制直方图"><a href="#绘制直方图" class="headerlink" title="绘制直方图"></a>绘制直方图</h2><p>python 中有不少画图的包，可以使用复杂的<a href="http://www.labri.fr/perso/nrougier/teaching/matplotlib/" target="_blank" rel="external">matplotlib</a>,当然也有简单的<a href="http://web.stanford.edu/~mwaskom/software/seaborn/introduction.html" target="_blank" rel="external">seaborn</a>。<br>　　　　<br>使用matplotlib中的pyplot画：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> Pmf</div><div class="line"><span class="keyword">from</span> matplotlib <span class="keyword">import</span> pyplot</div><div class="line">hist = Pmf.MakeHistFromList([<span class="number">1</span>,<span class="number">2</span>,<span class="number">2</span>,<span class="number">2</span>,<span class="number">2</span>,<span class="number">2</span>,<span class="number">2</span>,<span class="number">4</span>,<span class="number">4</span>,<span class="number">4</span>,<span class="number">4</span>,<span class="number">5</span>])</div><div class="line">vals,freqs = hist.Render()</div><div class="line">rectangles = pyplot.bar(vals,freqs)</div><div class="line">pyplot.show()</div></pre></td></tr></table></figure></p>
+<p><img src="http://7xia5s.com1.z0.glb.clouddn.com/thinkstats_matplotlib.png" alt="此处输入图片的描述"></p>
+<p>作者写了一个绘制图表的函数<a href="http://greenteapress.com/thinkstats/myplot.py" target="_blank" rel="external">myplot</a>.文档：<a href="http://greenteapress.com/thinkstats/myplot.html" target="_blank" rel="external">文档</a>.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">from</span> matplotlib <span class="keyword">import</span> pyplot</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">plotBabiesHist</span><span class="params">(data_dir=<span class="string">'.'</span>)</span>:</span></div><div class="line">    table,firsts,others = first.MakeTables(data_dir)</div><div class="line">    firsts_l = [p.prglength <span class="keyword">for</span> p <span class="keyword">in</span> firsts.records]</div><div class="line">    others_l = [p.prglength <span class="keyword">for</span> p <span class="keyword">in</span> others.records]</div><div class="line">    firsts_h = Pmf.MakeHistFromList(firsts_l)</div><div class="line">    others_h = Pmf.MakeHistFromList(others_l)</div><div class="line">    fst_v,fst_f = firsts_h.Render()</div><div class="line">    oth_v,oth_f = others_h.Render()</div><div class="line">    pyplot.bar(fst_v,fst_f)</div><div class="line">    pyplot.bar(oth_v,oth_f)</div><div class="line">    pyplot.show()</div></pre></td></tr></table></figure>
+<p>  <img src="http://7xia5s.com1.z0.glb.clouddn.com/thinkstats_figure_1.png" alt="7"></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://anboqing.github.io/2015/05/21/thinkstats_chpt2/" data-id="cisoqi7dm003brmggdqdzvikm" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2015/06/04/LogisticRegression_1/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Logistic Regression 以及 梯度下降法 学习笔记
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2015/05/18/machine_learning_tw_2/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">机器学习：感知机</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Caffe/">Caffe</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Caffe教程/">Caffe教程</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Learning/">Learning</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/PCA-降维/">PCA 降维</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/RMI/">RMI</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/SOA/">SOA</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/c/">c++</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/caffe/">caffe</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/epoll/">epoll</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/linux/">linux</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/pandas/">pandas</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/tcp-ip/">tcp/ip</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/函数式编程/">函数式编程</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/协程/">协程</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/工具配置/">工具配置</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/推荐系统/">推荐系统</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/数据挖掘/">数据挖掘</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/机器学习/">机器学习</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/算法学习/">算法学习</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/统计/">统计</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/编码/">编码</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/编译原理/">编译原理</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/设计模式/">设计模式</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/贝叶斯分类/">贝叶斯分类</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Caffe教程/">Caffe教程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Composite，组合模式/">Composite，组合模式</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Decorator/">Decorator</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/LaTex-数学公式-Pelican-MathJax/">LaTex  数学公式  Pelican  MathJax</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Learning/">Learning</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/PCA-降维/">PCA 降维</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RMI/">RMI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SOA/">SOA</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c-c-linkage-incomplete-type/">c c++ linkage incomplete-type</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/caffe-proto/">caffe .proto</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/datamining/">datamining</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/datamining-Apriori-FPGrowth/">datamining Apriori FPGrowth</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/epoll-网络编程/">epoll 网络编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux-source-code/">linux source code</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tcp-ip/">tcp/ip</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/web-service-axis-xfire-lomboz-tomcat/">web-service axis xfire lomboz tomcat</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/函数式编程/">函数式编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/动态规划/">动态规划</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/协程/">协程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/可视化-pandas/">可视化 pandas</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/基础知识-编码/">基础知识 编码</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/感知机/">感知机</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/推荐系统/">推荐系统</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/机器学习/">机器学习</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/机器学习-算法/">机器学习 算法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/梯度下降/">梯度下降</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编译原理-Compiler-上下文无关文法/">编译原理 Compiler 上下文无关文法</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/编译编译原理/">编译编译原理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/贝叶斯分类器/">贝叶斯分类器</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Caffe教程/" style="font-size: 20px;">Caffe教程</a> <a href="/tags/Composite，组合模式/" style="font-size: 10px;">Composite，组合模式</a> <a href="/tags/Decorator/" style="font-size: 10px;">Decorator</a> <a href="/tags/LaTex-数学公式-Pelican-MathJax/" style="font-size: 10px;">LaTex  数学公式  Pelican  MathJax</a> <a href="/tags/Learning/" style="font-size: 10px;">Learning</a> <a href="/tags/PCA-降维/" style="font-size: 10px;">PCA 降维</a> <a href="/tags/RMI/" style="font-size: 10px;">RMI</a> <a href="/tags/SOA/" style="font-size: 10px;">SOA</a> <a href="/tags/c-c-linkage-incomplete-type/" style="font-size: 10px;">c c++ linkage incomplete-type</a> <a href="/tags/caffe-proto/" style="font-size: 10px;">caffe .proto</a> <a href="/tags/datamining/" style="font-size: 10px;">datamining</a> <a href="/tags/datamining-Apriori-FPGrowth/" style="font-size: 10px;">datamining Apriori FPGrowth</a> <a href="/tags/epoll-网络编程/" style="font-size: 10px;">epoll 网络编程</a> <a href="/tags/linux-source-code/" style="font-size: 10px;">linux source code</a> <a href="/tags/tcp-ip/" style="font-size: 10px;">tcp/ip</a> <a href="/tags/web-service-axis-xfire-lomboz-tomcat/" style="font-size: 10px;">web-service axis xfire lomboz tomcat</a> <a href="/tags/函数式编程/" style="font-size: 10px;">函数式编程</a> <a href="/tags/动态规划/" style="font-size: 13.33px;">动态规划</a> <a href="/tags/协程/" style="font-size: 13.33px;">协程</a> <a href="/tags/可视化-pandas/" style="font-size: 10px;">可视化 pandas</a> <a href="/tags/基础知识-编码/" style="font-size: 10px;">基础知识 编码</a> <a href="/tags/感知机/" style="font-size: 10px;">感知机</a> <a href="/tags/推荐系统/" style="font-size: 13.33px;">推荐系统</a> <a href="/tags/机器学习/" style="font-size: 16.67px;">机器学习</a> <a href="/tags/机器学习-算法/" style="font-size: 10px;">机器学习 算法</a> <a href="/tags/梯度下降/" style="font-size: 10px;">梯度下降</a> <a href="/tags/编译原理-Compiler-上下文无关文法/" style="font-size: 10px;">编译原理 Compiler 上下文无关文法</a> <a href="/tags/编译编译原理/" style="font-size: 10px;">编译编译原理</a> <a href="/tags/贝叶斯分类器/" style="font-size: 10px;">贝叶斯分类器</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/01/">January 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/12/">December 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/07/">July 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/06/">June 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/04/">April 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/03/">March 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07/">July 2014</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/06/">June 2014</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2016/05/13/epoll/">事件驱动模型epoll</a>
+          </li>
+        
+          <li>
+            <a href="/2016/05/12/由补码引发的关于编码的思考/">由补码引发的关于编码的思考</a>
+          </li>
+        
+          <li>
+            <a href="/2016/01/15/Caffe教程４-Solver/">Caffe教程４：Solver</a>
+          </li>
+        
+          <li>
+            <a href="/2016/01/14/损失函数/">损失函数</a>
+          </li>
+        
+          <li>
+            <a href="/2016/01/13/Forward和Backward/">Forward 和 Backward</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2016 安勃卿<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>
